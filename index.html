@@ -133,6 +133,7 @@
     .dashboard-metric strong { display: block; margin: 3px 0 5px; font: 700 34px/1 var(--display); }
     .dashboard-metric span { color: var(--muted); font-size: 12px; }
     .dashboard-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; align-items: start; }
+    .today-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 36px; }
     .dashboard-card { min-width: 0; padding: 20px; }
     .dashboard-card .section-heading { align-items: baseline; margin-bottom: 13px; }
     .dashboard-card .helper { margin-bottom: 14px; }
@@ -153,7 +154,10 @@
     .pending-card { padding: 20px; border: 1.5px solid var(--warn); border-radius: 14px; background: #f8f4ed; }
     .pending-card blockquote { margin: 0 0 6px; font: 700 20px/1.45 var(--display); }
     .candidate-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
-    .candidate-list button { min-height: 36px; padding: 0 12px; border: 1px solid #cbb99d; border-radius: 999px; background: var(--white); }
+    .candidate-list button { display: grid; min-height: 46px; padding: 7px 12px; place-content: center; border: 1px solid #cbb99d; border-radius: 999px; background: var(--white); }
+    .candidate-list button > span { display: block; }
+    .candidate-status { margin-top: 2px; color: var(--muted); font-size: 10px; font-weight: 600; }
+    .candidate-status.silent { color: var(--signal); font-weight: 800; }
     .candidate-list .none { color: var(--muted); }
 
     .memo-list { display: grid; gap: 1px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--line); }
@@ -191,9 +195,6 @@
     .heatmap .student-col { position: sticky; left: 0; z-index: 2; min-width: 100px; padding-right: 10px; text-align: right; background: var(--paper); }
     .heatmap td { padding: 0; }
     .heat-cell { position: relative; width: 100%; min-width: 40px; height: 40px; padding: 0; border-radius: 5px; }
-    .heat-cell.empty { border: 1.5px solid var(--signal); background: transparent; }
-    .heat-cell.seen { border: 1px solid transparent; color: var(--muted); background: #dfe4e0; }
-    .heat-cell.concern { border: 1px solid transparent; color: #6e4e24; background: var(--warn-soft); }
     .heat-cell::after {
       content: attr(data-tooltip);
       position: absolute;
@@ -217,9 +218,6 @@
     .heat-cell:hover::after, .heat-cell:focus::after { visibility: visible; opacity: 1; }
     .heatmap-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 12px; color: var(--muted); font-size: 11px; }
     .legend-swatch { display: inline-block; width: 15px; height: 15px; margin-right: 5px; border-radius: 4px; vertical-align: -3px; }
-    .legend-swatch.empty { border: 1.5px solid var(--signal); }
-    .legend-swatch.seen { background: #dfe4e0; }
-    .legend-swatch.concern { background: var(--warn-soft); }
 
     .mirror { padding: 30px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
     .mirror-grid { display: grid; grid-template-columns: minmax(150px, .8fr) 2fr; gap: 26px; }
@@ -233,6 +231,7 @@
     .mirror-sentences { margin-top: 20px; color: #354642; }
 
     .student-toolbar { display: flex; justify-content: flex-end; margin-bottom: 14px; }
+    .section-heading .student-toolbar { margin-bottom: 0; }
     .student-toolbar label { display: flex; align-items: center; gap: 9px; }
     .student-toolbar select { width: auto; min-width: 150px; }
     .student-list { border-top: 1px solid var(--line); }
@@ -292,6 +291,8 @@
     .roster { display: grid; gap: 8px; margin-top: 16px; }
     .roster-row { display: grid; grid-template-columns: 72px 1fr 72px 72px auto; gap: 8px; align-items: center; }
     .roster-row strong { font-family: var(--display); }
+    .roster-name { display: grid; gap: 3px; min-width: 0; }
+    .roster-token-note { width: max-content; max-width: 100%; padding: 2px 6px; border-radius: 999px; background: var(--surface-strong); font-size: 9px; font-weight: 650; line-height: 1.4; }
     .roster-row input { min-height: 36px; }
     .provider-status { min-height: 22px; margin: 10px 0 0; color: var(--muted); font-size: 12px; }
     .self-test { font: 500 12px/1.5 var(--mono); color: var(--muted); }
@@ -645,8 +646,8 @@
     .pending-card blockquote { margin-bottom: var(--space-2); color: #493a22; font-size: 20px; }
     .candidate-list { gap: var(--space-2); margin-top: var(--space-4); }
     .candidate-list button {
-      min-height: 38px;
-      padding: 0 14px;
+      min-height: 46px;
+      padding: 7px 14px;
       border-color: #cbb487;
       color: #59431e;
       background: var(--surface);
@@ -758,17 +759,9 @@
       background: var(--surface);
       box-shadow: 8px 0 10px -12px rgba(31, 46, 38, .55);
     }
-    .heat-cell { min-width: 40px; height: 40px; border-radius: 7px; font-weight: 800; }
-    .heat-cell.empty { border: 1px dashed #9fac9f; background: var(--surface-subtle); }
-    .heat-cell.empty:hover { border-color: var(--signal); background: var(--signal-faint); }
-    .heat-cell.seen { border-color: #b8cbbf; color: var(--signal); background: var(--signal-soft); }
-    .heat-cell.concern { border-color: #dbc69f; color: #714f18; background: var(--warn-soft); }
     .heat-cell::after { border-radius: var(--radius-sm); box-shadow: var(--shadow-2); }
     .heat-cell:hover::after, .heat-cell:focus-visible::after { visibility: visible; opacity: 1; }
     .heatmap-legend { gap: var(--space-4); margin-top: var(--space-3); font-size: 12px; }
-    .legend-swatch.empty { border: 1px dashed #9fac9f; background: var(--surface-subtle); }
-    .legend-swatch.seen { border: 1px solid #b8cbbf; background: var(--signal-soft); }
-    .legend-swatch.concern { border: 1px solid #dbc69f; background: var(--warn-soft); }
 
     .mirror { padding: 34px 0; border-color: var(--line); }
     .mirror-grid { gap: var(--space-6); }
@@ -967,7 +960,7 @@
       .student-row .name-button { grid-row: auto; grid-column: 1; }
       .student-row span:first-of-type { grid-column: 1 / -1; }
       .roster-row { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2); padding: var(--space-4) 0; }
-      .roster-row strong, .roster-row input[data-role="aliases"], .roster-row .button-row { grid-column: 1 / -1; }
+      .roster-row .roster-name, .roster-row strong, .roster-row input[data-role="aliases"], .roster-row .button-row { grid-column: 1 / -1; }
       .roster-row .button-row { justify-content: flex-end; }
       .roster-row .button { min-width: 68px; }
       .dialog-actions .button { min-height: 46px; }
@@ -1084,19 +1077,6 @@
     .setup-roster-panel[hidden] { display: none; }
     .setup-footer { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding-top: var(--space-5); border-top: 1px solid var(--line); }
 
-    /* 고정 의미: 기록이 없는 칸이 채워진 칸보다 먼저 보여야 한다. */
-    .heat-cell.empty {
-      border: 2px solid var(--signal);
-      background: var(--white);
-      box-shadow: inset 0 0 0 2px var(--signal-faint), 0 1px 4px rgba(36, 89, 67, .12);
-    }
-    .heat-cell.empty:hover { border-color: var(--signal-dark); background: var(--signal-faint); }
-    .heat-cell.seen { border-color: transparent; color: #7d8982; background: #e7eae7; box-shadow: none; }
-    .heat-cell.concern { border-color: transparent; color: #806637; background: #efe9dc; box-shadow: none; }
-    .legend-swatch.empty { border: 2px solid var(--signal); background: var(--white); box-shadow: inset 0 0 0 1px var(--signal-faint); }
-    .legend-swatch.seen { border-color: transparent; background: #e7eae7; }
-    .legend-swatch.concern { border-color: transparent; background: #efe9dc; }
-
     @media (max-width: 760px) {
       .refinement, .weekly-brief { padding: 20px; }
       .weekly-followup-grid, .setup-choices { grid-template-columns: 1fr; }
@@ -1114,6 +1094,378 @@
       .refinement .button-row, .refinement .button { width: 100%; }
       .weekly-brief-header { display: grid; }
     }
+
+    /*
+     * v3.2 Restrained Workspace
+     * GitHub에서 호평받은 접근성 중심 대시보드의 정보 위계만 단일 HTML에 재해석한다.
+     * 장식은 낮추고 기록, 확인, 다음 행동이 먼저 보이도록 한다.
+     */
+    :root {
+      --paper: #f5f7f6;
+      --surface: #ffffff;
+      --surface-subtle: #f7f9f8;
+      --surface-strong: #edf1ef;
+      --ink: #17221e;
+      --ink-soft: #34433d;
+      --muted: #687770;
+      --muted-strong: #526159;
+      --signal: #176b5b;
+      --signal-dark: #105446;
+      --signal-hover: #105446;
+      --signal-soft: #dcece6;
+      --signal-faint: #f0f7f4;
+      --warn: #95602b;
+      --warn-soft: #f6eadb;
+      --warn-faint: #fdf9f3;
+      --danger: #9a4842;
+      --danger-soft: #f9ecea;
+      --line: #dfe5e2;
+      --line-strong: #cbd4cf;
+      --focus-ring: rgba(23, 107, 91, .20);
+      --tone-positive: #176b5b;
+      --tone-positive-soft: #e7f3ef;
+      --tone-neutral: #52677c;
+      --tone-neutral-soft: #edf2f6;
+      --tone-concern: #9a5d26;
+      --tone-concern-soft: #f9efe2;
+      --display: "Pretendard Variable", Pretendard, "SUIT Variable", "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif;
+      --radius-sm: 8px;
+      --radius-md: 13px;
+      --radius-lg: 17px;
+      --shadow-1: 0 1px 2px rgba(21, 42, 34, .04);
+      --shadow-2: 0 12px 32px rgba(21, 42, 34, .07);
+    }
+
+    html { background: var(--paper); }
+    [hidden] { display: none !important; }
+    body {
+      background:
+        linear-gradient(180deg, #f8faf9 0, var(--paper) 360px, var(--paper) 100%);
+      font-size: 15px;
+      line-height: 1.62;
+    }
+
+    .app-header {
+      border-bottom: 1px solid rgba(207, 216, 211, .9);
+      background: rgba(250, 252, 251, .93);
+      box-shadow: none;
+      backdrop-filter: blur(14px) saturate(120%);
+      -webkit-backdrop-filter: blur(14px) saturate(120%);
+    }
+    .header-inner { width: min(100% - 40px, var(--content)); }
+    .brand-row { min-height: 68px; }
+    .brand { gap: 11px; }
+    .brand::before {
+      width: 34px;
+      height: 34px;
+      flex-basis: 34px;
+      border: 1px solid #bdd2c9;
+      border-radius: 10px;
+      background-color: var(--signal-faint);
+      background-size: 19px 19px;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .65);
+    }
+    .brand strong { font-size: 23px; letter-spacing: -.04em; }
+    .brand span { color: var(--muted); font-size: 12px; }
+    .mode-badge { border-radius: 999px; box-shadow: none; }
+
+    .tabs {
+      width: max-content;
+      max-width: 100%;
+      gap: 3px;
+      margin-bottom: 12px;
+      padding: 4px;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #eef2f0;
+      scrollbar-width: none;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab {
+      min-height: 36px;
+      margin: 0;
+      padding: 0 15px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .tab:hover { background: rgba(255, 255, 255, .62); }
+    .tab[aria-selected="true"] {
+      border-color: #d7dfdb;
+      color: var(--ink);
+      background: var(--surface);
+      box-shadow: 0 1px 2px rgba(22, 42, 34, .07);
+    }
+
+    main { padding: 46px 0 104px; }
+    .page-heading { margin-bottom: 32px; }
+    .eyebrow { margin-bottom: 7px; color: var(--signal); font-size: 11px; letter-spacing: .09em; }
+    h1 { margin-bottom: 10px; font: 780 clamp(32px, 4.2vw, 45px)/1.15 var(--display); letter-spacing: -.045em; }
+    h2 { font-size: 23px; letter-spacing: -.025em; }
+    h3 { letter-spacing: -.015em; }
+    .lede { color: var(--muted-strong); font-size: 15px; }
+    .section-block { margin-top: 48px; }
+
+    .card,
+    .radar-group,
+    .memo-list,
+    .heatmap-wrap,
+    .student-list,
+    .weekly-brief {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      box-shadow: var(--shadow-1);
+    }
+    .card:hover,
+    .radar-group:hover { border-color: #d3dcd7; }
+    .card-pad { padding: 24px; }
+
+    input, textarea, select {
+      border-color: var(--line-strong);
+      border-radius: 10px;
+      background: #fff;
+      box-shadow: none;
+    }
+    input:hover, textarea:hover, select:hover { border-color: #aebdb5; }
+    input:focus, textarea:focus, select:focus,
+    input:focus-visible, textarea:focus-visible, select:focus-visible {
+      border-color: var(--signal);
+      box-shadow: 0 0 0 3px var(--focus-ring);
+    }
+    .button {
+      border-radius: 10px;
+      box-shadow: 0 1px 1px rgba(21, 42, 34, .04);
+    }
+    .button.primary { border-color: var(--signal); background: var(--signal); box-shadow: 0 1px 2px rgba(16, 84, 70, .15); }
+    .button.primary:hover { border-color: var(--signal-dark); background: var(--signal-dark); }
+
+    .today-actions { margin-bottom: 44px; }
+    .dashboard-card { padding: 22px 23px; }
+    .dashboard-card .section-heading { margin-bottom: 5px; }
+    .dashboard-card h2 { font-size: 20px; }
+    .dashboard-item { padding: 13px 0; }
+    .dashboard-tag { border: 1px solid #ead8bc; color: #775020; background: #fbf4e9; }
+    .dashboard-tag.queued { border-color: #c9ddd5; color: var(--signal); background: var(--signal-faint); }
+
+    .memo-form {
+      padding: 26px;
+      border: 1px solid #cedbd5;
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      box-shadow: var(--shadow-2);
+    }
+    .memo-form::before {
+      inset: 0 24px auto;
+      width: auto;
+      height: 3px;
+      border-radius: 0 0 3px 3px;
+      background: var(--signal);
+    }
+    .memo-form textarea { background: #fff; }
+
+    .memo-list { overflow: hidden; }
+    .memo-item { padding: 18px 20px; }
+    .memo-item:hover { background: #fafcfb; }
+    .memo-text { color: var(--ink-soft); }
+    .chip {
+      border: 1px solid var(--line);
+      color: var(--muted-strong);
+      background: var(--surface-subtle);
+    }
+    .chip.tone-positive { border-color: #c9dfd7; color: var(--tone-positive); background: var(--tone-positive-soft); }
+    .chip.tone-neutral { border-color: #d5dee6; color: var(--tone-neutral); background: var(--tone-neutral-soft); }
+    .chip.tone-concern,
+    .chip.concern { border-color: #ead4ba; color: var(--tone-concern); background: var(--tone-concern-soft); }
+
+    .pending-card {
+      border: 1px solid #eadcc6;
+      border-left: 3px solid var(--warn);
+      border-radius: var(--radius-lg);
+      background: #fdfaf5;
+      box-shadow: var(--shadow-1);
+    }
+    .candidate-list button { border-color: #dac5a4; background: #fff; }
+
+    .radar-header strong { font-size: clamp(29px, 4vw, 40px); }
+    .radar-groups { gap: 14px; }
+    .radar-group {
+      min-height: 154px;
+      padding: 21px 22px;
+      border-left: 1px solid var(--line);
+    }
+    .radar-group header { padding-bottom: 12px; border-bottom: 1px solid #edf1ef; }
+    .radar-group header h3 { color: var(--ink-soft); }
+    .radar-group header strong {
+      padding: 3px 8px;
+      border-radius: 999px;
+      color: var(--signal);
+      background: var(--signal-faint);
+      font-size: 12px;
+    }
+    .name-button { color: var(--ink); font-size: 17px; font-weight: 710; text-decoration-color: #a7c3b7; }
+    .name-button:hover { color: var(--signal); }
+    .group-detail { color: var(--muted); }
+
+    .tone-index-section {
+      padding: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 19px;
+      background: var(--surface);
+      box-shadow: var(--shadow-1);
+    }
+    .tone-index-details > summary { padding: 19px 24px; color: var(--ink); cursor: pointer; font-size: 16px; font-weight: 760; }
+    .tone-index-details > summary::marker { color: var(--signal); }
+    .tone-index-details[open] > summary { border-bottom: 1px solid var(--line); }
+    .tone-index-details-body { padding: 22px 26px 26px; }
+    .tone-index-details-body > .eyebrow { margin-bottom: 8px; }
+    .tone-index-note { max-width: 860px; margin: 0 0 20px; color: var(--muted); font-size: 13px; line-height: 1.65; }
+    .tone-index-overview {
+      display: flex;
+      align-items: baseline;
+      gap: 9px;
+      margin-bottom: 14px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .tone-index-overview strong { color: var(--ink); font-size: 23px; letter-spacing: -.03em; }
+    .tone-index-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .tone-index-card {
+      --tone-color: var(--tone-neutral);
+      --tone-soft: var(--tone-neutral-soft);
+      min-width: 0;
+      padding: 17px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+    }
+    .tone-index-card.tone-positive { --tone-color: var(--tone-positive); --tone-soft: var(--tone-positive-soft); }
+    .tone-index-card.tone-concern { --tone-color: var(--tone-concern); --tone-soft: var(--tone-concern-soft); }
+    .tone-index-card:hover { border-color: color-mix(in srgb, var(--tone-color) 35%, var(--line)); }
+    .tone-index-card > header { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 10px; align-items: start; }
+    .tone-index-mark {
+      display: grid;
+      width: 30px;
+      height: 30px;
+      place-items: center;
+      border-radius: 9px;
+      color: var(--tone-color);
+      background: var(--tone-soft);
+      font: 800 16px/1 var(--mono);
+    }
+    .tone-index-label { display: block; margin-bottom: 3px; color: var(--tone-color); font-size: 11px; font-weight: 780; }
+    .tone-index-card h3 { font-size: 14px; line-height: 1.38; }
+    .tone-index-count { color: var(--tone-color); font-size: 16px; white-space: nowrap; }
+    .tone-index-guide { min-height: 42px; margin: 14px 0 8px; color: var(--ink-soft); font-size: 12px; line-height: 1.55; }
+    .tone-index-meta { margin-bottom: 12px; color: var(--muted); font-size: 11px; }
+    .tone-index-students { display: flex; flex-wrap: wrap; gap: 5px 10px; padding-top: 10px; border-top: 1px solid #edf1ef; }
+    .tone-index-students .name-button { min-height: 25px; font-size: 13px; }
+    .tone-index-more, .tone-index-empty { color: var(--muted); font-size: 11px; }
+    .tone-index-empty { margin: 10px 0 0; padding-top: 10px; border-top: 1px solid #edf1ef; }
+    .tone-repeat-note {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: center;
+      margin-top: 12px;
+      padding: 14px 16px;
+      border: 1px solid #eadcc9;
+      border-radius: 12px;
+      background: #fdfaf5;
+    }
+    .tone-repeat-note strong { color: #765027; font-size: 13px; }
+    .tone-repeat-note p { margin: 3px 0 0; color: var(--muted); font-size: 11px; }
+    .tone-repeat-students { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px 12px; }
+    .tone-repeat-students .name-button { min-height: 26px; color: #765027; font-size: 13px; }
+
+    .heatmap-wrap { padding: 17px; }
+    .heatmap { border-spacing: 7px; }
+    .heat-cell { border-radius: 8px; font-weight: 800; }
+    /* 역방향 히트맵: 기록 없는 칸이 채워진 칸보다 항상 강하다. */
+    .heat-cell.empty {
+      border: 2.5px solid var(--signal);
+      background: var(--signal-soft);
+      box-shadow: inset 0 0 0 2px var(--signal-faint), var(--shadow-1);
+    }
+    .heat-cell.empty:hover { border-color: var(--signal-dark); background: var(--signal-soft); }
+    .heat-cell.concern { border: 1.5px solid var(--warn); color: var(--warn); background: var(--warn-faint); box-shadow: none; }
+    .heat-cell.contact { border: 1px dashed var(--line-strong); color: var(--muted); background: var(--surface-subtle); box-shadow: none; }
+    .heat-cell.seen { border: 1px solid var(--line); color: var(--muted); background: var(--surface-subtle); box-shadow: none; }
+    .legend-swatch.empty { border: 2px solid var(--signal); background: var(--signal-soft); box-shadow: inset 0 0 0 1px var(--signal-faint); }
+    .legend-swatch.concern { border: 1.5px solid var(--warn); background: var(--warn-faint); }
+    .legend-swatch.contact { border: 1px dashed var(--line-strong); background: var(--surface-subtle); }
+    .legend-swatch.seen { border: 1px solid var(--line); background: var(--surface-subtle); }
+
+    .mirror { padding: 26px; border-radius: var(--radius-lg); background: var(--surface); }
+    .bar-track { background: #edf1ef; }
+    .bar-fill { background: var(--signal); }
+    .weekly-brief { padding: 24px; box-shadow: var(--shadow-1); }
+    .weekly-followup-card { border-radius: 12px; }
+    .weekly-student-list { border-radius: 12px; }
+    .weekly-student-row { background: #fff; }
+
+    #studentDialog {
+      width: min(680px, calc(100% - 28px));
+      max-height: min(88vh, 820px);
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 19px;
+      box-shadow: 0 24px 70px rgba(16, 36, 28, .20);
+    }
+    #studentDialog::backdrop { background: rgba(18, 28, 24, .38); backdrop-filter: blur(2px); }
+    #studentDialog .dialog-body { padding: 25px; }
+    .dialog-header { padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+    .dialog-header h2 { margin-bottom: 0; font-size: 27px; }
+    .dialog-close { border-radius: 9px; color: var(--muted); background: var(--surface-subtle); }
+    .dialog-tone-index { margin: 18px 0; padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface-subtle); }
+    .dialog-tone-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+    .dialog-tone-heading h3 { font-size: 14px; }
+    .dialog-tone-heading span { color: var(--muted); font-size: 10px; }
+    .tone-timeline { display: grid; gap: 1px; overflow: hidden; border: 1px solid var(--line); border-radius: 10px; background: var(--line); }
+    .tone-timeline-item { position: relative; display: grid; grid-template-columns: 145px minmax(0, 1fr); gap: 12px; padding: 10px 12px; background: #fff; }
+    .tone-timeline-item::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 3px; background: var(--tone-neutral); opacity: .7; }
+    .tone-timeline-item.tone-positive::before { background: var(--tone-positive); }
+    .tone-timeline-item.tone-concern::before { background: var(--tone-concern); }
+    .tone-timeline-meta { display: flex; align-items: center; gap: 6px; min-width: 0; color: var(--muted); font-size: 10px; }
+    .tone-timeline-meta time { font-family: var(--mono); }
+    .tone-timeline-meta .chip { padding: 2px 6px; }
+    .tone-timeline-item p { margin: 0; overflow: hidden; color: var(--ink-soft); font-size: 12px; line-height: 1.5; text-overflow: ellipsis; white-space: nowrap; }
+    .tone-timeline-empty { margin: 0; padding: 14px; color: var(--muted); background: #fff; font-size: 12px; }
+
+    @media (max-width: 900px) {
+      .tone-index-grid { grid-template-columns: 1fr; }
+      .tone-index-guide { min-height: 0; }
+      .tone-repeat-note { grid-template-columns: 1fr; }
+      .tone-repeat-students { justify-content: flex-start; }
+    }
+
+    @media (max-width: 760px) {
+      .header-inner { width: min(100% - 28px, var(--content)); }
+      main { width: min(100% - 28px, var(--content)); padding-top: 34px; }
+      .brand-row { min-height: 61px; }
+      .brand span { display: none; }
+      .tabs { width: 100%; }
+      .tab { flex: 1 0 auto; padding-inline: 13px; }
+      .tone-index-section { padding: 0; }
+      .tone-index-details-body { padding: 20px; }
+      .tone-timeline-item { grid-template-columns: 1fr; gap: 5px; }
+      .tone-timeline-item p { white-space: normal; }
+      .dialog-tone-heading { align-items: flex-start; flex-direction: column; gap: 3px; }
+    }
+
+    @media (max-width: 520px) {
+      .mode-badge { max-width: 128px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .memo-form, .card-pad, .dashboard-card, .weekly-brief { padding: 20px; }
+      .tone-index-heading { align-items: flex-start; }
+      .tone-index-card > header { grid-template-columns: 30px minmax(0, 1fr); }
+      .tone-index-count { grid-column: 2; }
+      #studentDialog .dialog-body { padding: 20px; }
+      .dialog-actions { align-items: stretch; flex-direction: column; }
+      .dialog-actions .button { width: 100%; }
+    }
   </style>
 </head>
 <body>
@@ -1125,9 +1477,7 @@
       </div>
       <nav id="tabs" class="tabs" role="tablist" aria-label="주 화면">
         <button class="tab" id="tab-today" role="tab" aria-controls="panel-today" aria-selected="true" data-tab="today">오늘</button>
-        <button class="tab" id="tab-dashboard" role="tab" aria-controls="panel-dashboard" aria-selected="false" data-tab="dashboard" tabindex="-1">대시보드</button>
         <button class="tab" id="tab-radar" role="tab" aria-controls="panel-radar" aria-selected="false" data-tab="radar" tabindex="-1">주간 레이더</button>
-        <button class="tab" id="tab-students" role="tab" aria-controls="panel-students" aria-selected="false" data-tab="students" tabindex="-1">학생</button>
         <button class="tab" id="tab-report" role="tab" aria-controls="panel-report" aria-selected="false" data-tab="report" tabindex="-1">기록 장부</button>
         <button class="tab" id="tab-settings" role="tab" aria-controls="panel-settings" aria-selected="false" data-tab="settings" tabindex="-1">설정</button>
       </nav>
@@ -1136,7 +1486,6 @@
 
   <main>
     <section id="panel-today" role="tabpanel" aria-labelledby="tab-today" tabindex="0">
-      <div id="todayFocus"></div>
       <header class="page-heading">
         <p class="eyebrow">30초 기록</p>
         <h1>오늘 눈에 들어온 장면</h1>
@@ -1149,6 +1498,19 @@
         <div class="button-row"><button id="refineMemo" class="button primary" type="submit">분석·정리</button><button id="quickSaveMemo" class="button" type="button">원문 바로 저장</button></div>
       </form>
       <p id="saveFeedback" class="save-line" role="status" aria-live="polite"></p>
+
+      <div id="todayFocus" class="dashboard-grid today-actions">
+        <section class="card dashboard-card" aria-labelledby="dashboardTalkHeading">
+          <div class="section-heading"><h2 id="dashboardTalkHeading">오늘 말 걸기</h2><span id="dashboardTalkCount" class="mono muted"></span></div>
+          <p class="helper">학생 메뉴에서 등록한 오늘의 대화 목록입니다.</p>
+          <div id="dashboardTalkList" class="dashboard-list"></div>
+        </section>
+        <section class="card dashboard-card" aria-labelledby="dashboardConsultationHeading">
+          <div class="section-heading"><h2 id="dashboardConsultationHeading">상담 예정</h2><span id="dashboardConsultationCount" class="mono muted"></span></div>
+          <p class="helper">오늘 이후로 예약된 상담을 날짜순으로 표시합니다.</p>
+          <div id="dashboardConsultationList" class="dashboard-list"></div>
+        </section>
+      </div>
 
       <section id="refinementSection" class="refinement card" aria-labelledby="refinementHeading" hidden>
         <div class="section-heading"><div><p class="eyebrow">저장 전 교사 확인</p><h2 id="refinementHeading">관찰 기록 정리본</h2></div><span id="refinementMode" class="status-pill"></span></div>
@@ -1163,6 +1525,12 @@
         <div id="pendingCards" class="stack"></div>
       </section>
 
+      <section id="unlinkedSection" class="section-block" aria-labelledby="unlinkedHeading" hidden>
+        <div class="section-heading"><h2 id="unlinkedHeading">학생이 연결되지 않은 기록</h2><span id="unlinkedCount" class="mono muted"></span></div>
+        <p class="helper">이름을 별칭으로 적었거나 오타가 있으면 여기에 나타납니다. 학생을 고르면 그 기록이 연결됩니다.</p>
+        <div id="unlinkedCards" class="stack"></div>
+      </section>
+
       <section class="section-block" aria-labelledby="weekHeading">
         <div class="section-heading"><h2 id="weekHeading">이번 주 기록</h2></div>
         <div id="weeklyMemos"></div>
@@ -1174,32 +1542,6 @@
       </section>
     </section>
 
-    <section id="panel-dashboard" role="tabpanel" aria-labelledby="tab-dashboard" tabindex="0" hidden>
-      <header class="page-heading">
-        <p class="eyebrow">교사의 후속 행동</p>
-        <h1>교사 대시보드</h1>
-        <p class="lede">기록 공백과 반복된 관찰 맥락, 이미 잡아 둔 상담 날짜를 한눈에 확인합니다. 학생에 대한 평가나 AI 판단이 아닙니다.</p>
-      </header>
-      <div id="dashboardMetrics" class="dashboard-metrics"></div>
-      <div class="dashboard-grid">
-        <section class="card dashboard-card" aria-labelledby="dashboardTalkHeading">
-          <div class="section-heading"><h2 id="dashboardTalkHeading">오늘 말 걸기</h2><span id="dashboardTalkCount" class="mono muted"></span></div>
-          <p class="helper">학생 메뉴에서 등록한 오늘의 대화 목록입니다.</p>
-          <div id="dashboardTalkList" class="dashboard-list"></div>
-        </section>
-        <section class="card dashboard-card" aria-labelledby="dashboardAttentionHeading">
-          <div class="section-heading"><h2 id="dashboardAttentionHeading">관심을 줄 학생</h2><span id="dashboardAttentionCount" class="mono muted"></span></div>
-          <p class="helper">로컬 규칙: 기록 공백 또는 최근 우려 맥락만 반복된 경우입니다.</p>
-          <div id="dashboardAttentionList" class="dashboard-list"></div>
-        </section>
-        <section class="card dashboard-card" aria-labelledby="dashboardConsultationHeading">
-          <div class="section-heading"><h2 id="dashboardConsultationHeading">상담 예정</h2><span id="dashboardConsultationCount" class="mono muted"></span></div>
-          <p class="helper">오늘 이후로 예약된 상담을 날짜순으로 표시합니다.</p>
-          <div id="dashboardConsultationList" class="dashboard-list"></div>
-        </section>
-      </div>
-    </section>
-
     <section id="panel-radar" role="tabpanel" aria-labelledby="tab-radar" tabindex="0" hidden>
       <header class="page-heading">
         <p class="eyebrow">비어 있을수록 또렷하게</p>
@@ -1209,8 +1551,19 @@
       </header>
       <div id="radarGroups" class="radar-groups"></div>
 
+      <section id="toneIndexSection" class="section-block tone-index-section" aria-labelledby="toneIndexHeading">
+        <details class="tone-index-details">
+          <summary id="toneIndexHeading">관찰 맥락 색인 · 최근 7일</summary>
+          <div class="tone-index-details-body">
+            <p class="eyebrow">학생 평가가 아닌 장면 분류</p>
+            <p class="tone-index-note">색은 학생의 성향을 뜻하지 않습니다. 긍정은 대화를 시작할 강점 장면, 중립은 평소 모습을 비교할 기준 장면, 우려는 다른 날짜에도 이어지는지 다시 확인할 장면을 찾는 데 사용합니다.</p>
+            <div id="toneIndexContainer"></div>
+          </div>
+        </details>
+      </section>
+
       <section class="section-block" aria-labelledby="heatmapHeading">
-        <div class="section-heading"><h2 id="heatmapHeading">기록의 빈칸</h2><span class="mono muted">학생 × 날짜</span></div>
+        <div class="section-heading"><h2 id="heatmapHeading">기록의 빈칸</h2><div class="student-toolbar"><label>정렬<select id="studentSort"><option value="last">마지막 언급순</option><option value="count">언급 횟수순</option><option value="name">이름순</option></select></label></div></div>
         <div id="heatmapContainer"></div>
       </section>
 
@@ -1218,18 +1571,6 @@
         <div class="section-heading"><h2 id="mirrorHeading">이번 주 선생님의 시선</h2></div>
         <div id="mirrorContainer"></div>
       </section>
-    </section>
-
-    <section id="panel-students" role="tabpanel" aria-labelledby="tab-students" tabindex="0" hidden>
-      <header class="page-heading">
-        <p class="eyebrow">학급 전체</p>
-        <h1>학생별 기록 빈도</h1>
-        <p class="lede">관찰 기록의 양과 맥락을 보여 줄 뿐, 학생에 대한 평가가 아닙니다.</p>
-      </header>
-      <div class="student-toolbar">
-        <label>정렬<select id="studentSort"><option value="last">마지막 언급순</option><option value="count">언급 횟수순</option><option value="name">이름순</option></select></label>
-      </div>
-      <div id="studentsList" class="student-list"></div>
     </section>
 
     <section id="panel-report" role="tabpanel" aria-labelledby="tab-report" tabindex="0" hidden>
@@ -1245,6 +1586,11 @@
         <button id="downloadXlsx" class="button primary" type="submit">Excel로 내보내기</button>
         <p id="exportStatus" class="export-status" role="status" aria-live="polite">학생별 문맥만 포함하며 전체 자유 메모·별칭·API 설정은 내보내지 않습니다.</p>
       </form>
+      <section id="validationMetricsSection" class="card card-pad" aria-labelledby="validationMetricsHeading">
+        <div class="section-heading"><div><p class="eyebrow">브라우저 계산 · 학생 평가 아님</p><h2 id="validationMetricsHeading">빈자리 사용 검증 지표</h2></div><button id="copyMetrics" class="button small no-print" type="button">지표 복사</button></div>
+        <dl id="validationMetrics" class="report-metrics"></dl>
+        <p id="metricsCopyStatus" class="helper no-print" role="status" aria-live="polite">학생 이름 없이 학교 보고용 지표만 복사합니다.</p>
+      </section>
       <div class="section-heading"><h2>미언급 학생 수 추이</h2><button id="printReport" class="button small no-print" type="button">현재 리포트 인쇄</button></div>
       <div id="trendContainer" class="card card-pad"></div>
       <div id="reportContent"></div>
@@ -1292,6 +1638,17 @@
           </details>
         </section>
 
+        <section class="card wide" aria-labelledby="backfillHeading">
+          <div class="section-heading"><h2 id="backfillHeading">지난 기록 한 번에 넣기</h2></div>
+          <p>수첩이나 한글 파일에 적어 둔 지난 기록을 붙여넣으면, 2주를 기다리지 않고 바로 빈자리를 확인할 수 있습니다. 날짜 줄과 기록 줄을 번갈아 적으세요.</p>
+          <form id="backfillForm" class="stack">
+            <label>지난 관찰 기록<textarea id="backfillInput" rows="10" maxlength="50000" placeholder="9/1&#10;김도윤이 사물함 정리 도와줌&#10;임지훈 지각&#10;9/2&#10;최다인 계속 떠들어서 주의&#10;박예린 질문 좋았음"></textarea></label>
+            <p class="helper">날짜는 9/1, 9.1, 9월 1일, 2026-09-01 모두 인식합니다. 한 줄이 관찰 기록 한 건이 됩니다. 최대 300건.</p>
+            <div><button id="importBackfill" class="button primary" type="submit">지난 기록 넣기</button></div>
+          </form>
+          <p id="backfillStatus" class="import-status" role="status" aria-live="polite"></p>
+        </section>
+
         <section class="card wide" aria-labelledby="rosterHeading">
           <div class="section-heading"><h2 id="rosterHeading">학생 명단</h2><span id="rosterCount" class="mono muted"></span></div>
           <form id="studentAddForm" class="field-grid four">
@@ -1299,6 +1656,7 @@
             <label>별칭<input id="studentAliases" maxlength="80" placeholder="고양이|고양"></label>
             <label>모둠<input id="studentGroup" type="number" min="1" max="30"></label>
             <label>번호<input id="studentNumber" type="number" min="1" max="999"></label>
+            <p class="helper field-span">일반 낱말(안경, 하늘 등)은 오인식 때문에 별칭으로 등록되지 않습니다.</p>
             <div class="field-span"><button class="button" type="submit">학생 직접 추가</button></div>
           </form>
           <div id="rosterList" class="roster"></div>
@@ -1333,6 +1691,7 @@
           <h2 id="dataHeading">시연과 데이터</h2>
           <p>별칭·모둠·출석번호가 모두 부여된 가상 학생 25명과 가상 관찰 메모를 불러옵니다. 기존 《빈자리》 데이터는 교체됩니다.</p>
           <div class="button-row"><button id="loadDemo" class="button primary" type="button">25명 데모 데이터 넣기</button><button id="downloadBackup" class="button" type="button">작업 백업 저장</button><label class="button" for="restoreBackup">백업 불러오기</label><input id="restoreBackup" type="file" accept=".json,application/json" hidden><button id="resetAll" class="button danger" type="button">전체 초기화</button></div>
+          <p class="warning-copy">학생 이름과 관찰 기록은 이 브라우저에 그대로 남습니다. 공용 PC에서는 사용을 마친 뒤 [전체 초기화]를 눌러 주세요.</p>
           <p class="helper">다운로드한 HTML을 직접 열 때 브라우저 저장 정책이 달라도 복원할 수 있도록 작업 백업을 보관하세요. 백업에는 학생 자료가 포함되며 API 키는 제외됩니다.</p>
           <p id="backupStatus" class="import-status" role="status" aria-live="polite"></p>
           <p id="selfTestStatus" class="self-test"></p>
@@ -1397,6 +1756,10 @@
     <div class="dialog-body">
       <header class="dialog-header"><div><p class="eyebrow">교사의 다음 행동</p><h2 id="dialogTitle"></h2></div><button id="closeDialog" class="dialog-close" type="button" aria-label="닫기">×</button></header>
       <p id="dialogClue" class="muted"></p>
+      <section class="dialog-tone-index" aria-labelledby="dialogToneHeading">
+        <div class="dialog-tone-heading"><h3 id="dialogToneHeading">최근 관찰 장면</h3><span>성격 색인은 학생 평가가 아닙니다</span></div>
+        <div id="dialogToneTimeline" class="tone-timeline"></div>
+      </section>
       <div class="dialog-actions">
         <button id="queueTodayButton" class="button primary" type="button" data-dialog-action="queue">오늘 말 걸기</button>
         <button class="button" type="button" data-dialog-action="schedule">상담 예약</button>
@@ -1434,7 +1797,12 @@
       const DOMAINS = ["행동", "학업", "정서", "관계", "건강"];
       const TONES = ["긍정", "중립", "우려"];
       const REVIEW_STATUSES = ["미확인", "확인", "교사수정", "제외"];
-      const APP_VERSION = "3.0.0";
+      const RISKY_ALIASES = Object.freeze([
+        "안경", "하늘", "바다", "보라", "사랑", "우리", "선생", "오늘", "내일", "어제", "친구",
+        "학교", "교실", "엄마", "아빠", "형", "누나", "언니", "동생", "반장", "부반장"
+      ]);
+      const AFTER_NAME = /^(?:[\s,.·!?、。「」()"'\n]|이|가|은|는|을|를|도|만|랑|과|와|의|에|한|께|님|씨|아|야|요|네|$)/;
+      const APP_VERSION = "3.3.0";
       const MAX_ROSTER_IMPORT = 200;
       const PROVIDER_SIGNAL_WORDS = Object.freeze([
         "지각", "미제출", "안 챙", "떠들", "주의", "다툼", "늦", "안 함", "못 함", "산만", "휴대폰",
@@ -1507,6 +1875,11 @@
       const memoryStorage = new Map();
       let storagePersistent = true;
       const SAFE_PROMPT = Symbol("binjari.safePrompt");
+
+      function isRiskyAlias(value) {
+        const alias = String(value || "").normalize("NFC").trim();
+        return RISKY_ALIASES.includes(alias) || RISKY_ALIASES.some((word) => alias === `${word}이` || alias === `${word}아` || alias === `${word}야`);
+      }
 
       function deepClone(value) {
         return typeof structuredClone === "function"
@@ -1675,7 +2048,8 @@
             date: typeof memo.date === "string" ? memo.date : localToday(),
             text: typeof memo.text === "string" ? memo.text : "",
             mentions: Array.isArray(memo.mentions) ? memo.mentions.map((mention) => normalizeMentionRecord(mention, id)) : [],
-            pending: Array.isArray(memo.pending) ? memo.pending : []
+            pending: Array.isArray(memo.pending) ? memo.pending : [],
+            skipLink: memo.skipLink === true
           };
         });
       }
@@ -1830,6 +2204,23 @@
         return `${month}월 ${day}일`;
       }
 
+      function parseBackfillDate(line, today) {
+        const trimmed = String(line || "").normalize("NFC").trim();
+        const full = trimmed.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+        if (full) {
+          return `${full[1]}-${String(full[2]).padStart(2, "0")}-${String(full[3]).padStart(2, "0")}`;
+        }
+        const short = trimmed.match(/^(\d{1,2})\s*[./월-]\s*(\d{1,2})\s*일?$/);
+        if (!short) return null;
+        const month = Number(short[1]);
+        const day = Number(short[2]);
+        if (month < 1 || month > 12 || day < 1 || day > 31) return null;
+        const year = Number(today.slice(0, 4));
+        const pad = (value) => String(value).padStart(2, "0");
+        const candidate = `${year}-${pad(month)}-${pad(day)}`;
+        return candidate <= today ? candidate : `${year - 1}-${pad(month)}-${pad(day)}`;
+      }
+
       function schoolTerm(ymd) {
         const date = dateFromYmd(ymd || localToday());
         const month = date.getMonth() + 1;
@@ -1844,6 +2235,8 @@
       }
 
       function sourceLabel(source) {
+        if (source === "teacher_contact") return "교사 대화";
+        if (source === "teacher_link") return "교사 연결";
         if (String(source).startsWith("ai_")) return "AI분류";
         if (String(source).startsWith("teacher_")) return "교사직접";
         return "로컬매칭";
@@ -2362,6 +2755,7 @@
 
       function appendRosterRecords(records) {
         const names = new Set(state.students.map((student) => student.name));
+        const rejectedAliases = new Set();
         let maxId = state.students.reduce((current, student) => Math.max(current, Number(student.id.replace(/\D/g, "")) || 0), 0);
         let added = 0;
         let skipped = 0;
@@ -2375,7 +2769,11 @@
           state.students.push({
             id: `S${String(maxId).padStart(2, "0")}`,
             name: record.name,
-            aliases: record.aliases,
+            aliases: (record.aliases || []).filter((alias) => {
+              if (!isRiskyAlias(alias)) return true;
+              rejectedAliases.add(alias);
+              return false;
+            }),
             group: record.group,
             number: record.number ?? fallbackNumber,
             snoozeUntil: null
@@ -2390,6 +2788,12 @@
           state.mirror = null;
           state.weeklyBrief = null;
           persistState();
+        }
+        if (rejectedAliases.size) {
+          const aliases = [...rejectedAliases];
+          showToast(aliases.length === 1
+            ? `'${aliases[0]}'은 일반 낱말이라 오인식 위험이 있어 별칭에서 제외했습니다.`
+            : `${aliases.map((alias) => `'${alias}'`).join(", ")}은 일반 낱말이라 오인식 위험이 있어 별칭에서 제외했습니다.`);
         }
         return { added, skipped };
       }
@@ -2562,6 +2966,7 @@
             const raw = candidate.value;
             const token = String(raw || "").normalize("NFC").trim();
             if (token.length < 2) continue;
+            if (isRiskyAlias(token)) continue;
             if (!tokenMap.has(token)) tokenMap.set(token, { ids: new Set(), embeddedAllowed: false });
             const entry = tokenMap.get(token);
             entry.ids.add(student.id);
@@ -2571,6 +2976,11 @@
         return [...tokenMap.entries()]
           .map(([token, entry]) => ({ token, ids: [...entry.ids], givenOnly: !entry.embeddedAllowed }))
           .sort((a, b) => b.token.length - a.token.length || a.token.localeCompare(b.token, "ko"));
+      }
+
+      function needsFullNameOnly(student) {
+        const tokens = textTokens([student]).map((entry) => entry.token);
+        return tokens.length <= 1;
       }
 
       function contextAt(text, position) {
@@ -2587,12 +2997,45 @@
         return normalized.slice(start, end).trim();
       }
 
+      const NEGATIVE_CUES = [
+        "다투", "다퉜", "싸우", "싸웠", "때리", "괴롭", "따돌", "놀림", "갈등", "어색",
+        "늦", "지각", "결석", "조퇴", "빠짐",
+        "안 챙", "못 챙", "안 함", "못 함", "안 해", "못 해", "안 냄", "안 옴",
+        "안 됨", "안 됐", "안 돼", "안 좋", "잘못", "별로",
+        "미제출", "떠들", "산만", "휴대폰", "주의 줌", "주의 받", "주의를", "혼남",
+        "어두", "울먹", "눈물", "불안", "위축", "의욕 없", "기운 없",
+        "아프", "보건실", "다침",
+        "혼자 있", "혼자 앉", "혼자 밥", "혼자 놀", "말이 없", "도움 필요", "거의 안"
+      ];
+      const POSITIVE_CUES = ["잘", "좋", "열심", "성실", "도와", "밝", "자신감", "꼼꼼", "이끎", "리더십", "어울", "챙겨", "먼저 나", "관심 보임"];
+      const NEG_CANCEL = /^[^.!?]{0,6}?(안\s|않|없|말고|아니|극복|나아졌|좋아졌)/;
+      const POS_CANCEL_HEAD = /(안|않|못|별로)\s*$/;
+
+      function cueHit(value, cues, cancel) {
+        for (const cue of cues) {
+          let from = 0;
+          for (;;) {
+            const at = value.indexOf(cue, from);
+            if (at < 0) break;
+            from = at + cue.length;
+            const head = value.slice(Math.max(0, at - 8), at);
+            const tail = value.slice(from, from + 8);
+            if (cancel(cue, head, tail)) continue;
+            return true;
+          }
+        }
+        return false;
+      }
+
       function fallbackTone(context) {
         const value = String(context).normalize("NFC");
-        const negative = ["지각", "미제출", "안 챙", "떠들", "주의", "다툼", "늦", "안 함", "못 함", "산만", "휴대폰", "어두", "아프", "어색", "도움 필요", "결석"];
-        const positive = ["잘", "좋", "열심", "성실", "도와", "밝", "자신감", "꼼꼼", "이끎", "리더십", "관심 보임"];
-        if (negative.some((word) => value.includes(word))) return "우려";
-        if (positive.some((word) => value.includes(word))) return "긍정";
+        const negativeHit = cueHit(value, NEGATIVE_CUES, (cue, head, tail) =>
+          NEG_CANCEL.test(tail)
+          || (/^(안|못)\s/.test(cue) && NEGATIVE_CUES.some((other) => !/^(안|못)\s/.test(other) && head.includes(other))));
+        if (negativeHit) return "우려";
+        const positiveHit = cueHit(value, POSITIVE_CUES, (cue, head, tail) =>
+          POS_CANCEL_HEAD.test(head) || /^못/.test(tail));
+        if (positiveHit) return "긍정";
         return "중립";
       }
 
@@ -2600,7 +3043,7 @@
         const value = String(context).normalize("NFC");
         if (["보건실", "아프", "건강", "결석", "병원"].some((word) => value.includes(word))) return "건강";
         if (["표정", "자신감", "밝", "기분", "불안", "울", "감정"].some((word) => value.includes(word))) return "정서";
-        if (["사이", "친구", "다툼", "갈등", "리더십", "모둠 이끄", "함께"].some((word) => value.includes(word))) return "관계";
+        if (["사이", "친구", "다툼", "다투", "다퉜", "싸우", "싸웠", "괴롭", "따돌", "놀림", "혼자", "갈등", "리더십", "모둠 이끄", "함께"].some((word) => value.includes(word))) return "관계";
         if (["과제", "수학", "수행", "질문", "필기", "독서록", "발표", "학습", "공부"].some((word) => value.includes(word))) return "학업";
         return "행동";
       }
@@ -2624,8 +3067,10 @@
             if (index < 0) break;
             const range = { start: index, end: index + entry.token.length };
             from = range.end;
-            if (entry.givenOnly && /[가-힣]/.test(normalized[index - 1] || "")) continue;
+            if (/[가-힣]/.test(normalized[index - 1] || "")) continue;
             if (occupied.some((existing) => rangeOverlaps(range, existing))) continue;
+            const after = normalized.slice(range.end, range.end + 2);
+            if (range.end < normalized.length && !AFTER_NAME.test(after)) continue;
             occupied.push(range);
             matchedRanges.push(range);
             const context = contextAt(normalized, index);
@@ -2654,7 +3099,7 @@
           }
         }
 
-        const directivePattern = /(?:\d+모둠[^.!?\n]{0,45}?(?:한|하는|하던|했던|있던)\s*애|(?:[가-힣0-9]+(?:\s+[가-힣0-9]+){0,4}\s+)?(?:한|하는|하던|했던|있던|웃던|쓴|큰)\s*애|안경\s*쓴(?:\s*애)?|키\s*큰(?:\s*애)?|앞자리(?:의)?(?:\s*(?:애|학생))?|그\s*애|걔|\d+번(?:\s*학생)?)/g;
+        const directivePattern = /(?:\d+모둠[^.!?\n]{0,45}?(?:한|하는|하던|했던|있던)\s*애|(?:[가-힣0-9]+(?:\s+[가-힣0-9]+){0,4}\s+)?(?:한|하는|하던|했던|있던|웃던|쓴|큰)\s*애|안경\s*쓴(?:\s*애)?|키\s*큰(?:\s*애)?|앞자리(?:의)?(?:\s*(?:애|학생))?|그\s*애|걔|\d+번(?=\s*(?:학생|이|가|은|는|한테|에게)))/g;
         for (const match of normalized.matchAll(directivePattern)) {
           const range = { start: match.index, end: match.index + match[0].length };
           if (matchedRanges.some((existing) => rangeOverlaps(range, existing))) continue;
@@ -2712,6 +3157,76 @@
         }
         model.memos.sort((a, b) => a.date.localeCompare(b.date));
         return created;
+      }
+
+      function backfillMemos(text, model = state) {
+        const emptyResult = { created: 0, dates: 0, linked: 0, unlinked: 0, skippedFuture: 0, beforeDateHeader: 0 };
+        if (model.settings.demoMode) {
+          if (model !== state || !confirm("가상 데모 데이터가 들어 있습니다. 지운 뒤 실제 기록을 넣을까요?")) {
+            return { ...emptyResult, cancelled: true };
+          }
+          model.students = [];
+          model.memos = [];
+          model.contacts = [];
+          model.todayQueue = null;
+          model.settings.demoMode = false;
+          model.classInfo.createdAt = localToday();
+          model.mirror = null;
+          model.weeklyBrief = null;
+          bumpAnalysisContext();
+          persistState();
+        }
+        if (!model.students.length) return { ...emptyResult, noStudents: true };
+
+        const today = effectiveToday(model);
+        const lines = String(text || "").normalize("NFC").split(/\r?\n/);
+        let cursor = null;
+        const created = [];
+        const dates = new Set();
+        let skippedFuture = 0;
+        let beforeDateHeader = 0;
+        for (const raw of lines) {
+          const line = raw.trim();
+          if (!line) continue;
+          const parsed = parseBackfillDate(line, today);
+          if (parsed) {
+            if (parsed > today) { cursor = null; skippedFuture += 1; continue; }
+            cursor = parsed;
+            continue;
+          }
+          if (!cursor) { beforeDateHeader += 1; continue; }
+          if (created.length >= 300) break;
+          const memo = createMemo(nextId("M", model.memos), cursor, line, model.students);
+          memo.analysisVersion = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+          model.memos.push(memo);
+          created.push(memo);
+          dates.add(cursor);
+        }
+        if (!created.length) {
+          return { created: 0, dates: 0, linked: 0, unlinked: 0, skippedFuture, beforeDateHeader };
+        }
+        model.memos.sort((a, b) => a.date.localeCompare(b.date));
+        const earliest = [...dates].sort()[0];
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(model.classInfo.createdAt || "")
+            || earliest < model.classInfo.createdAt) {
+          model.classInfo.createdAt = earliest;
+        }
+        model.mirror = null;
+        model.weeklyBrief = null;
+        if (model === state) {
+          bumpAnalysisContext();
+          persistState();
+        }
+        const unlinked = created.filter((memo) => !(memo.mentions || []).length
+          && !(memo.pending || []).length).length;
+        return {
+          created: created.length,
+          dates: dates.size,
+          linked: created.length - unlinked,
+          unlinked,
+          skippedFuture,
+          beforeDateHeader
+        };
       }
 
       function splitObservationUnits(text) {
@@ -2830,7 +3345,7 @@
         const rows = [
           ["S01", "강민준", 1, 1, ["민준이"]], ["S02", "고서연", 2, 1, ["서연이"]], ["S03", "권하늘", 3, 1, ["하늘이"]],
           ["S04", "김도윤", 4, 1, ["도윤이"]], ["S05", "김서준", 5, 2, ["서준이"]], ["S06", "김지호", 6, 2, ["지호"]],
-          ["S07", "나은우", 7, 2, ["안경", "은우"]], ["S08", "문채원", 8, 2, ["채원이"]], ["S09", "박시우", 9, 3, ["시우"]],
+          ["S07", "나은우", 7, 2, ["은우"]], ["S08", "문채원", 8, 2, ["채원이"]], ["S09", "박시우", 9, 3, ["시우"]],
           ["S10", "박예린", 10, 4, ["예린이"]], ["S11", "배준서", 11, 4, ["준서"]], ["S12", "서지안", 12, 3, ["지안이"]],
           ["S13", "손유진", 13, 4, ["유진이"]], ["S14", "송하윤", 14, 4, ["하윤이"]], ["S15", "신아람", 15, 5, ["아람이"]],
           ["S16", "오태경", 16, 3, ["태경이"]], ["S17", "유하람", 17, 3, ["하람이"]], ["S18", "윤도현", 18, 5, ["도현이"]],
@@ -2845,7 +3360,7 @@
           ["2026-09-04", "모둠활동 진행. 3모둠 발표 좋았는데 마지막에 정리한 애가 특히 잘함. 박시우 자료 준비 성실. 오태경이 진행 잘 이끎."],
           ["2026-09-05", "임지훈 또 준비물 안 챙김. 이번 주 세 번째. 강민준 발표 자신감 붙은 듯."],
           ["2026-09-08", "체육대회 연습. 윤도현 리더십 좋음. 신아람 다리 아프다고 보건실. 배준서 응원 열심히."],
-          ["2026-09-09", "안경 쓴 애 요즘 표정이 좀 어두움. 김서준은 조용하지만 과제 늘 성실. 문채원 지각 사유 제출함."],
+          ["2026-09-09", "나은우 요즘 표정이 좀 어두움. 김서준은 조용하지만 과제 늘 성실. 문채원 지각 사유 제출함."],
           ["2026-09-10", "정예준 독서록 잘 써옴. 장민서랑 송하윤 사이가 좀 어색해 보임. 김지호 발표 준비 도움 필요."],
           ["2026-09-11", "최다인 수업 중 휴대폰. 임지훈 지각 또. 이건우 청소 마무리 도와줌."],
           ["2026-09-12", "박예린 모둠 이끄는 모습 좋았음. 나은우한테 따로 말 걸어봄. 김도윤 요즘 밝아짐."]
@@ -2881,6 +3396,14 @@
         return output.sort((a, b) => a.date.localeCompare(b.date));
       }
 
+      function isObservationMention(mention) {
+        return mention?.source !== "teacher_contact";
+      }
+
+      function observationMentions(studentId, model = state, from = null, to = null) {
+        return mentionsForStudent(studentId, model, from, to).filter(isObservationMention);
+      }
+
       function allEvidenceForStudent(studentId, model = state, from = null, to = null) {
         const output = [];
         for (const memo of model.memos) {
@@ -2907,20 +3430,82 @@
       }
 
       function mentionCount(studentId, from = null, to = effectiveToday(), model = state) {
-        return mentionsForStudent(studentId, model, from, to).length;
+        return observationMentions(studentId, model, from, to).length;
       }
 
       function toneBreakdown(studentId, from = null, to = effectiveToday(), model = state) {
         const result = { 긍정: 0, 중립: 0, 우려: 0 };
-        for (const mention of mentionsForStudent(studentId, model, from, to)) {
+        for (const mention of observationMentions(studentId, model, from, to)) {
           if (TONES.includes(mention.tone)) result[mention.tone] += 1;
         }
         return result;
       }
 
+      function toneClassName(tone) {
+        if (tone === "긍정") return "tone-positive";
+        if (tone === "우려") return "tone-concern";
+        return "tone-neutral";
+      }
+
+      function concernContextStats(studentId, days = state.settings.silentDays, model = state, today = effectiveToday(model)) {
+        const from = addDays(today, -days);
+        const mentions = mentionsForStudent(studentId, model, from, today).filter((mention) => mention.tone === "우려");
+        return {
+          count: mentions.length,
+          dateCount: new Set(mentions.map((mention) => mention.date)).size,
+          dates: [...new Set(mentions.map((mention) => mention.date))].sort()
+        };
+      }
+
+      function repeatedConcernStudents(days = state.settings.silentDays, model = state, today = effectiveToday(model)) {
+        return model.students.filter((student) => {
+          if (isSnoozed(student, today, model)) return false;
+          return concernContextStats(student.id, days, model, today).dateCount >= 2;
+        });
+      }
+
+      function toneIndexSummary(model = state, today = effectiveToday(model), days = 7) {
+        const safeDays = Math.max(1, Number(days) || 7);
+        const from = addDays(today, -(safeDays - 1));
+        const entries = [];
+        for (const memo of model.memos) {
+          if (memo.date < from || memo.date > today) continue;
+          for (const rawMention of memo.mentions || []) {
+            const mention = normalizeMentionRecord(rawMention, memo.id);
+            if (mention.reviewStatus === "제외" || !isObservationMention(mention) || !studentById(mention.studentId, model)) continue;
+            entries.push({ ...mention, memoId: memo.id, date: memo.date });
+          }
+        }
+        entries.sort((a, b) => b.date.localeCompare(a.date) || b.evidenceId.localeCompare(a.evidenceId));
+        const tones = {};
+        for (const tone of TONES) {
+          const toneEntries = entries.filter((entry) => entry.tone === tone);
+          const studentIds = [...new Set(toneEntries.map((entry) => entry.studentId))];
+          const domainCounts = Object.fromEntries(DOMAINS.map((domain) => [domain, toneEntries.filter((entry) => entry.domain === domain).length]));
+          const topDomain = toneEntries.length
+            ? Object.entries(domainCounts).sort((a, b) => b[1] - a[1] || DOMAINS.indexOf(a[0]) - DOMAINS.indexOf(b[0]))[0][0]
+            : null;
+          tones[tone] = {
+            count: toneEntries.length,
+            studentCount: studentIds.length,
+            dateCount: new Set(toneEntries.map((entry) => entry.date)).size,
+            studentIds,
+            topDomain
+          };
+        }
+        return {
+          from,
+          to: today,
+          total: entries.length,
+          mentionedStudents: new Set(entries.map((entry) => entry.studentId)).size,
+          recordDays: new Set(entries.map((entry) => entry.date)).size,
+          tones
+        };
+      }
+
       function domainBreakdown(studentId, from = null, to = effectiveToday(), model = state) {
         const result = Object.fromEntries(DOMAINS.map((domain) => [domain, 0]));
-        for (const mention of mentionsForStudent(studentId, model, from, to)) {
+        for (const mention of observationMentions(studentId, model, from, to)) {
           if (DOMAINS.includes(mention.domain)) result[mention.domain] += 1;
         }
         return result;
@@ -2965,6 +3550,44 @@
           .map((pending) => ({ ...pending, memoId: memo.id, memoDate: memo.date, memoText: memo.text })));
       }
 
+      function recentUnlinkedMemos(model = state, today = effectiveToday(model)) {
+        const from = addDays(today, -13);
+        return model.memos
+          .filter((memo) => memo.date >= from && memo.date <= today
+            && !(memo.mentions || []).length && !(memo.pending || []).length && memo.skipLink !== true)
+          .sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id))
+          .slice(0, 10);
+      }
+
+      function linkUnlinkedMemo(memoId, studentId, model = state) {
+        const memo = model.memos.find((item) => item.id === memoId);
+        if (!memo || !studentById(studentId, model)) return null;
+        const mention = normalizeMentionRecord({
+          studentId,
+          tone: fallbackTone(memo.text),
+          domain: fallbackDomain(memo.text),
+          context: memo.text,
+          source: "teacher_link"
+        }, memo.id);
+        memo.mentions.push(mention);
+        memo.skipLink = false;
+        if (model === state) {
+          bumpAnalysisContext();
+          state.mirror = null;
+          state.weeklyBrief = null;
+          persistState();
+        }
+        return mention;
+      }
+
+      function skipUnlinkedMemo(memoId, model = state) {
+        const memo = model.memos.find((item) => item.id === memoId);
+        if (!memo) return false;
+        memo.skipLink = true;
+        if (model === state) persistState();
+        return true;
+      }
+
       function refreshDirectiveCandidates(model = state) {
         for (const memo of model.memos) {
           for (const pending of memo.pending || []) {
@@ -2979,7 +3602,7 @@
       }
 
       function clueForStudent(studentId, model = state) {
-        const candidates = mentionsForStudent(studentId, model)
+        const candidates = observationMentions(studentId, model)
           .filter((mention) => mention.tone === "긍정" || mention.tone === "중립")
           .sort((a, b) => b.date.localeCompare(a.date));
         if (!candidates.length) return null;
@@ -3013,19 +3636,46 @@
         return true;
       }
 
+      function recordTeacherContact(studentId, model = state) {
+        const student = studentById(studentId, model);
+        if (!student) return null;
+        const date = effectiveToday(model);
+        model.contacts.push(createContact(studentId, "대화", date, "레이더 알림 후", model));
+        const memo = createMemo(nextId("M", model.memos), date, `${student.name} 선생님이 따로 대화함.`, model.students);
+        memo.mentions = [normalizeMentionRecord({
+          studentId,
+          tone: "중립",
+          domain: "관계",
+          context: "선생님이 따로 대화함",
+          source: "teacher_contact"
+        }, memo.id)];
+        memo.pending = [];
+        memo.analysisVersion = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        model.memos.push(memo);
+        model.memos.sort((a, b) => a.date.localeCompare(b.date));
+        removeTodayQueueStudent(studentId, model);
+        model.mirror = null;
+        model.weeklyBrief = null;
+        if (model === state) {
+          bumpAnalysisContext();
+          persistState();
+        }
+        return memo;
+      }
+
       function attentionStudentRows(model = state, today = effectiveToday(model)) {
         const silentIds = new Set(silentStudents(model.settings.silentDays, model, today).map((student) => student.id));
-        const concernIds = new Set(concernOnlyStudents(model.settings.silentDays, model, today).map((student) => student.id));
+        const concernIds = new Set(repeatedConcernStudents(model.settings.silentDays, model, today).map((student) => student.id));
         return model.students
           .filter((student) => silentIds.has(student.id) || concernIds.has(student.id))
           .map((student) => {
             const last = lastMentionedAt(student.id, model, today);
-            const concernCount = concernIds.has(student.id)
-              ? toneBreakdown(student.id, addDays(today, -model.settings.silentDays), today, model).우려
-              : 0;
+            const concernStats = concernIds.has(student.id)
+              ? concernContextStats(student.id, model.settings.silentDays, model, today)
+              : { count: 0, dateCount: 0 };
             const reasons = [];
             if (silentIds.has(student.id)) reasons.push(last ? `${daysBetween(last, today)}일간 기록 없음` : "관찰 기록 없음");
-            if (concernIds.has(student.id)) reasons.push(`우려 맥락만 ${concernCount}회`);
+            if (concernIds.has(student.id)) reasons.push(`서로 다른 ${concernStats.dateCount}일에 우려 맥락 · ${concernStats.count}건`);
             return { student, silent: silentIds.has(student.id), concern: concernIds.has(student.id), reasons, last };
           })
           .sort((a, b) => {
@@ -3108,6 +3758,71 @@
           guard += 1;
         }
         return output;
+      }
+
+      function observationStart(model = state, today = effectiveToday(model)) {
+        const createdAt = model.classInfo.createdAt;
+        return /^\d{4}-\d{2}-\d{2}$/.test(createdAt || "") && createdAt <= today ? createdAt : today;
+      }
+
+      function observationDays(model = state, today = effectiveToday(model)) {
+        return daysBetween(observationStart(model, today), today) + 1;
+      }
+
+      function weeklyTrend(model = state, today = effectiveToday(model)) {
+        if (!model.students.length) return [];
+        const start = observationStart(model, today);
+        const output = [];
+        let weekStart = start;
+        let guard = 0;
+        while (weekStart <= today && guard < 104) {
+          const weekEnd = addDays(weekStart, 6);
+          const asOf = weekEnd > today ? today : weekEnd;
+          output.push({ from: weekStart, to: asOf, count: silentStudents(model.settings.silentDays, model, asOf).length });
+          weekStart = addDays(weekStart, 7);
+          guard += 1;
+        }
+        return output;
+      }
+
+      function validationMetrics(model = state, today = effectiveToday(model)) {
+        const from = observationStart(model, today);
+        const covered = model.students.filter((student) => observationMentions(student.id, model, from, today).length > 0).length;
+        const total = model.students.length;
+        const percent = total ? Math.round((covered / total) * 100) : 0;
+        const currentSilent = silentStudents(model.settings.silentDays, model, today).length;
+        const firstSilent = weeklyTrend(model, today)[0]?.count ?? currentSilent;
+        const delta = currentSilent - firstSilent;
+        const deltaLabel = delta < 0 ? `▼ ${Math.abs(delta)}` : delta > 0 ? `▲ ${delta}` : "— 0";
+        const contacts = model.contacts.filter((contact) => contact.date >= from && contact.date <= today && studentById(contact.studentId, model));
+        const talks = new Set(contacts.filter((contact) => contact.type === "대화").map((contact) => contact.studentId)).size;
+        const consultations = new Set(contacts.filter((contact) => contact.type === "상담예약").map((contact) => contact.studentId)).size;
+        return {
+          from,
+          to: today,
+          covered,
+          total,
+          percent,
+          currentSilent,
+          firstSilent,
+          delta,
+          deltaLabel,
+          talks,
+          consultations,
+          recordDays: recordedDays(from, today, model),
+          elapsedDays: observationDays(model, today)
+        };
+      }
+
+      function buildMetricsReport(model = state, today = effectiveToday(model)) {
+        const metrics = validationMetrics(model, today);
+        return [
+          `빈자리 사용 결과 · ${model.classInfo.className || "학급 미설정"} · ${metrics.from} ~ ${metrics.to}`,
+          `관찰 커버리지: ${metrics.covered}/${metrics.total}명 (${metrics.percent}%)`,
+          `기록 공백: ${metrics.currentSilent}명 (시작 주 ${metrics.firstSilent}명 대비 ${metrics.deltaLabel})`,
+          `후속 조치: 대화 ${metrics.talks}명 · 상담 예약 ${metrics.consultations}명`,
+          `기록 지속: ${metrics.recordDays}일 기록 / ${metrics.elapsedDays}일 경과`
+        ].join("\n");
       }
 
       function anonymize(rawText, model = state) {
@@ -3582,7 +4297,7 @@
       }
 
       function setTab(name, focus = false) {
-        if (!["today", "dashboard", "radar", "students", "report", "settings"].includes(name)) return;
+        if (!["today", "radar", "report", "settings"].includes(name)) return;
         ui.activeTab = name;
         for (const tab of document.querySelectorAll("[role=tab]")) {
           const active = tab.dataset.tab === name;
@@ -3596,37 +4311,45 @@
       }
 
       function renderTodayFocus() {
-        const container = document.getElementById("todayFocus");
-        container.replaceChildren();
-        const items = todayQueueItems();
-        if (!items.length) return;
-        const list = element("div", { className: "stack" });
-        for (const item of items) {
+        const queueItems = todayQueueItems();
+        const consultations = upcomingConsultations();
+        document.getElementById("dashboardTalkCount").textContent = `${queueItems.length}명`;
+        document.getElementById("dashboardConsultationCount").textContent = `${consultations.length}건`;
+
+        const talkList = document.getElementById("dashboardTalkList");
+        talkList.replaceChildren();
+        for (const item of queueItems) {
           const student = studentById(item.studentId);
           if (!student) continue;
           const clue = item.clue || clueForStudent(student.id);
-          const clueLine = clue
-            ? element("p", { className: "focus-clue" }, [
-                element("span", { className: "mono", text: formatShortDate(clue.date) }),
-                "  ", element("q", { text: clue.quote })
-              ])
-            : element("p", { className: "focus-clue", text: "최근 긍정·중립 기록이 없습니다" });
-          list.append(element("article", { className: "focus-card" }, [
-            element("div", {}, [element("h3", { text: student.name }), clueLine]),
-            element("button", { className: "button primary", text: "대화함", type: "button", dataset: { action: "contact-done", studentId: student.id } })
+          talkList.append(element("article", { className: "dashboard-item" }, [
+            element("header", {}, [
+              studentButton(student),
+              element("button", { className: "button primary small", text: "대화함", type: "button", dataset: { action: "contact-done", studentId: student.id } })
+            ]),
+            element("p", { className: "dashboard-clue", text: clue ? `${formatShortDate(clue.date)} · ${clue.quote}` : "최근 긍정·중립 기록 없음" })
           ]));
         }
-        container.append(element("section", { className: "today-focus-stack", attrs: { "aria-labelledby": "todayFocusHeading" } }, [
-          element("div", { className: "today-focus-heading" }, [
-            element("h2", { id: "todayFocusHeading", text: "오늘 말 걸기" }),
-            element("strong", { className: "mono muted", text: `${items.length}명` })
-          ]),
-          list
-        ]));
+        if (!talkList.children.length) talkList.append(element("p", { className: "muted", text: "오늘 말 걸기로 등록한 학생이 없습니다." }));
+
+        const consultationList = document.getElementById("dashboardConsultationList");
+        consultationList.replaceChildren();
+        for (const item of consultations) {
+          consultationList.append(element("article", { className: "dashboard-item" }, [
+            element("header", {}, [
+              studentButton(item.student),
+              element("span", { className: "dashboard-date", text: `${formatKoreanDate(item.contact.date)} · ${consultationDateLabel(item.contact.date)}` })
+            ]),
+            item.contact.note ? element("p", { className: "dashboard-clue", text: item.contact.note }) : null
+          ]));
+        }
+        if (!consultationList.children.length) consultationList.append(element("p", { className: "muted", text: "예정된 상담이 없습니다." }));
+        document.getElementById("todayFocus").hidden = queueItems.length === 0 && consultations.length === 0;
       }
 
       function renderPendingCards() {
         const pendings = unresolvedPendings();
+        const silentIds = new Set(silentStudents().map((student) => student.id));
         const section = document.getElementById("pendingSection");
         const container = document.getElementById("pendingCards");
         document.getElementById("pendingCount").textContent = `${pendings.length}건`;
@@ -3636,11 +4359,18 @@
           const candidateButtons = pending.candidates
             .map((studentId) => studentById(studentId))
             .filter(Boolean)
-            .map((student) => element("button", {
-              type: "button",
-              text: student.name,
-              dataset: { action: "resolve-pending", memoId: pending.memoId, pendingId: pending.id, studentId: student.id }
-            }));
+            .sort((a, b) => Number(silentIds.has(b.id)) - Number(silentIds.has(a.id)) || (a.number || 9999) - (b.number || 9999) || a.name.localeCompare(b.name, "ko"))
+            .map((student) => {
+              const last = lastMentionedAt(student.id);
+              const silent = silentIds.has(student.id);
+              return element("button", {
+                type: "button",
+                dataset: { action: "resolve-pending", memoId: pending.memoId, pendingId: pending.id, studentId: student.id }
+              }, [
+                element("span", { text: student.name }),
+                element("small", { className: `candidate-status${silent ? " silent" : ""}`, text: silent ? "기록 없음" : `마지막 ${formatShortDate(last)}` })
+              ]);
+            });
           candidateButtons.push(element("button", {
             className: "none",
             type: "button",
@@ -3652,6 +4382,36 @@
             element("p", { className: "muted", text: "누구를 말씀하신 걸까요?" }),
             Number.isFinite(pending.aiConfidence) ? element("p", { className: "helper", text: `후보가 ${pending.candidates.length}명으로 좁혀졌습니다 · 최종 확인은 교사가 합니다` }) : null,
             element("div", { className: "candidate-list" }, candidateButtons)
+          ]));
+        }
+      }
+
+      function renderUnlinkedMemos() {
+        const memos = recentUnlinkedMemos();
+        const section = document.getElementById("unlinkedSection");
+        const container = document.getElementById("unlinkedCards");
+        document.getElementById("unlinkedCount").textContent = `${memos.length}건`;
+        section.hidden = memos.length === 0;
+        container.replaceChildren();
+        for (const memo of memos) {
+          const select = element("select", { attrs: { "aria-label": `${formatKoreanDate(memo.date)} 기록과 연결할 학생` } }, [
+            element("option", { value: "", text: "학생 선택", attrs: { selected: true, disabled: true } }),
+            ...state.students
+              .slice()
+              .sort((a, b) => (a.number || 9999) - (b.number || 9999) || a.name.localeCompare(b.name, "ko"))
+              .map((student) => element("option", { value: student.id, text: `${student.number ? `${student.number}번 ` : ""}${student.name}` }))
+          ]);
+          container.append(element("article", { className: "memo-item", dataset: { unlinkedMemoId: memo.id } }, [
+            element("header", {}, [
+              element("span", { className: "memo-date", text: formatKoreanDate(memo.date) }),
+              element("span", { className: "mono muted", text: memo.id })
+            ]),
+            element("p", { className: "memo-text", text: memo.text }),
+            element("div", { className: "button-row" }, [
+              element("label", {}, ["연결할 학생", select]),
+              element("button", { className: "button primary small", text: "연결", type: "button", attrs: { disabled: !state.students.length }, dataset: { action: "link-unlinked", memoId: memo.id } }),
+              element("button", { className: "button small", text: "넘어가기", type: "button", dataset: { action: "skip-unlinked", memoId: memo.id } })
+            ])
           ]));
         }
       }
@@ -3669,8 +4429,9 @@
         for (const memo of memos) {
           const chips = (memo.mentions || []).map((mention) => {
             const student = studentById(mention.studentId);
-            return student ? element("span", { className: `chip${mention.tone === "우려" ? " concern" : ""}`, text: student.name }) : null;
-          });
+            return student ? element("span", { className: `chip ${toneClassName(mention.tone)}`, text: `${student.name} · ${mention.tone}` }) : null;
+          }).filter(Boolean);
+          if (!chips.length) chips.push(element("span", { className: "chip", text: "연결된 학생 없음" }));
           list.append(element("article", { className: "memo-item" }, [
             element("header", {}, [element("span", { className: "memo-date", text: formatKoreanDate(memo.date) }), element("span", { className: "mono muted", text: `${memo.mentions?.length || 0}명` })]),
             element("p", { className: "memo-text", text: memo.text.split("\n")[0] }),
@@ -3710,7 +4471,7 @@
           const record = draft.records[index];
           const mentionChips = (record.memo.mentions || []).map((mention) => {
             const student = studentById(mention.studentId);
-            return element("span", { className: `chip${mention.tone === "우려" ? " concern" : ""}`, text: `${student?.name || mention.studentId} · ${mention.domain} · ${mention.tone}` });
+            return element("span", { className: `chip ${toneClassName(mention.tone)}`, text: `${student?.name || mention.studentId} · ${mention.domain} · ${mention.tone}` });
           });
           if (!mentionChips.length) mentionChips.push(element("span", { className: "chip", text: "연결 학생 없음" }));
           const unresolved = (record.memo.pending || []).filter((pending) => !pending.resolved).length;
@@ -3726,6 +4487,7 @@
       function renderToday() {
         renderTodayFocus();
         renderPendingCards();
+        renderUnlinkedMemos();
         renderWeeklyMemos();
         renderRefinementDraft();
         renderWeeklyBrief();
@@ -3733,68 +4495,6 @@
         dateInput.max = effectiveToday();
         if (!dateInput.value) dateInput.value = effectiveToday();
         document.getElementById("saveFeedback").textContent = ui.feedback;
-      }
-
-      function renderDashboard() {
-        const queueItems = todayQueueItems();
-        const attentionRows = attentionStudentRows();
-        const consultations = upcomingConsultations();
-        const metrics = document.getElementById("dashboardMetrics");
-        metrics.replaceChildren(...[
-          ["오늘 말 걸기", queueItems.length, "오늘 등록된 학생"],
-          ["관심을 줄 학생", attentionRows.length, "기록 공백·반복 맥락"],
-          ["상담 예정", consultations.length, "오늘 이후 예약"]
-        ].map(([label, value, detail]) => element("article", { className: "dashboard-metric" }, [
-          element("p", { className: "eyebrow", text: label }),
-          element("strong", { text: `${value}명` }),
-          element("span", { text: detail })
-        ])));
-
-        document.getElementById("dashboardTalkCount").textContent = `${queueItems.length}명`;
-        document.getElementById("dashboardAttentionCount").textContent = `${attentionRows.length}명`;
-        document.getElementById("dashboardConsultationCount").textContent = `${consultations.length}건`;
-
-        const talkList = document.getElementById("dashboardTalkList");
-        talkList.replaceChildren();
-        for (const item of queueItems) {
-          const student = studentById(item.studentId);
-          if (!student) continue;
-          const clue = item.clue || clueForStudent(student.id);
-          talkList.append(element("article", { className: "dashboard-item" }, [
-            element("header", {}, [
-              studentButton(student),
-              element("button", { className: "button primary small", text: "대화함", type: "button", dataset: { action: "contact-done", studentId: student.id } })
-            ]),
-            element("p", { className: "dashboard-clue", text: clue ? `${formatShortDate(clue.date)} · ${clue.quote}` : "최근 긍정·중립 기록 없음" })
-          ]));
-        }
-        if (!talkList.children.length) talkList.append(element("p", { className: "muted", text: "오늘 말 걸기로 등록한 학생이 없습니다." }));
-
-        const queuedIds = new Set(queueItems.map((item) => item.studentId));
-        const attentionList = document.getElementById("dashboardAttentionList");
-        attentionList.replaceChildren();
-        for (const row of attentionRows) {
-          const tags = row.reasons.map((reason) => element("span", { className: "dashboard-tag", text: reason }));
-          if (queuedIds.has(row.student.id)) tags.push(element("span", { className: "dashboard-tag queued", text: "오늘 말 걸기 등록" }));
-          attentionList.append(element("article", { className: "dashboard-item" }, [
-            element("header", {}, [studentButton(row.student)]),
-            element("div", { className: "dashboard-tags" }, tags)
-          ]));
-        }
-        if (!attentionList.children.length) attentionList.append(element("p", { className: "muted", text: "현재 규칙에 해당하는 학생이 없습니다." }));
-
-        const consultationList = document.getElementById("dashboardConsultationList");
-        consultationList.replaceChildren();
-        for (const item of consultations) {
-          consultationList.append(element("article", { className: "dashboard-item" }, [
-            element("header", {}, [
-              studentButton(item.student),
-              element("span", { className: "dashboard-date", text: `${formatKoreanDate(item.contact.date)} · ${consultationDateLabel(item.contact.date)}` })
-            ]),
-            item.contact.note ? element("p", { className: "dashboard-clue", text: item.contact.note }) : null
-          ]));
-        }
-        if (!consultationList.children.length) consultationList.append(element("p", { className: "muted", text: "예정된 상담이 없습니다." }));
       }
 
       function streakText(student) {
@@ -3809,7 +4509,7 @@
         const container = document.getElementById("radarGroups");
         container.replaceChildren();
         const silent = silentStudents();
-        const concerns = concernOnlyStudents();
+        const concerns = repeatedConcernStudents();
         const contacts = contactsInWindow();
         const snoozed = snoozedStudents();
 
@@ -3817,20 +4517,20 @@
           const names = element("div", { className: "name-grid" }, silent.map((student) => studentButton(student)));
           const streaks = silent.map(streakText).filter(Boolean).map((text) => element("p", { className: "streak", text }));
           container.append(element("article", { className: "radar-group" }, [
-            element("header", {}, [element("h3", { text: `⬜  ${state.settings.silentDays === 14 ? "2주간" : `${state.settings.silentDays}일간`} 기록에 없음` }), element("strong", { text: `${silent.length}명` })]),
+            element("header", {}, [element("h3", { text: `기록 공백 · ${state.settings.silentDays === 14 ? "2주간" : `${state.settings.silentDays}일간`} 기록에 없음` }), element("strong", { text: `${silent.length}명` })]),
             names, ...streaks
           ]));
         }
 
         if (concerns.length) {
           const lines = concerns.map((student) => {
-            const breakdown = toneBreakdown(student.id, addDays(effectiveToday(), -state.settings.silentDays), effectiveToday());
+            const concernStats = concernContextStats(student.id);
             const domains = domainBreakdown(student.id, addDays(effectiveToday(), -state.settings.silentDays), effectiveToday());
             const topDomain = Object.entries(domains).sort((a, b) => b[1] - a[1])[0]?.[0] || "행동";
-            return element("div", { className: "group-line" }, [studentButton(student), element("span", { className: "group-detail", text: `${breakdown.우려}회 · 전부 ${topDomain} 맥락` })]);
+            return element("div", { className: "group-line" }, [studentButton(student), element("span", { className: "group-detail", text: `${concernStats.dateCount}일 · ${concernStats.count}건 · ${topDomain} 맥락` })]);
           });
           container.append(element("article", { className: "radar-group" }, [
-            element("header", {}, [element("h3", { text: "🔸  언급은 있으나 ‘우려’ 톤만" }), element("strong", { text: `${concerns.length}명` })]),
+            element("header", {}, [element("h3", { text: "서로 다른 날짜에 ‘우려’ 맥락 반복" }), element("strong", { text: `${concerns.length}명` })]),
             ...lines
           ]));
         }
@@ -3845,7 +4545,7 @@
             return element("div", { className: "group-line" }, [studentButton(student), element("span", { className: "group-detail", text: detail })]);
           });
           container.append(element("article", { className: "radar-group" }, [
-            element("header", {}, [element("h3", { text: "🟢  최근 알림 후 접촉함" }), element("strong", { text: `${contactMap.size}명` })]),
+            element("header", {}, [element("h3", { text: "접촉 기록 · 최근 알림 후 접촉함" }), element("strong", { text: `${contactMap.size}명` })]),
             ...lines
           ]));
         }
@@ -3856,7 +4556,7 @@
             return element("div", { className: "group-line" }, [studentButton(student), element("span", { className: "group-detail", text: contact?.note ? `“${contact.note}”` : `${formatKoreanDate(student.snoozeUntil)}까지` })]);
           });
           container.append(element("article", { className: "radar-group" }, [
-            element("header", {}, [element("h3", { text: "⚪  괜찮음 처리 · 4주간 알림 제외" }), element("strong", { text: `${snoozed.length}명` })]),
+            element("header", {}, [element("h3", { text: "알림 제외 · 괜찮음 처리 후 4주" }), element("strong", { text: `${snoozed.length}명` })]),
             ...lines
           ]));
         }
@@ -3864,9 +4564,11 @@
         if (!container.children.length) container.append(emptyMessage("표시할 레이더 항목이 없습니다.", "메모가 쌓이면 기록의 빈칸과 반복된 톤이 여기에 나타납니다."));
       }
 
-      function cellState(studentId, date) {
-        const memos = state.memos.filter((memo) => memo.date === date && (memo.mentions || []).some((mention) => mention.studentId === studentId));
+      function cellState(studentId, date, model = state) {
+        const memos = model.memos.filter((memo) => memo.date === date && (memo.mentions || []).some((mention) => mention.studentId === studentId));
         if (!memos.length) return { type: "empty", memos: [] };
+        const mentions = memos.flatMap((memo) => memo.mentions.filter((mention) => mention.studentId === studentId));
+        if (mentions.length && mentions.every((mention) => mention.source === "teacher_contact")) return { type: "contact", memos };
         const concern = memos.some((memo) => memo.mentions.some((mention) => mention.studentId === studentId && mention.tone === "우려"));
         return { type: concern ? "concern" : "seen", memos };
       }
@@ -3879,7 +4581,10 @@
           return;
         }
         const dates = analysisDates();
+        const sort = document.getElementById("studentSort").value || "last";
         const sorted = [...state.students].sort((a, b) => {
+          if (sort === "name") return a.name.localeCompare(b.name, "ko");
+          if (sort === "count") return mentionCount(a.id) - mentionCount(b.id) || a.name.localeCompare(b.name, "ko");
           const aLast = lastMentionedAt(a.id);
           const bLast = lastMentionedAt(b.id);
           const aDays = aLast ? daysBetween(aLast, effectiveToday()) : 9999;
@@ -3897,13 +4602,13 @@
             const status = cellState(student.id, date);
             const description = status.type === "empty"
               ? `${formatKoreanDate(date)} · 언급 없음`
-              : `${formatKoreanDate(date)} · ${status.type === "concern" ? "우려 맥락으로 언급" : "긍정 또는 중립 맥락으로 언급"}\n${status.memos.map((memo) => memo.text).join("\n")}`;
+              : `${formatKoreanDate(date)} · ${status.type === "concern" ? "우려 맥락으로 언급" : status.type === "contact" ? "교사가 따로 대화함" : "긍정 또는 중립 맥락으로 언급"}\n${status.memos.map((memo) => memo.text).join("\n")}`;
             row.append(element("td", {}, element("button", {
               className: `heat-cell ${status.type}`,
-              text: status.type === "concern" ? "!" : status.type === "seen" ? "·" : "",
+              text: status.type === "concern" ? "!" : status.type === "seen" ? "·" : status.type === "contact" ? "↔" : "",
               type: "button",
               attrs: { "aria-label": `${student.name}, ${description}` },
-              dataset: { tooltip: description }
+              dataset: { tooltip: description, action: "open-report", studentId: student.id }
             })));
           }
           body.append(row);
@@ -3912,6 +4617,7 @@
         const legend = element("div", { className: "heatmap-legend" }, [
           element("span", {}, [element("i", { className: "legend-swatch empty", attrs: { "aria-hidden": "true" } }), "언급 없음"]),
           element("span", {}, [element("i", { className: "legend-swatch seen", attrs: { "aria-hidden": "true" } }), "긍정·중립 언급"]),
+          element("span", {}, [element("i", { className: "legend-swatch contact", attrs: { "aria-hidden": "true" } }), "교사 대화"]),
           element("span", {}, [element("i", { className: "legend-swatch concern", attrs: { "aria-hidden": "true" } }), "우려 언급"])
         ]);
         container.append(element("div", { className: "heatmap-wrap" }, table), legend);
@@ -3933,7 +4639,8 @@
         const { from, to } = weeklyObservationWindow(model, today);
         const attention = new Map(attentionStudentRows(model, today).map((row) => [row.student.id, row]));
         return model.students.map((student) => {
-          const mentions = mentionsForStudent(student.id, model, from, to);
+          const mentions = observationMentions(student.id, model, from, to);
+          const contactCount = mentionsForStudent(student.id, model, from, to).filter((mention) => !isObservationMention(mention)).length;
           const tones = Object.fromEntries(TONES.map((tone) => [tone, mentions.filter((mention) => mention.tone === tone).length]));
           const domains = Object.fromEntries(DOMAINS.map((domain) => [domain, mentions.filter((mention) => mention.domain === domain).length]));
           const topDomain = mentions.length ? Object.entries(domains).sort((a, b) => b[1] - a[1])[0][0] : null;
@@ -3946,6 +4653,7 @@
             domains,
             topDomain,
             aiCount,
+            contactCount,
             attention: attention.get(student.id) || null
           };
         }).sort((a, b) => Number(Boolean(b.attention)) - Number(Boolean(a.attention)) || b.count - a.count || (a.student.number || 9999) - (b.student.number || 9999));
@@ -3953,7 +4661,7 @@
 
       function weeklyBriefFactCatalog(model = state, today = effectiveToday(model)) {
         const windowData = weeklyObservationWindow(model, today);
-        const mentions = windowData.memos.flatMap((memo) => (memo.mentions || []).filter((mention) => normalizeMentionRecord(mention, memo.id).reviewStatus !== "제외"));
+        const mentions = windowData.memos.flatMap((memo) => (memo.mentions || []).filter((mention) => normalizeMentionRecord(mention, memo.id).reviewStatus !== "제외" && isObservationMention(mention)));
         const mentionedStudents = new Set(mentions.map((mention) => mention.studentId)).size;
         const domains = Object.fromEntries(DOMAINS.map((domain) => [domain, mentions.filter((mention) => mention.domain === domain).length]));
         const tones = Object.fromEntries(TONES.map((tone) => [tone, mentions.filter((mention) => mention.tone === tone).length]));
@@ -3978,9 +4686,9 @@
         for (const domain of DOMAINS) if (domains[domain] > 0) add("distribution", `${domain} 영역으로 분류된 언급은 ${domains[domain]}건입니다.`);
         add("distribution", `기록 성격 분포는 긍정 ${tones.긍정}건, 중립 ${tones.중립}건, 우려 ${tones.우려}건입니다.`);
         const silent = silentStudents(model.settings.silentDays, model, today);
-        const concern = concernOnlyStudents(model.settings.silentDays, model, today);
+        const concern = repeatedConcernStudents(model.settings.silentDays, model, today);
         add("followup", `설정된 기록 공백 기준에 해당하는 학생은 ${silent.length}명입니다.`);
-        add("followup", `최근 기록이 우려 맥락만 2회 이상인 학생은 ${concern.length}명입니다.`);
+        add("followup", `설정 기간 중 서로 다른 날짜 2일 이상에 우려 맥락이 기록된 학생은 ${concern.length}명입니다.`);
         const consultations = upcomingConsultations(model, today);
         if (consultations.length) add("followup", `오늘 이후 상담 예약은 ${consultations.length}건입니다.`);
         return { ...windowData, facts, mentions, mentionedStudents, domains, tones };
@@ -4072,9 +4780,10 @@
         ]));
         const studentRows = weeklyStudentRows();
         const studentList = element("div", { className: "weekly-student-list" }, studentRows.map((row) => {
-          const distribution = row.count
+          const distributionBase = row.count
             ? `${row.topDomain} 중심 · 긍 ${row.tones.긍정} / 중 ${row.tones.중립} / 우 ${row.tones.우려}${row.aiCount ? ` · AI분류 ${row.aiCount}` : ""}`
             : row.attention?.reasons.join(" · ") || "최근 7일 연결 기록 없음";
+          const distribution = `${distributionBase}${row.contactCount ? ` · 교사 대화 ${row.contactCount}회` : ""}`;
           return element("article", { className: "weekly-student-row" }, [
             studentButton(row.student),
             element("span", { text: `기록 ${row.count}건` }),
@@ -4141,7 +4850,7 @@
         const from = dates[0];
         const to = today;
         const memos = model.memos.filter((memo) => memo.date >= from && memo.date <= to);
-        const mentions = memos.flatMap((memo) => memo.mentions || []);
+        const mentions = memos.flatMap((memo) => memo.mentions || []).filter(isObservationMention);
         const domains = Object.fromEntries(DOMAINS.map((domain) => [domain, 0]));
         const perStudent = new Map();
         for (const mention of mentions) {
@@ -4249,40 +4958,22 @@
         const jump = document.getElementById("radarPendingJump");
         jump.replaceChildren();
         const pendingCount = unresolvedPendings().length;
-        if (pendingCount) jump.append(element("div", { className: "pending-jump" }, ["📌 확인 요청 ", element("button", { text: `${pendingCount}건`, type: "button", dataset: { action: "go-pending" } }), " · 교사가 확인하면 레이더가 즉시 바뀝니다"]));
+        if (pendingCount) jump.append(element("div", { className: "pending-jump" }, ["확인 요청 ", element("button", { text: `${pendingCount}건`, type: "button", dataset: { action: "go-pending" } }), " · 교사가 확인하면 레이더가 즉시 바뀝니다"]));
         renderRadarGroups();
+        renderToneIndex();
         renderHeatmap();
         renderMirror();
       }
 
-      function renderStudents() {
-        const sort = document.getElementById("studentSort").value || "last";
-        const list = [...state.students];
-        list.sort((a, b) => {
-          if (sort === "name") return a.name.localeCompare(b.name, "ko");
-          if (sort === "count") return mentionCount(a.id) - mentionCount(b.id) || a.name.localeCompare(b.name, "ko");
-          const aLast = lastMentionedAt(a.id);
-          const bLast = lastMentionedAt(b.id);
-          if (!aLast && bLast) return -1;
-          if (aLast && !bLast) return 1;
-          return (aLast || "").localeCompare(bLast || "") || a.name.localeCompare(b.name, "ko");
-        });
-        const container = document.getElementById("studentsList");
-        container.replaceChildren();
-        if (!list.length) {
-          container.append(emptyMessage("학생 명단이 없습니다.", "설정에서 명단을 추가해 주세요."));
-          return;
-        }
-        for (const student of list) {
-          const last = lastMentionedAt(student.id);
-          const tone = toneBreakdown(student.id);
-          container.append(element("article", { className: "student-row" }, [
-            studentButton(student, "open-report"),
-            element("span", { text: last ? `마지막 언급 ${daysBetween(last, effectiveToday())}일 전` : "마지막 언급 기록 없음" }),
-            element("span", { text: `언급 ${mentionCount(student.id)}회` }),
-            element("span", { className: "mono", text: `긍${tone.긍정} 중${tone.중립} 우${tone.우려}` })
-          ]));
-        }
+      function renderValidationMetrics() {
+        const metrics = validationMetrics();
+        const container = document.getElementById("validationMetrics");
+        container.replaceChildren(
+          element("div", { className: "metric" }, [element("dt", { text: "관찰 커버리지" }), element("dd", { text: `${metrics.covered}명 / ${metrics.total}명 (${metrics.percent}%)` })]),
+          element("div", { className: "metric" }, [element("dt", { text: "현재 기록 공백" }), element("dd", { text: `${metrics.currentSilent}명 · 시작 주 ${metrics.firstSilent}명 대비 ${metrics.deltaLabel}` })]),
+          element("div", { className: "metric" }, [element("dt", { text: "후속 조치" }), element("dd", { text: `대화 ${metrics.talks}명 · 상담 예약 ${metrics.consultations}명` })]),
+          element("div", { className: "metric" }, [element("dt", { text: "기록 지속" }), element("dd", { text: `${metrics.recordDays}일 기록 / ${metrics.elapsedDays}일 경과` })])
+        );
       }
 
       function renderTrend() {
@@ -4364,6 +5055,7 @@
       }
 
       function renderReport() {
+        renderValidationMetrics();
         renderTrend();
         const container = document.getElementById("reportContent");
         container.replaceChildren();
@@ -4432,7 +5124,10 @@
         }
         for (const student of state.students) {
           container.append(element("div", { className: "roster-row", dataset: { studentId: student.id } }, [
-            element("strong", { text: student.name }),
+            element("div", { className: "roster-name" }, [
+              element("strong", { text: student.name }),
+              needsFullNameOnly(student) ? element("span", { className: "roster-token-note muted", text: "성을 포함해 적어야 인식됩니다" }) : null
+            ]),
             element("input", { value: (student.aliases || []).join("|"), attrs: { "aria-label": `${student.name} 별칭`, placeholder: "별칭" }, dataset: { role: "aliases" } }),
             element("input", { value: student.group ?? "", attrs: { "aria-label": `${student.name} 모둠`, type: "number", min: "1", max: "30", placeholder: "모둠" }, dataset: { role: "group" } }),
             element("input", { value: student.number ?? "", attrs: { "aria-label": `${student.name} 번호`, type: "number", min: "1", max: "999", placeholder: "번호" }, dataset: { role: "number" } }),
@@ -4442,6 +5137,55 @@
             ])
           ]));
         }
+      }
+
+      function renderToneIndex() {
+        const container = document.getElementById("toneIndexContainer");
+        const summary = toneIndexSummary();
+        const repeated = repeatedConcernStudents();
+        const definitions = [
+          { tone: "긍정", key: "positive", mark: "+", title: "다시 꺼낼 강점 장면", guide: "대화를 시작하거나 관계를 잇는 구체적 장면으로 되찾습니다." },
+          { tone: "중립", key: "neutral", mark: "·", title: "평소 모습을 볼 기준 장면", guide: "참여·행동의 평소 맥락을 비교할 기준 기록으로 남깁니다." },
+          { tone: "우려", key: "concern", mark: "!", title: "이어지는지 확인할 장면", guide: "같은 학생에게 서로 다른 날짜에 반복될 때만 후속 확인에 연결합니다." }
+        ];
+        const cards = definitions.map((definition) => {
+          const data = summary.tones[definition.tone];
+          const students = data.studentIds.slice(0, 6).map((studentId) => studentById(studentId)).filter(Boolean);
+          const remainder = Math.max(0, data.studentCount - students.length);
+          const studentLinks = students.length
+            ? element("div", { className: "tone-index-students", attrs: { "aria-label": `${definition.tone} 맥락 최근 연결 학생` } }, [
+              ...students.map((student) => studentButton(student)),
+              remainder ? element("span", { className: "tone-index-more", text: `외 ${remainder}명` }) : null
+            ])
+            : element("p", { className: "tone-index-empty", text: "연결된 장면이 없습니다." });
+          return element("article", { className: `tone-index-card tone-${definition.key}`, dataset: { tone: definition.key } }, [
+            element("header", {}, [
+              element("span", { className: "tone-index-mark", text: definition.mark, attrs: { "aria-hidden": "true" } }),
+              element("div", {}, [element("span", { className: "tone-index-label", text: definition.tone }), element("h3", { text: definition.title })]),
+              element("strong", { className: "tone-index-count", text: `${data.count}건` })
+            ]),
+            element("p", { className: "tone-index-guide", text: definition.guide }),
+            element("p", { className: "tone-index-meta", text: `학생 ${data.studentCount}명 · 기록 ${data.dateCount}일${data.topDomain ? ` · ${data.topDomain} 맥락이 가장 많음` : ""}` }),
+            studentLinks
+          ]);
+        });
+        const repeatedLinks = repeated.length
+          ? element("div", { className: "tone-repeat-students" }, repeated.map((student) => studentButton(student)))
+          : element("span", { className: "muted", text: "현재 기준에 해당하는 학생이 없습니다." });
+        container.replaceChildren(
+          element("div", { className: "tone-index-overview" }, [
+            element("strong", { text: `${summary.total}건` }),
+            element("span", { text: `관찰 장면 · 학생 ${summary.mentionedStudents}명 · 기록 ${summary.recordDays}일` })
+          ]),
+          element("div", { className: "tone-index-grid" }, cards),
+          element("aside", { className: "tone-repeat-note" }, [
+            element("div", {}, [
+              element("strong", { text: `설정 기간 안에 우려 맥락이 서로 다른 날짜에 반복 · ${repeated.length}명` }),
+              element("p", { text: "반복 여부만 표시하며, 원인이나 학생 상태를 추정하지 않습니다." })
+            ]),
+            repeatedLinks
+          ])
+        );
       }
 
       function providerStatusText() {
@@ -4771,9 +5515,7 @@
       function renderAll() {
         renderModeBadge();
         renderToday();
-        renderDashboard();
         renderRadar();
-        renderStudents();
         renderReport();
         renderSettings();
         setTab(ui.activeTab);
@@ -4869,9 +5611,9 @@
         return `${prefix}${String(max + 1).padStart(3, "0")}`;
       }
 
-      function createContact(studentId, type, date, note = "") {
+      function createContact(studentId, type, date, note = "", model = state) {
         return {
-          id: nextId("C", state.contacts),
+          id: nextId("C", model.contacts),
           studentId,
           type,
           date,
@@ -4904,10 +5646,35 @@
         state.weeklyBrief = null;
         persistState();
         const mentioned = new Set(memos.flatMap((memo) => memo.mentions.map((mention) => mention.studentId))).size;
+        const unlinked = memos.filter((memo) => !(memo.mentions || []).length && !(memo.pending || []).length).length;
         const dateLabel = date === effectiveToday() ? "오늘" : formatKoreanDate(date);
-        ui.feedback = `${storagePersistent ? "저장됨" : "임시 저장됨"} · ${dateLabel} ${memos.length}줄 · 언급 ${mentioned}명 / 미언급 ${Math.max(0, state.students.length - mentioned)}명`;
+        ui.feedback = `${storagePersistent ? "저장됨" : "임시 저장됨"} · ${dateLabel} ${memos.length}줄 · 언급 ${mentioned}명 / 미언급 ${Math.max(0, state.students.length - mentioned)}명${unlinked ? ` · 연결 없음 ${unlinked}줄` : ""}`;
         renderAll();
         for (const memo of memos) enhanceMemoInBackground(memo, memo.analysisVersion, expectedContextVersion);
+      }
+
+      function renderStudentToneTimeline(studentId) {
+        const container = document.getElementById("dialogToneTimeline");
+        const mentions = mentionsForStudent(studentId)
+          .slice()
+          .sort((a, b) => b.date.localeCompare(a.date) || b.evidenceId.localeCompare(a.evidenceId))
+          .slice(0, 5);
+        container.replaceChildren();
+        if (!mentions.length) {
+          container.append(element("p", { className: "tone-timeline-empty", text: "연결된 관찰 장면이 없습니다." }));
+          return;
+        }
+        for (const mention of mentions) {
+          const context = effectiveEvidenceContext(mention) || mention.memoText || "문맥 없음";
+          container.append(element("article", { className: `tone-timeline-item ${toneClassName(mention.tone)}` }, [
+            element("div", { className: "tone-timeline-meta" }, [
+              element("time", { text: formatShortDate(mention.date), attrs: { datetime: mention.date } }),
+              element("span", { className: `chip ${toneClassName(mention.tone)}`, text: mention.tone }),
+              element("span", { text: mention.domain })
+            ]),
+            element("p", { text: context })
+          ]));
+        }
       }
 
       function openStudentDialog(studentId) {
@@ -4917,6 +5684,7 @@
         document.getElementById("dialogTitle").textContent = student.name;
         const clue = clueForStudent(student.id);
         document.getElementById("dialogClue").textContent = clue ? `${formatShortDate(clue.date)}  “${clue.quote}”` : "긍정·중립 맥락의 최근 기록이 없습니다.";
+        renderStudentToneTimeline(student.id);
         const queueButton = document.getElementById("queueTodayButton");
         const queued = todayQueueItems().some((item) => item.studentId === student.id);
         queueButton.disabled = queued;
@@ -4939,7 +5707,9 @@
         const cleanName = String(name || "").normalize("NFC").trim();
         if (cleanName.length < 2) return false;
         if (state.students.some((student) => student.name === cleanName)) return false;
-        const cleanAliases = [...new Set(aliases.map((alias) => String(alias || "").normalize("NFC").trim()).filter((alias) => alias.length >= 2))];
+        const normalizedAliases = [...new Set(aliases.map((alias) => String(alias || "").normalize("NFC").trim()).filter((alias) => alias.length >= 2))];
+        const rejectedAliases = normalizedAliases.filter(isRiskyAlias);
+        const cleanAliases = normalizedAliases.filter((alias) => !isRiskyAlias(alias));
         const max = state.students.reduce((current, student) => Math.max(current, Number(student.id.replace(/\D/g, "")) || 0), 0);
         const nextNumber = Number.isFinite(Number(number)) && Number(number) > 0 ? Number(number) : state.students.length + 1;
         state.students.push({ id: `S${String(max + 1).padStart(2, "0")}`, name: cleanName, aliases: cleanAliases, group: group ? Number(group) : null, number: nextNumber, snoozeUntil: null });
@@ -4949,6 +5719,11 @@
         state.mirror = null;
         state.weeklyBrief = null;
         persistState();
+        if (rejectedAliases.length) {
+          showToast(rejectedAliases.length === 1
+            ? `'${rejectedAliases[0]}'은 일반 낱말이라 오인식 위험이 있어 별칭에서 제외했습니다.`
+            : `${rejectedAliases.map((alias) => `'${alias}'`).join(", ")}은 일반 낱말이라 오인식 위험이 있어 별칭에서 제외했습니다.`);
+        }
         return true;
       }
 
@@ -5047,6 +5822,22 @@
           check("pending 1건", unresolvedPendings(demo).length === 1);
           check("미언급 5명", silentStudents(14, demo, DEMO_TODAY).map((student) => student.name).join(",") === "고서연,권하늘,서지안,손유진,조은채");
           check("우려 전용 2명", concernOnlyStudents(14, demo, DEMO_TODAY).map((student) => student.name).join(",") === "임지훈,최다인");
+          check("서로 다른 날짜 우려 맥락 반복 2명", repeatedConcernStudents(14, demo, DEMO_TODAY).map((student) => student.name).join(",") === "임지훈,최다인");
+          const concernDateFixture = deepClone(demo);
+          concernDateFixture.contacts = [];
+          const toneMemo = (id, date, tone) => ({
+            id,
+            date,
+            text: "가상 관찰 장면",
+            mentions: [normalizeMentionRecord({ studentId: "S04", tone, domain: "행동", context: "가상 관찰 장면" }, id)],
+            pending: []
+          });
+          concernDateFixture.memos = [toneMemo("TC1", DEMO_TODAY, "우려"), toneMemo("TC2", DEMO_TODAY, "우려")];
+          check("같은 날짜 우려 여러 건은 반복으로 보지 않음", !repeatedConcernStudents(14, concernDateFixture, DEMO_TODAY).some((student) => student.id === "S04"));
+          concernDateFixture.memos.push(toneMemo("TC3", addDays(DEMO_TODAY, -1), "우려"), toneMemo("TC4", DEMO_TODAY, "긍정"));
+          check("긍정 맥락이 다른 날짜 우려 반복을 상쇄하지 않음", repeatedConcernStudents(14, concernDateFixture, DEMO_TODAY).some((student) => student.id === "S04") && concernContextStats("S04", 14, concernDateFixture, DEMO_TODAY).dateCount === 2);
+          const toneSummaryFixture = toneIndexSummary(concernDateFixture, DEMO_TODAY, 7);
+          check("색인 장면·학생·날짜 사실 집계", toneSummaryFixture.total === 4 && toneSummaryFixture.mentionedStudents === 1 && toneSummaryFixture.recordDays === 2 && toneSummaryFixture.tones.긍정.count === 1 && toneSummaryFixture.tones.우려.count === 3);
           const resolved = deepClone(demo);
           const pending = unresolvedPendings(resolved)[0];
           applyPendingResolution(resolved, pending.memoId, pending.id, "S12");
@@ -5060,30 +5851,87 @@
           check("오늘 말 걸기 2명 이상 누적·중복 방지", firstQueued && secondQueued && !duplicateQueued && todayQueueItems(queueFixture, DEMO_TODAY).map((item) => item.studentId).join(",") === "S02,S03");
           removeTodayQueueStudent("S02", queueFixture);
           check("대화 완료 학생만 목록에서 제거", todayQueueItems(queueFixture, DEMO_TODAY).map((item) => item.studentId).join(",") === "S03");
+          const contactFixture = deepClone(demo);
+          addTodayQueueStudent("S02", contactFixture);
+          const silentBeforeContact = silentStudents(14, contactFixture, DEMO_TODAY).length;
+          const contactMemo = recordTeacherContact("S02", contactFixture);
+          check("교사 대화가 기록 공백을 해소", silentBeforeContact === 5 && silentStudents(14, contactFixture, DEMO_TODAY).length === 4 && lastMentionedAt("S02", contactFixture, DEMO_TODAY) === DEMO_TODAY && todayQueueItems(contactFixture, DEMO_TODAY).length === 0);
+          check("교사 대화 출처·히트맵 상태 구분", contactMemo?.mentions[0]?.source === "teacher_contact" && sourceLabel(contactMemo.mentions[0].source) === "교사 대화" && cellState("S02", DEMO_TODAY, contactFixture).type === "contact");
+          check("교사 대화는 시선 집계 제외", (() => {
+            const fx = deepClone(demo);
+            const before = mirrorSummary(fx, DEMO_TODAY).domains.관계;
+            recordTeacherContact("S02", fx);
+            return mirrorSummary(fx, DEMO_TODAY).domains.관계 === before
+              && silentStudents(14, fx, DEMO_TODAY).length === 4;
+          })());
+          check("교사 대화는 대화 실마리가 되지 않음", (() => {
+            const fx = deepClone(demo);
+            recordTeacherContact("S10", fx);
+            return !String(clueForStudent("S10", fx)?.quote || "").includes("따로 대화함");
+          })());
           const attentionFixture = attentionStudentRows(demo, DEMO_TODAY);
-          check("대시보드 관심 기준 합집합", attentionFixture.length === 7 && attentionFixture.filter((row) => row.silent).length === 5 && attentionFixture.filter((row) => row.concern).length === 2);
+          check("관심 기준 합집합", attentionFixture.length === 7 && attentionFixture.filter((row) => row.silent).length === 5 && attentionFixture.filter((row) => row.concern).length === 2);
           const consultationFixture = deepClone(demo);
           consultationFixture.contacts.push(
             { id: "C901", studentId: "S02", type: "상담예약", date: DEMO_TODAY, note: "" },
             { id: "C902", studentId: "S03", type: "상담예약", date: addDays(DEMO_TODAY, 2), note: "" },
             { id: "C903", studentId: "S04", type: "상담예약", date: addDays(DEMO_TODAY, -1), note: "" }
           );
-          check("대시보드 예정 상담 날짜순", upcomingConsultations(consultationFixture, DEMO_TODAY).map((item) => item.contact.id).join(",") === "C901,C902");
+          check("오늘 탭 예정 상담 날짜순", upcomingConsultations(consultationFixture, DEMO_TODAY).map((item) => item.contact.id).join(",") === "C901,C902");
           const appendFixture = deepClone(demo);
           appendFixture.memos = [];
-          appendMemoEntries(appendFixture, DEMO_TODAY, "안경이 친구를 도와줌\n박시우가 자료를 정리함\n오태경이 발표를 이끎");
-          appendMemoEntries(appendFixture, DEMO_TODAY, "안경이 질문함\n박시우가 도와줌\n오태경이 정리함");
+          appendMemoEntries(appendFixture, DEMO_TODAY, "은우가 친구를 도와줌\n박시우가 자료를 정리함\n오태경이 발표를 이끎");
+          appendMemoEntries(appendFixture, DEMO_TODAY, "은우가 질문함\n박시우가 도와줌\n오태경이 정리함");
           const appendedToday = appendFixture.memos.filter((memo) => memo.date === DEMO_TODAY);
           check("같은 날짜 3줄씩 두 번 누적", appendedToday.length === 6 && new Set(appendedToday.map((memo) => memo.id)).size === 6 && appendedToday.every((memo) => memo.text && !memo.text.includes("\n")));
           check("별칭 줄별 학생 연결", appendedToday.filter((memo) => memo.mentions.some((mention) => mention.studentId === "S07")).length === 2);
+          check("소급 날짜 형식 인식", (() => {
+            const t = "2026-09-12";
+            return parseBackfillDate("9/1", t) === "2026-09-01"
+              && parseBackfillDate("9월 1일", t) === "2026-09-01"
+              && parseBackfillDate("2026-09-01", t) === "2026-09-01"
+              && parseBackfillDate("12/25", t) === "2025-12-25"
+              && parseBackfillDate("김도윤 지각", t) === null;
+          })());
+          check("소급 입력 다중 날짜 저장", (() => {
+            const fx = deepClone(demo);
+            const first = addDays(localToday(), -11);
+            const second = addDays(localToday(), -10);
+            fx.settings.demoMode = false;
+            fx.memos = [];
+            fx.classInfo.createdAt = localToday();
+            const result = backfillMemos(`${first}\n김도윤이 사물함 정리 도와줌\n임지훈 지각\n${second}\n박예린 질문 좋았음`, fx);
+            return result.created === 3 && result.dates === 2 && result.linked === 3
+              && fx.classInfo.createdAt === first
+              && fx.memos.filter((memo) => memo.date === first).length === 2;
+          })());
+          check("날짜 줄 없는 앞부분은 저장 안 함", (() => {
+            const fx = deepClone(demo);
+            const first = addDays(localToday(), -11);
+            fx.settings.demoMode = false;
+            fx.memos = [];
+            const result = backfillMemos(`김도윤 지각\n${first}\n임지훈 지각`, fx);
+            return result.created === 1 && result.beforeDateHeader === 1;
+          })());
+          check("교사 수동 연결", (() => {
+            const fx = deepClone(demo);
+            fx.memos = [];
+            appendMemoEntries(fx, DEMO_TODAY, "오늘 우산 잃어버린 아이 있었음");
+            const target = fx.memos[0];
+            const initiallyUnlinked = !(target.mentions || []).length;
+            const linked = linkUnlinkedMemo(target.id, "S02", fx);
+            return initiallyUnlinked && linked?.studentId === "S02"
+              && linked.source === "teacher_link" && sourceLabel(linked.source) === "교사 연결"
+              && recentUnlinkedMemos(fx, DEMO_TODAY).length === 0;
+          })());
           check("신규 브라우저 초기 설정 필요", normalizeOnboarding(null, [], { className: "" }).completed === false);
           check("기존 작업 초기 설정 자동 마이그레이션", normalizeOnboarding(null, demo.students, { className: "3-2" }).completed === true);
-          const refinedUnits = splitObservationUnits("안경이 질문함. 박시우가 자료를 정리함!\n오태경이 발표를 이끎");
+          const refinedUnits = splitObservationUnits("은우가 질문함. 박시우가 자료를 정리함!\n오태경이 발표를 이끎");
           check("관찰 원문 문장·줄 단위 분리", refinedUnits.length === 3 && refinedUnits.every((unit) => /[.!?。！？]$/.test(unit)));
-          const refinementDraft = buildRefinementDraft(DEMO_TODAY, "안경이 질문함.\n박시우가 자료를 정리함", demo);
+          const refinementDraft = buildRefinementDraft(DEMO_TODAY, "은우가 질문함.\n박시우가 자료를 정리함", demo);
           check("정리 초안 별칭 연결", refinementDraft.records.length === 2 && refinementDraft.records[0].memo.mentions.some((mention) => mention.studentId === "S07") && refinementDraft.records[1].memo.mentions.some((mention) => mention.studentId === "S09"));
           const refinementSignals = JSON.stringify(refinementSignalItems(refinementDraft, demo));
-          check("정리 API 입력 실명·별칭·원문 제외", refinementSignals.includes("S07") && refinementSignals.includes("S09") && !refinementSignals.includes("나은우") && !refinementSignals.includes("안경") && !refinementSignals.includes("박시우") && !refinementSignals.includes("자료를 정리함"));
+          check("정리 API 입력 실명·별칭·원문 제외", refinementSignals.includes("S07") && refinementSignals.includes("S09") && !refinementSignals.includes("나은우") && !refinementSignals.includes("은우") && !refinementSignals.includes("박시우") && !refinementSignals.includes("자료를 정리함"));
           check("정리 API 응답 허용키 전체 검증", validateRefinementResult([
             { key: "R1:S07", tone: "중립", domain: "학업" },
             { key: "R2:S09", tone: "긍정", domain: "행동" }
@@ -5103,10 +5951,19 @@
           const weeklyRows = weeklyStudentRows(demo, DEMO_TODAY);
           const eunwooWeek = weeklyRows.find((row) => row.student.id === "S07");
           check("학생별 주간 데이터 산출", weeklyRows.length === 25 && eunwooWeek?.count === 2 && eunwooWeek.last === DEMO_TODAY);
+          check("커버리지 계산", (() => {
+            const covered = demo.students.filter((student) =>
+              observationMentions(student.id, demo, null, DEMO_TODAY).length > 0).length;
+            return covered === 20 && demo.students.length === 25;
+          })());
+          check("지표 복사 텍스트 실명 제외", (() => {
+            const text = buildMetricsReport(demo, DEMO_TODAY);
+            return !demo.students.some((student) => text.includes(student.name));
+          })());
           const weekendFixture = deepClone(demo);
           weekendFixture.settings.demoMode = false;
           weekendFixture.memos = [];
-          appendMemoEntries(weekendFixture, "2026-08-29", "안경이 질문하고 친구를 도와줌");
+          appendMemoEntries(weekendFixture, "2026-08-29", "은우가 질문하고 친구를 도와줌");
           const weekendMirror = mirrorSummary(weekendFixture, "2026-08-29");
           check("주말 관찰 교사의 시선 반영", weekendMirror.memoCount === 1 && weekendMirror.mentionCount === 1 && weekendMirror.mentionedStudents === 1);
           check("관찰 기록 안정 ID·초기 상태", demo.memos.every((memo) => memo.mentions.every((mention) => mention.evidenceId === `${memo.id}-${mention.studentId}` && mention.reviewStatus === "미확인")));
@@ -5118,8 +5975,8 @@
           const changedContextMemo = createMemo(reviewFixture.id, reviewFixture.date, "김도윤이 다른 활동을 도왔다.", demo.students, reviewFixture);
           check("같은 문맥 검토 상태 보존", sameContextMemo.mentions[0].reviewStatus === "교사수정" && sameContextMemo.mentions[0].teacherRevision.includes("사물함"));
           check("문맥 변경 시 미확인 복귀", changedContextMemo.mentions[0].reviewStatus === "미확인" && changedContextMemo.mentions[0].teacherRevision === "");
-          const privateText = anonymize("3-2 김도윤과 안경 쓴 애를 확인함", demo);
-          check("실명·별칭·학급 익명화", !privateText.includes("김도윤") && !privateText.includes("안경") && !privateText.includes("3-2") && privateText.includes("S04") && privateText.includes("S07"));
+          const privateText = anonymize("3-2 김도윤과 은우를 확인함", demo);
+          check("실명·별칭·학급 익명화", !privateText.includes("김도윤") && !privateText.includes("은우") && !privateText.includes("3-2") && privateText.includes("S04") && privateText.includes("S07"));
           const extraPrivate = deepClone(demo);
           extraPrivate.settings.privateTerms = ["테스트교사"];
           const broadPrivateText = anonymize("한빛초등학교 테스트교사와 확인함", extraPrivate);
@@ -5128,6 +5985,22 @@
           const strictObservationSafe = strictObservation.includes("지각") && !strictObservation.includes("한빛") && !strictObservation.includes("홍길동") && !strictObservation.includes("김하늘") && !strictObservation.includes("3학년");
           check(`API 동적 원문 최소화${strictObservationSafe ? "" : ` (${strictObservation})`}`, strictObservationSafe);
           check("명단 밖 동명이름 오탐 방지", !extractMentionsFromText("김하늘 선생님이 확인함", demo.students, "T000").mentions.some((mention) => mention.studentId === "S03"));
+          check("부정 취소 → 우려 아님", fallbackTone("최다인 오늘은 늦지 않고 잘 왔음") !== "우려");
+          check("어간 변화 다툼 감지", fallbackTone("하람이랑 태경이가 다퉜다") === "우려" && fallbackDomain("하람이랑 태경이가 다퉜다") === "관계");
+          check("긍정 표현 오탐 없음", fallbackTone("친구들과 잘 어울림") === "긍정"
+            && fallbackTone("서울 견학 다녀옴") === "중립" && fallbackTone("발표를 잘못했다") === "우려");
+          check("부정 표현 놓침 없음", fallbackTone("기분이 안 좋아 보임") === "우려"
+            && fallbackTone("숙제를 계속 안 해옴") === "우려" && fallbackTone("오늘도 혼자 밥 먹음") === "우려");
+          check("취소 뒤 진짜 부정 감지", fallbackTone("지각 안 했지만 오후에 또 지각함") === "우려");
+          check("부정의 부정은 우려 아님", fallbackTone("오늘 결석 안 함") !== "우려"
+            && fallbackTone("최다인 오늘은 늦지 않고 잘 왔음") === "긍정");
+          check("관계 맥락 확장", fallbackDomain("괴롭힘 당했다고 함") === "관계"
+            && fallbackDomain("오늘도 혼자 밥 먹음") === "관계");
+          check("일반명사 오탐 차단", extractMentionsFromText("오늘 하늘이 맑아서 운동장 수업함", [{ id: "S03", name: "권하늘", aliases: [], group: 1 }], "T1").mentions.length === 0);
+          check("등록 별칭 일반명사 오탐 차단", !extractMentionsFromText("오늘 하늘이 맑아서 운동장 수업함", demo.students, "T1B").mentions.some((mention) => mention.studentId === "S03"));
+          check("위험 별칭 오탐 차단", extractMentionsFromText("교실에서 안경을 주웠다", [{ id: "S07", name: "나은우", aliases: ["안경"], group: 2 }], "T1A").mentions.length === 0);
+          check("전체 이름 필요 안내 기준", needsFullNameOnly({ id: "SX1", name: "권하늘", aliases: ["하늘이"] }) && !needsFullNameOnly({ id: "SX2", name: "가상학생", aliases: ["반짝이"] }));
+          check("횟수 N번 지시어 제외", extractMentionsFromText("지각 5번", [{ id: "S01", name: "임지훈", aliases: [], group: 6 }], "T2").pending.length === 0);
           const deletedStudentModel = deepClone(demo);
           deletedStudentModel.students = deletedStudentModel.students.filter((student) => student.id !== "S04");
           deletedStudentModel.privateTokens = ["김도윤", "도윤"];
@@ -5196,7 +6069,7 @@
           check("XLSX 날짜·필터·유효성", observationXml.includes('s="2"><v>') && observationTableXml.includes("<autoFilter") && observationXml.includes("<dataValidations count=\"3\""));
           check("XLSX 수식 기반 집계", studentXml.includes("COUNTIFS") && studentXml.includes("MAXIFS") && summaryXml.includes("MINIFS") && summaryXml.includes("COUNTIFS"));
           const allExportXml = [...workbookEntries.values()].join("\n");
-          check("XLSX 원문·별칭·API 제외", !allExportXml.includes(demo.memos[0].text) && !allExportXml.includes("안경") && !allExportXml.includes(demo.settings.endpoint));
+          check("XLSX 원문·별칭·API 제외", !allExportXml.includes(demo.memos[0].text) && !allExportXml.includes("<t>은우</t>") && !allExportXml.includes(demo.settings.endpoint));
           const formulaFixture = deepClone(demo);
           formulaFixture.memos[0].mentions[0].teacherRevision = '=HYPERLINK("https://example.invalid")';
           formulaFixture.memos[0].mentions[0].reviewStatus = "교사수정";
@@ -5339,8 +6212,9 @@
           return;
         }
         const mentioned = new Set(created.flatMap((memo) => memo.mentions.map((mention) => mention.studentId))).size;
+        const unlinked = created.filter((memo) => !(memo.mentions || []).length && !(memo.pending || []).length).length;
         const dateLabel = draft.date === effectiveToday() ? "오늘" : formatKoreanDate(draft.date);
-        ui.feedback = `${storagePersistent ? "저장됨" : "임시 저장됨"} · ${dateLabel} 정리 기록 ${created.length}건 · 연결 학생 ${mentioned}명`;
+        ui.feedback = `${storagePersistent ? "저장됨" : "임시 저장됨"} · ${dateLabel} 정리 기록 ${created.length}건 · 연결 학생 ${mentioned}명${unlinked ? ` · 연결 없음 ${unlinked}줄` : ""}`;
         ui.refinementDraft = null;
         document.getElementById("memoText").value = "";
         renderAll();
@@ -5428,6 +6302,37 @@
         } finally {
           button.disabled = false;
         }
+      });
+
+      document.getElementById("backfillForm").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const status = document.getElementById("backfillStatus");
+        const text = document.getElementById("backfillInput").value;
+        if (state.memos.length && !state.settings.demoMode
+          && !confirm(`기존 기록 ${state.memos.length}건에 추가로 넣습니다. 계속할까요?`)) return;
+        const result = backfillMemos(text);
+        if (result.cancelled) {
+          status.textContent = "지난 기록 입력을 취소했습니다.";
+          return;
+        }
+        if (result.noStudents) {
+          renderAll();
+          setTab("settings");
+          document.getElementById("backfillStatus").textContent = "먼저 학생 명단을 등록해 주세요. 명단이 없으면 이름을 연결할 수 없습니다.";
+          return;
+        }
+        if (!result.created) {
+          status.textContent = "저장할 기록을 찾지 못했습니다. 첫 줄에 날짜(예: 9/1)를 적었는지 확인해 주세요.";
+          return;
+        }
+        let message = `기록 ${result.created}건을 ${result.dates}일치로 넣었습니다 · 학생 연결 ${result.linked}건 · 연결 없음 ${result.unlinked}건`;
+        if (result.beforeDateHeader) message += ` · 날짜 줄 앞의 ${result.beforeDateHeader}줄은 저장하지 않았습니다`;
+        if (result.skippedFuture) message += ` · 미래 날짜 ${result.skippedFuture}개 제외`;
+        status.textContent = message;
+        renderAll();
+        document.getElementById("backfillStatus").textContent = message;
+        setTab("radar");
+        showToast("지난 기록을 넣었습니다. 레이더에서 빈자리를 확인하세요.");
       });
 
       document.getElementById("studentAddForm").addEventListener("submit", (event) => {
@@ -5597,7 +6502,7 @@
         openSetupDialog(false);
       });
 
-      document.getElementById("studentSort").addEventListener("change", renderStudents);
+      document.getElementById("studentSort").addEventListener("change", renderHeatmap);
       document.getElementById("reportStudentSelect").addEventListener("change", (event) => {
         ui.selectedStudentId = event.currentTarget.value;
         renderReport();
@@ -5625,6 +6530,28 @@
         }
       });
       document.getElementById("printReport").addEventListener("click", () => window.print());
+      document.getElementById("copyMetrics").addEventListener("click", async () => {
+        const text = buildMetricsReport();
+        const status = document.getElementById("metricsCopyStatus");
+        document.getElementById("metricsCopyFallback")?.remove();
+        try {
+          if (!navigator.clipboard?.writeText) throw new Error("CLIPBOARD_UNAVAILABLE");
+          await navigator.clipboard.writeText(text);
+          status.textContent = "학생 이름 없이 검증 지표를 복사했습니다.";
+          showToast("검증 지표를 복사했습니다.");
+        } catch {
+          const fallback = element("textarea", {
+            id: "metricsCopyFallback",
+            className: "no-print",
+            value: text,
+            attrs: { rows: 6, readonly: true, "aria-label": "복사할 빈자리 사용 검증 지표" }
+          });
+          status.after(fallback);
+          fallback.focus();
+          fallback.select();
+          status.textContent = "자동 복사가 막혀 아래 텍스트를 선택했습니다. Ctrl+C로 복사해 주세요.";
+        }
+      });
       document.getElementById("closeDialog").addEventListener("click", closeStudentDialog);
       document.getElementById("studentDialog").addEventListener("click", (event) => {
         if (event.target === event.currentTarget) closeStudentDialog();
@@ -5689,7 +6616,22 @@
         if (!button) return;
         const { action, studentId, memoId, pendingId, evidenceId } = button.dataset;
         if (action === "resolve-pending") resolvePending(memoId, pendingId, studentId || null);
-        else if (action === "save-evidence") {
+        else if (action === "link-unlinked") {
+          const select = button.closest("[data-unlinked-memo-id]")?.querySelector("select");
+          if (!select?.value) {
+            showToast("연결할 학생을 먼저 선택해 주세요.");
+            select?.focus();
+            return;
+          }
+          const student = studentById(select.value);
+          if (!linkUnlinkedMemo(memoId, select.value)) return;
+          renderAll();
+          showToast(`${student?.name || "선택한 학생"}에게 기록을 연결했습니다.`);
+        } else if (action === "skip-unlinked") {
+          if (!skipUnlinkedMemo(memoId)) return;
+          renderAll();
+          showToast("학생과 무관한 기록으로 넘어갔습니다.");
+        } else if (action === "save-evidence") {
           const saved = saveEvidenceReview(evidenceId, button.closest(".evidence-card"));
           showToast(saved ? "관찰 기록의 검토 상태를 저장했습니다." : "확인 문맥과 분류를 확인해 주세요.");
           if (saved) renderAll();
@@ -5712,11 +6654,8 @@
         } else if (action === "contact-done") {
           const targetStudentId = studentId || todayQueueItems()[0]?.studentId;
           if (!targetStudentId || !todayQueueItems().some((item) => item.studentId === targetStudentId)) return;
-          state.contacts.push(createContact(targetStudentId, "대화", effectiveToday(), "레이더 알림 후"));
-          state.weeklyBrief = null;
           const student = studentById(targetStudentId);
-          removeTodayQueueStudent(targetStudentId);
-          persistState();
+          if (!recordTeacherContact(targetStudentId)) return;
           renderAll();
           showToast(`${student?.name || "학생"}과 대화한 것으로 기록했습니다.`);
         } else if (action === "save-student") {
@@ -5725,7 +6664,9 @@
           if (!student || !row) return;
           bumpAnalysisContext();
           rememberPrivateTokens(studentPrivateTokens(student));
-          student.aliases = [...new Set(row.querySelector("[data-role=aliases]").value.split("|").map((alias) => alias.normalize("NFC").trim()).filter((alias) => alias.length >= 2))];
+          const aliases = [...new Set(row.querySelector("[data-role=aliases]").value.split("|").map((alias) => alias.normalize("NFC").trim()).filter((alias) => alias.length >= 2))];
+          const rejectedAliases = aliases.filter(isRiskyAlias);
+          student.aliases = aliases.filter((alias) => !isRiskyAlias(alias));
           const group = Number(row.querySelector("[data-role=group]").value);
           student.group = Number.isFinite(group) && group > 0 ? group : null;
           const number = Number(row.querySelector("[data-role=number]").value);
@@ -5735,7 +6676,11 @@
           state.weeklyBrief = null;
           persistState();
           renderAll();
-          showToast(`${student.name} 정보를 저장했습니다.`);
+          showToast(rejectedAliases.length
+            ? (rejectedAliases.length === 1
+              ? `'${rejectedAliases[0]}'은 일반 낱말이라 오인식 위험이 있어 별칭에서 제외했습니다.`
+              : `${rejectedAliases.map((alias) => `'${alias}'`).join(", ")}은 일반 낱말이라 오인식 위험이 있어 별칭에서 제외했습니다.`)
+            : `${student.name} 정보를 저장했습니다.`);
         } else if (action === "remove-student") {
           const student = studentById(studentId);
           const linkedEvidence = student ? allEvidenceForStudent(studentId).length : 0;
@@ -5769,17 +6714,30 @@
         deanonymize,
         parseJson,
         extractMentionsFromText,
+        fallbackTone,
+        fallbackDomain,
+        parseBackfillDate,
+        backfillMemos,
         splitObservationUnits,
         buildRefinementDraft,
         validateRefinementResult,
         refinementSignalItems,
         silentStudents,
         concernOnlyStudents,
+        concernContextStats,
+        repeatedConcernStudents,
+        toneIndexSummary,
         todayQueueItems,
         addTodayQueueStudent,
         removeTodayQueueStudent,
+        recordTeacherContact,
         attentionStudentRows,
         upcomingConsultations,
+        recentUnlinkedMemos,
+        linkUnlinkedMemo,
+        validationMetrics,
+        weeklyTrend,
+        buildMetricsReport,
         weeklyBriefFactCatalog,
         weeklyStudentRows,
         validateWeeklyBriefResult,
@@ -5787,6 +6745,7 @@
         buildDemoState,
         buildXlsxPackage,
         allEvidenceForStudent,
+        cellState,
         runSelfTests
       });
     })();
