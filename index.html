@@ -264,6 +264,9 @@
     .paste-fallback summary { color: var(--muted); cursor: pointer; font-weight: 700; }
     .model-picker-note { grid-column: 1 / -1; margin: -3px 0 0; color: var(--muted); font-size: 12px; }
     .model-manual[hidden] { display: none; }
+    .api-advanced { grid-column: 1 / -1; margin-top: 2px; padding-top: 12px; border-top: 1px solid var(--line); }
+    .api-advanced summary { color: var(--muted); cursor: pointer; font-size: 12px; font-weight: 700; }
+    .api-advanced .field-grid { margin-top: 12px; }
     .roster { display: grid; gap: 8px; margin-top: 16px; }
     .roster-row { display: grid; grid-template-columns: 72px 1fr 72px 72px auto; gap: 8px; align-items: center; }
     .roster-row strong { font-family: var(--display); }
@@ -485,28 +488,34 @@
         </section>
 
         <section class="card wide" aria-labelledby="apiHeading">
-          <div class="section-heading"><h2 id="apiHeading">모델 API</h2><span class="mono muted">provider-neutral</span></div>
+          <div class="section-heading"><h2 id="apiHeading">모델 API</h2><span class="mono muted">Gemini · OpenAI · Claude · Upstage</span></div>
           <p class="warning-copy">키는 이 브라우저에만 저장됩니다. 공용 PC에서는 사용을 마친 뒤 [키 삭제]를 눌러 주세요.</p>
-          <p class="warning-copy">서버 없는 구조라 API 키는 암호화된 비밀이 아닙니다. 제한된 데모용 키를 사용하세요. 사용자 지정 endpoint에는 원문 대신 학생 ID·후보 ID·고정 분류 신호만 전송됩니다.</p>
+          <p class="warning-copy">서버 없는 구조라 API 키는 암호화된 비밀이 아닙니다. 제한된 데모용 키를 사용하세요. 기본 설정에서는 키를 선택한 서비스에만 전송합니다. 고급 endpoint를 바꾸면 그 주소로 전송되므로 신뢰할 수 있는 주소만 사용하세요. 학생 원문 대신 학생 ID·후보 ID·고정 분류 신호만 전송됩니다.</p>
           <form id="apiForm" class="field-grid">
-            <label>프로토콜<select id="apiProtocol"><option value="anthropic-messages">Anthropic Messages</option><option value="openai-chat">OpenAI 호환 Chat Completions</option><option value="openai-responses">OpenAI Responses</option><option value="gemini-generate-content">Gemini generateContent</option></select></label>
-            <label>사용할 모델<select id="apiModelSelect"><option value="__manual__">직접 입력</option></select></label>
-            <label id="apiModelManualLabel" class="model-manual">직접 입력 모델 ID<input id="apiModel" autocomplete="off" placeholder="정확한 모델 ID"></label>
-            <label class="field-span">전체 endpoint<input id="apiEndpoint" type="url" autocomplete="off" spellcheck="false"></label>
-            <label>인증 방식<select id="apiAuthMode"><option value="x-api-key">x-api-key</option><option value="bearer">Authorization: Bearer</option><option value="api-key">api-key</option><option value="x-goog-api-key">x-goog-api-key</option><option value="none">없음 · 로컬 모델</option></select></label>
+            <label>AI 서비스<select id="apiService"><option value="gemini">Gemini</option><option value="openai">OpenAI</option><option value="claude">Claude</option><option value="upstage">Upstage</option></select></label>
             <label>API 키<input id="apiKey" type="password" autocomplete="off" spellcheck="false" placeholder="저장된 키는 다시 표시하지 않습니다"></label>
+            <label>사용할 추론 모델<select id="apiModelSelect"><option value="__manual__">직접 입력</option></select></label>
             <label>시간 제한<select id="apiTimeout"><option value="8000">8초</option><option value="12000">12초</option><option value="20000">20초</option></select></label>
-            <p class="model-picker-note">키를 입력한 뒤 모델 목록을 불러오면 공급자가 허용한 정확한 모델 ID를 드롭다운에서 고를 수 있습니다. 목록 API가 없는 사용자 지정 서버는 직접 입력을 사용하세요.</p>
-            <div class="field-span button-row"><button id="loadModels" class="button" type="button">모델 목록 불러오기</button><button class="button primary" type="submit">모델 설정 저장</button><button id="testApi" class="button" type="button">선택 모델 연결 시험</button><button id="deleteApiKey" class="button danger" type="button">키 삭제</button></div>
+            <label id="apiModelManualLabel" class="field-span model-manual">직접 입력 모델 ID<input id="apiModel" autocomplete="off" placeholder="정확한 모델 ID"></label>
+            <p class="model-picker-note">서비스를 고르고 키 값만 붙여넣으세요. 복사된 <span class="mono">Authorization: Bearer</span>, 따옴표, 공백·줄바꿈은 자동으로 제거합니다. 모델 목록 확인은 키 저장과 별개이며, 실제 사용 가능 여부는 연결 시험에서 확인합니다.</p>
+            <div class="field-span button-row"><button id="loadModels" class="button" type="button">사용 가능 모델 확인</button><button class="button primary" type="submit">API 키·모델 저장</button><button id="testApi" class="button" type="button">선택 모델 연결 시험</button><button id="deleteApiKey" class="button danger" type="button">키 삭제</button></div>
+            <details class="api-advanced">
+              <summary>고급 연결 설정</summary>
+              <div class="field-grid">
+                <label>프로토콜<select id="apiProtocol"><option value="anthropic-messages">Anthropic Messages</option><option value="openai-chat">OpenAI 호환 Chat Completions</option><option value="openai-responses">OpenAI Responses</option><option value="gemini-generate-content">Gemini generateContent</option></select></label>
+                <label>인증 방식<select id="apiAuthMode"><option value="x-api-key">x-api-key</option><option value="bearer">Authorization: Bearer</option><option value="api-key">api-key</option><option value="x-goog-api-key">x-goog-api-key</option><option value="none">없음 · 로컬 모델</option></select></label>
+                <label class="field-span">전체 endpoint<input id="apiEndpoint" type="url" autocomplete="off" spellcheck="false"></label>
+              </div>
+            </details>
           </form>
-          <p class="helper">브라우저 CORS를 허용하고 선택한 프로토콜과 호환되는 모델을 연결할 수 있습니다. 연결에 실패해도 메모와 모든 화면은 규칙 기반으로 계속 동작합니다.</p>
+          <p class="helper">브라우저 CORS가 모델 목록 조회를 막으면 공식 기본 모델을 제시하고 연결 시험에서 실제 권한을 확인합니다. 연결에 실패해도 모든 화면은 규칙 기반으로 계속 동작합니다.</p>
           <p id="providerStatus" class="provider-status" role="status" aria-live="polite"></p>
         </section>
 
         <section class="card wide" aria-labelledby="dataHeading">
           <h2 id="dataHeading">시연과 데이터</h2>
-          <p>가상 학생과 가상 메모만 들어 있는 고정 데모를 불러옵니다. 기존 《빈자리》 데이터는 교체됩니다.</p>
-          <div class="button-row"><button id="loadDemo" class="button primary" type="button">데모 데이터 넣기</button><button id="downloadBackup" class="button" type="button">작업 백업 저장</button><label class="button" for="restoreBackup">백업 불러오기</label><input id="restoreBackup" type="file" accept=".json,application/json" hidden><button id="resetAll" class="button danger" type="button">전체 초기화</button></div>
+          <p>별칭·모둠·출석번호가 모두 부여된 가상 학생 25명과 가상 관찰 메모를 불러옵니다. 기존 《빈자리》 데이터는 교체됩니다.</p>
+          <div class="button-row"><button id="loadDemo" class="button primary" type="button">25명 데모 데이터 넣기</button><button id="downloadBackup" class="button" type="button">작업 백업 저장</button><label class="button" for="restoreBackup">백업 불러오기</label><input id="restoreBackup" type="file" accept=".json,application/json" hidden><button id="resetAll" class="button danger" type="button">전체 초기화</button></div>
           <p class="helper">다운로드한 HTML을 직접 열 때 브라우저 저장 정책이 달라도 복원할 수 있도록 작업 백업을 보관하세요. 백업에는 학생 자료가 포함되며 API 키는 제외됩니다.</p>
           <p id="backupStatus" class="import-status" role="status" aria-live="polite"></p>
           <p id="selfTestStatus" class="self-test"></p>
@@ -554,7 +563,7 @@
       const DOMAINS = ["행동", "학업", "정서", "관계", "건강"];
       const TONES = ["긍정", "중립", "우려"];
       const REVIEW_STATUSES = ["미확인", "확인", "교사수정", "제외"];
-      const APP_VERSION = "2.2.0";
+      const APP_VERSION = "2.3.1";
       const MAX_ROSTER_IMPORT = 200;
       const PROVIDER_SIGNAL_WORDS = Object.freeze([
         "지각", "미제출", "안 챙", "떠들", "주의", "다툼", "늦", "안 함", "못 함", "산만", "휴대폰",
@@ -571,24 +580,58 @@
       const PROVIDER_DEFAULTS = Object.freeze({
         "anthropic-messages": {
           endpoint: "https://api.anthropic.com/v1/messages",
-          model: "claude-haiku-4-5-20251001",
+          model: "claude-sonnet-5",
           authMode: "x-api-key"
         },
         "openai-chat": {
           endpoint: "https://api.openai.com/v1/chat/completions",
-          model: "gpt-5-mini",
+          model: "gpt-5.6-terra",
           authMode: "bearer"
         },
         "openai-responses": {
           endpoint: "https://api.openai.com/v1/responses",
-          model: "gpt-5-mini",
+          model: "gpt-5.6-terra",
           authMode: "bearer"
         },
         "gemini-generate-content": {
           endpoint: "https://generativelanguage.googleapis.com/v1beta/models",
-          model: "gemini-2.5-flash",
+          model: "gemini-3.6-flash",
           authMode: "x-goog-api-key"
         }
+      });
+      const SERVICE_PRESETS = Object.freeze({
+        gemini: Object.freeze({
+          label: "Gemini",
+          protocol: "gemini-generate-content",
+          endpoint: "https://generativelanguage.googleapis.com/v1beta/models",
+          authMode: "x-goog-api-key",
+          model: "gemini-3.6-flash",
+          models: Object.freeze(["gemini-3.1-pro-preview", "gemini-3.6-flash", "gemini-3.5-flash", "gemini-2.5-pro"])
+        }),
+        openai: Object.freeze({
+          label: "OpenAI",
+          protocol: "openai-responses",
+          endpoint: "https://api.openai.com/v1/responses",
+          authMode: "bearer",
+          model: "gpt-5.6-terra",
+          models: Object.freeze(["gpt-5.6-sol", "gpt-5.6-terra", "gpt-5.6-luna"])
+        }),
+        claude: Object.freeze({
+          label: "Claude",
+          protocol: "anthropic-messages",
+          endpoint: "https://api.anthropic.com/v1/messages",
+          authMode: "x-api-key",
+          model: "claude-sonnet-5",
+          models: Object.freeze(["claude-fable-5", "claude-opus-5", "claude-sonnet-5", "claude-haiku-4-5-20251001"])
+        }),
+        upstage: Object.freeze({
+          label: "Upstage",
+          protocol: "openai-chat",
+          endpoint: "https://api.upstage.ai/v1/chat/completions",
+          authMode: "bearer",
+          model: "solar-pro4",
+          models: Object.freeze(["solar-pro4", "solar-pro3", "solar-pro2", "solar-mini"])
+        })
       });
       const memoryStorage = new Map();
       let storagePersistent = true;
@@ -656,16 +699,50 @@
         return `${y}-${m}-${d}`;
       }
 
+      function inferService(value = {}) {
+        if (SERVICE_PRESETS[value.service]) return value.service;
+        const endpoint = String(value.endpoint || "").toLowerCase();
+        if (endpoint.includes("generativelanguage.googleapis.com")) return "gemini";
+        if (endpoint.includes("api.openai.com")) return "openai";
+        if (endpoint.includes("api.anthropic.com")) return "claude";
+        if (endpoint.includes("api.upstage.ai")) return "upstage";
+        if (value.protocol === "gemini-generate-content") return "gemini";
+        if (value.protocol === "anthropic-messages") return "claude";
+        if (value.protocol === "openai-responses" || value.protocol === "openai-chat") return "openai";
+        return "gemini";
+      }
+
+      function serviceLabel(service) {
+        return SERVICE_PRESETS[service]?.label || "선택한 서비스";
+      }
+
+      function normalizeApiKey(rawValue) {
+        let key = String(rawValue || "").trim();
+        key = key.replace(/^(["'`])([\s\S]*)\1$/, "$2").trim();
+        key = key.replace(/^authorization\s*:\s*bearer\s+/i, "").replace(/^bearer\s+/i, "").trim();
+        key = key.replace(/^(["'`])([\s\S]*)\1$/, "$2").trim();
+        return key.replace(/\s+/g, "");
+      }
+
       function normalizeSettings(value = {}) {
-        const protocol = PROVIDER_DEFAULTS[value.protocol] ? value.protocol : "anthropic-messages";
+        const service = inferService(value);
+        const preset = SERVICE_PRESETS[service];
+        const protocol = PROVIDER_DEFAULTS[value.protocol] ? value.protocol : preset.protocol;
         const defaults = PROVIDER_DEFAULTS[protocol];
+        const apiKey = typeof value.apiKey === "string" ? normalizeApiKey(value.apiKey) : "";
         return {
-          apiKey: typeof value.apiKey === "string" ? value.apiKey : "",
+          apiKey,
+          apiKeyService: apiKey ? (SERVICE_PRESETS[value.apiKeyService] ? value.apiKeyService : service) : "",
           demoMode: Boolean(value.demoMode),
           silentDays: [7, 14, 21].includes(Number(value.silentDays)) ? Number(value.silentDays) : 14,
+          service,
           protocol,
-          endpoint: typeof value.endpoint === "string" && value.endpoint.trim() ? value.endpoint.trim() : defaults.endpoint,
-          model: typeof value.model === "string" && value.model.trim() ? value.model.trim() : defaults.model,
+          endpoint: typeof value.endpoint === "string" && value.endpoint.trim()
+            ? value.endpoint.trim()
+            : protocol === preset.protocol ? preset.endpoint : defaults.endpoint,
+          model: typeof value.model === "string" && value.model.trim()
+            ? value.model.trim()
+            : protocol === preset.protocol ? preset.model : defaults.model,
           authMode: ["bearer", "x-api-key", "api-key", "x-goog-api-key", "none"].includes(value.authMode)
             ? value.authMode
             : defaults.authMode,
@@ -1100,6 +1177,7 @@
         const settings = {
           ...deepClone(model.settings),
           apiKey: "",
+          apiKeyService: "",
           modelCatalog: [],
           modelCatalogSignature: "",
           modelCatalogFetchedAt: "",
@@ -1130,6 +1208,7 @@
         const settings = normalizeSettings({
           ...(source.settings || {}),
           apiKey: "",
+          apiKeyService: "",
           modelCatalog: [],
           modelCatalogSignature: "",
           modelCatalogFetchedAt: "",
@@ -1692,19 +1771,31 @@
         return { id, date, text, mentions, pending: extracted.pending };
       }
 
+      function appendMemoEntries(model, date, text) {
+        const lines = String(text || "").normalize("NFC").split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+        const created = [];
+        for (const line of lines) {
+          const memo = createMemo(nextId("M", model.memos), date, line, model.students);
+          model.memos.push(memo);
+          created.push(memo);
+        }
+        model.memos.sort((a, b) => a.date.localeCompare(b.date));
+        return created;
+      }
+
       function buildDemoState(existingSettings = state.settings, existingPrivateTokens = []) {
         const rows = [
-          ["S01", "강민준", 1, []], ["S02", "고서연", 1, []], ["S03", "권하늘", 1, []],
-          ["S04", "김도윤", 1, []], ["S05", "김서준", 2, []], ["S06", "김지호", 2, []],
-          ["S07", "나은우", 2, ["안경"]], ["S08", "문채원", 2, []], ["S09", "박시우", 3, []],
-          ["S10", "박예린", 4, []], ["S11", "배준서", 4, []], ["S12", "서지안", 3, []],
-          ["S13", "손유진", 4, []], ["S14", "송하윤", 4, []], ["S15", "신아람", 5, []],
-          ["S16", "오태경", 3, []], ["S17", "유하람", 3, []], ["S18", "윤도현", 5, []],
-          ["S19", "이건우", 5, []], ["S20", "이수민", 5, []], ["S21", "임지훈", 6, []],
-          ["S22", "장민서", 6, []], ["S23", "정예준", 6, []], ["S24", "조은채", 6, []],
-          ["S25", "최다인", 6, []]
+          ["S01", "강민준", 1, 1, ["민준이"]], ["S02", "고서연", 2, 1, ["서연이"]], ["S03", "권하늘", 3, 1, ["하늘이"]],
+          ["S04", "김도윤", 4, 1, ["도윤이"]], ["S05", "김서준", 5, 2, ["서준이"]], ["S06", "김지호", 6, 2, ["지호"]],
+          ["S07", "나은우", 7, 2, ["안경", "은우"]], ["S08", "문채원", 8, 2, ["채원이"]], ["S09", "박시우", 9, 3, ["시우"]],
+          ["S10", "박예린", 10, 4, ["예린이"]], ["S11", "배준서", 11, 4, ["준서"]], ["S12", "서지안", 12, 3, ["지안이"]],
+          ["S13", "손유진", 13, 4, ["유진이"]], ["S14", "송하윤", 14, 4, ["하윤이"]], ["S15", "신아람", 15, 5, ["아람이"]],
+          ["S16", "오태경", 16, 3, ["태경이"]], ["S17", "유하람", 17, 3, ["하람이"]], ["S18", "윤도현", 18, 5, ["도현이"]],
+          ["S19", "이건우", 19, 5, ["건우"]], ["S20", "이수민", 20, 5, ["수민이"]], ["S21", "임지훈", 21, 6, ["지훈이"]],
+          ["S22", "장민서", 22, 6, ["민서"]], ["S23", "정예준", 23, 6, ["예준이"]], ["S24", "조은채", 24, 6, ["은채"]],
+          ["S25", "최다인", 25, 6, ["다인이"]]
         ];
-        const students = rows.map(([id, name, group, aliases], index) => ({ id, name, aliases, group, number: index + 1, snoozeUntil: null }));
+        const students = rows.map(([id, name, number, group, aliases]) => ({ id, name, aliases, group, number, snoozeUntil: null }));
         const memoRows = [
           ["2026-09-01", "2학기 첫날. 김도윤이 사물함 정리 도와줌. 임지훈 지각. 이수민은 방학 과제 제일 먼저 냄."],
           ["2026-09-02", "수학 수행평가 안내. 최다인 계속 떠들어서 두 번 주의. 박예린 질문 좋았음. 유하람 필기 꼼꼼함."],
@@ -1851,9 +1942,8 @@
         return { date: latest.date, quote: latest.context || latest.memoText };
       }
 
-      function analysisDates(model = state) {
+      function analysisDates(model = state, today = effectiveToday(model)) {
         if (model.settings.demoMode) return [...DEMO_HEAT_DATES];
-        const today = effectiveToday(model);
         const dates = [];
         let cursor = today;
         while (dates.length < 10) {
@@ -1996,8 +2086,22 @@
       function applyAuthentication(headers, config) {
         if (config.authMode === "none") return;
         if (!config.apiKey) throw new Error("PROVIDER_API_KEY_REQUIRED");
+        if (config.apiKeyService && config.apiKeyService !== config.service) throw new Error("PROVIDER_API_KEY_SERVICE_MISMATCH");
         if (config.authMode === "bearer") headers.Authorization = `Bearer ${config.apiKey}`;
         else headers[config.authMode] = config.apiKey;
+      }
+
+      function providerAuthFailureCode(payload) {
+        const code = String(payload?.error?.code || payload?.code || "").toLowerCase();
+        const message = String(payload?.error?.message || payload?.message || "").toLowerCase();
+        return /invalid[_\s-]*(?:api[_\s-]*)?key|api key (?:is )?invalid/.test(`${code} ${message}`)
+          ? "PROVIDER_API_KEY_INVALID"
+          : "PROVIDER_AUTH_FAILED";
+      }
+
+      async function responseAuthFailureCode(response) {
+        try { return providerAuthFailureCode(await response.clone().json()); }
+        catch { return "PROVIDER_AUTH_FAILED"; }
       }
 
       function modelCatalogEndpoint(config) {
@@ -2019,7 +2123,7 @@
       }
 
       function modelCatalogSignature(config) {
-        return JSON.stringify([config.protocol, modelCatalogEndpoint(config), config.authMode]);
+        return JSON.stringify([config.service, config.protocol, modelCatalogEndpoint(config), config.authMode]);
       }
 
       function prepareModelCatalogRequest(config) {
@@ -2032,22 +2136,55 @@
         return { url: modelCatalogEndpoint(config), init: { method: "GET", headers } };
       }
 
-      function parseModelCatalog(protocol, payload) {
+      function isReasoningModel(service, modelId) {
+        const id = String(modelId || "").toLowerCase();
+        if (!id || /(?:embedding|embed|moderation|image|audio|realtime|transcrib|whisper|tts)/.test(id)) return false;
+        if (service === "openai") {
+          return /^(?:gpt-5(?:[.-]|$)|o\d(?:[.-]|$))/.test(id) && !/(?:chat|codex|cyber|search|deep-research)/.test(id);
+        }
+        if (service === "gemini") {
+          return /^gemini-/.test(id) && !/(?:live|robotics|banana|veo|omni|computer-use)/.test(id);
+        }
+        if (service === "claude") return /^claude-(?:fable|opus|sonnet|haiku)-/.test(id);
+        if (service === "upstage") return /^solar-/.test(id);
+        return true;
+      }
+
+      function sortServiceModels(service, models) {
+        const preferred = new Map((SERVICE_PRESETS[service]?.models || []).map((model, index) => [model, index]));
+        return [...models].sort((a, b) => {
+          const aRank = preferred.has(a) ? preferred.get(a) : 999;
+          const bRank = preferred.has(b) ? preferred.get(b) : 999;
+          return aRank - bRank || b.localeCompare(a, "en", { numeric: true, sensitivity: "base" });
+        });
+      }
+
+      function filterReasoningModels(service, candidates) {
+        const normalized = [...new Set(candidates.map((model) => String(model || "").trim()).filter((model) => model && model.length <= 200 && !/\s/.test(model)))];
+        return sortServiceModels(service, normalized.filter((model) => isReasoningModel(service, model))).slice(0, 250);
+      }
+
+      function parseModelCatalog(config, payload) {
         if (!payload || typeof payload !== "object") throw new Error("PROVIDER_MODELS_INVALID");
         let candidates = [];
-        if (protocol === "gemini-generate-content") {
+        if (config.protocol === "gemini-generate-content") {
           candidates = Array.isArray(payload.models)
             ? payload.models
-              .filter((model) => !Array.isArray(model?.supportedGenerationMethods) || model.supportedGenerationMethods.includes("generateContent"))
+              .filter((model) => {
+                const methods = Array.isArray(model?.supportedGenerationMethods)
+                  ? model.supportedGenerationMethods
+                  : Array.isArray(model?.supportedActions) ? model.supportedActions : null;
+                return !methods || methods.includes("generateContent");
+              })
               .map((model) => typeof model?.name === "string" ? model.name.replace(/^models\//, "") : "")
             : [];
         } else {
           const source = Array.isArray(payload.data) ? payload.data : Array.isArray(payload.models) ? payload.models : [];
           candidates = source.map((model) => typeof model === "string" ? model : typeof model?.id === "string" ? model.id : typeof model?.name === "string" ? model.name.replace(/^models\//, "") : "");
         }
-        const models = [...new Set(candidates.map((model) => String(model || "").trim()).filter((model) => model && model.length <= 200 && !/\s/.test(model)))].sort((a, b) => a.localeCompare(b));
+        const models = filterReasoningModels(config.service, candidates);
         if (!models.length) throw new Error("PROVIDER_MODELS_INVALID");
-        return models.slice(0, 250);
+        return models;
       }
 
       async function fetchModelCatalog(config) {
@@ -2056,13 +2193,13 @@
         const timer = setTimeout(() => controller.abort(), config.timeoutMs);
         try {
           const response = await fetch(request.url, { ...request.init, signal: controller.signal });
-          if (response.status === 401 || response.status === 403) throw new Error("PROVIDER_AUTH_FAILED");
+          if (response.status === 401 || response.status === 403) throw new Error(await responseAuthFailureCode(response));
           if (response.status === 429) throw new Error("PROVIDER_RATE_LIMITED");
           if (!response.ok) throw new Error(response.status >= 500 ? "PROVIDER_UNAVAILABLE" : "PROVIDER_MODELS_REJECTED");
           let payload;
           try { payload = await response.json(); }
           catch { throw new Error("PROVIDER_MODELS_INVALID"); }
-          return parseModelCatalog(config.protocol, payload);
+          return parseModelCatalog(config, payload);
         } catch (error) {
           if (error?.name === "AbortError") throw new Error("PROVIDER_TIMEOUT");
           if (error instanceof Error && error.message.startsWith("PROVIDER_")) throw error;
@@ -2138,7 +2275,7 @@
         try {
           const response = await fetch(request.url, { ...request.init, signal: controller.signal });
           if (!response.ok) {
-            if (response.status === 401 || response.status === 403) throw new Error("PROVIDER_AUTH_FAILED");
+            if (response.status === 401 || response.status === 403) throw new Error(await responseAuthFailureCode(response));
             if (response.status === 404) throw new Error("PROVIDER_MODEL_NOT_FOUND");
             if (response.status === 429) throw new Error("PROVIDER_RATE_LIMITED");
             if (response.status >= 500) throw new Error("PROVIDER_UNAVAILABLE");
@@ -2169,7 +2306,7 @@
       }
 
       function providerConfigFingerprint(config = state.settings) {
-        return JSON.stringify([config.protocol, config.endpoint, config.model, config.authMode, config.apiKey]);
+        return JSON.stringify([config.service, config.protocol, config.endpoint, config.model, config.authMode, config.apiKeyService, config.apiKey]);
       }
 
       async function callJsonModel(rawPrompt) {
@@ -2191,7 +2328,11 @@
       }
 
       function hasProviderConfig() {
-        return Boolean(state.settings.endpoint && state.settings.model && (state.settings.authMode === "none" || state.settings.apiKey));
+        return Boolean(
+          state.settings.endpoint
+          && state.settings.model
+          && (state.settings.authMode === "none" || (state.settings.apiKey && state.settings.apiKeyService === state.settings.service))
+        );
       }
 
       function validateClassificationResult(parsed, ids) {
@@ -2549,11 +2690,11 @@
         container.append(element("div", { className: "heatmap-wrap" }, table), legend);
       }
 
-      function mirrorSummary() {
-        const dates = analysisDates();
+      function mirrorSummary(model = state, today = effectiveToday(model)) {
+        const dates = analysisDates(model, today);
         const from = dates[0];
-        const to = dates.at(-1);
-        const memos = state.memos.filter((memo) => memo.date >= from && memo.date <= to);
+        const to = today;
+        const memos = model.memos.filter((memo) => memo.date >= from && memo.date <= to);
         const mentions = memos.flatMap((memo) => memo.mentions || []);
         const domains = Object.fromEntries(DOMAINS.map((domain) => [domain, 0]));
         const perStudent = new Map();
@@ -2860,21 +3001,49 @@
       function providerStatusText() {
         if (ui.providerMessage) return ui.providerMessage;
         const test = state.settings.lastTest;
-        if (!test?.at) return "아직 연결을 확인하지 않았습니다.";
-        if (test.ok) return `연결 확인 · ${new Date(test.at).toLocaleString("ko-KR")}`;
-        return `규칙 기반 모드 · ${test.errorCode || "연결 확인 필요"}`;
+        if (test?.at) {
+          if (test.ok) return `연결 확인 · ${new Date(test.at).toLocaleString("ko-KR")}`;
+          return `규칙 기반 모드 · ${providerErrorText(test.errorCode, state.settings.service)}`;
+        }
+        if (state.settings.apiKey && state.settings.apiKeyService === state.settings.service) {
+          return `${serviceLabel(state.settings.service)} API 키 저장됨 · ${state.settings.model} · 연결 시험 필요`;
+        }
+        return "저장된 API 키가 없습니다.";
+      }
+
+      function providerErrorText(code, service = state.settings.service) {
+        const label = serviceLabel(service);
+        const messages = {
+          PROVIDER_API_KEY_REQUIRED: "API 키를 먼저 입력해 주세요.",
+          PROVIDER_API_KEY_SERVICE_MISMATCH: "저장된 키가 현재 선택한 서비스의 키가 아닙니다. 이 서비스의 키를 새로 입력해 주세요.",
+          PROVIDER_API_KEY_INVALID: `${label}가 이 키를 유효하지 않은 키로 응답했습니다. ${label}에서 발급한 활성 키의 값만 다시 복사해 주세요. Bearer, 따옴표, 공백은 입력하지 않아도 됩니다.`,
+          PROVIDER_AUTH_FAILED: `${label}가 인증 권한을 허용하지 않았습니다. 키의 프로젝트·API 사용 권한을 확인해 주세요.`,
+          PROVIDER_RATE_LIMITED: `${label} 호출 한도에 도달했습니다. 잠시 후 다시 시도해 주세요.`,
+          PROVIDER_TIMEOUT: `${label} 응답 시간이 초과되었습니다.`,
+          PROVIDER_MODELS_INVALID: `${label}가 사용할 수 있는 추론 모델 목록을 반환하지 않았습니다. 기본 목록이나 직접 입력을 사용할 수 있습니다.`,
+          PROVIDER_MODELS_REJECTED: `${label}의 이 endpoint에서는 모델 목록 조회가 허용되지 않습니다. 기본 목록이나 직접 입력을 사용할 수 있습니다.`,
+          PROVIDER_NETWORK_FAILED: `브라우저 CORS 또는 네트워크 문제로 ${label}에 연결하지 못했습니다.`,
+          PROVIDER_MODEL_NOT_FOUND: `${label}에서 선택한 모델을 찾지 못했습니다. 모델 ID를 다시 확인해 주세요.`,
+          PROVIDER_REQUEST_REJECTED: `${label}가 요청을 거부했습니다. endpoint·모델·권한을 확인해 주세요.`,
+          PROVIDER_UNAVAILABLE: `${label} 서비스가 일시적으로 응답하지 않습니다.`,
+          PROVIDER_RESPONSE_INVALID: `${label} 응답 형식을 읽지 못했습니다.`,
+          PROVIDER_TEST_SCHEMA_INVALID: `${label} 연결 응답이 필요한 JSON 형식이 아닙니다.`
+        };
+        return messages[code] || `연결 오류 ${code || "PROVIDER_FAILED"}`;
       }
 
       function renderModelSelect(models = [], selectedModel = "") {
         const select = document.getElementById("apiModelSelect");
         const input = document.getElementById("apiModel");
         const manualLabel = document.getElementById("apiModelManualLabel");
+        const service = document.getElementById("apiService").value;
+        const recommended = SERVICE_PRESETS[service]?.model;
         const normalized = [...new Set(models.map((model) => String(model || "").trim()).filter(Boolean))];
         select.replaceChildren();
         if (selectedModel && !normalized.includes(selectedModel)) {
           select.append(element("option", { text: `${selectedModel} · 현재 설정`, value: selectedModel }));
         }
-        for (const model of normalized) select.append(element("option", { text: model, value: model }));
+        for (const model of normalized) select.append(element("option", { text: model === recommended ? `${model} · 추천` : model, value: model }));
         select.append(element("option", { text: "직접 입력…", value: "__manual__" }));
         const choice = selectedModel || normalized[0] || "__manual__";
         select.value = [...select.options].some((option) => option.value === choice) ? choice : "__manual__";
@@ -2888,14 +3057,22 @@
       }
 
       function apiDraftConfig() {
+        const service = document.getElementById("apiService").value;
+        const keyInput = document.getElementById("apiKey");
+        const typedKey = normalizeApiKey(keyInput.value);
+        if (typedKey && typedKey !== keyInput.value) keyInput.value = typedKey;
+        const storedKey = state.settings.apiKeyService === service ? state.settings.apiKey : "";
+        const apiKey = typedKey || storedKey;
         return {
           ...state.settings,
+          service,
           protocol: document.getElementById("apiProtocol").value,
           endpoint: document.getElementById("apiEndpoint").value.trim(),
           model: selectedApiModelDraft(),
           authMode: document.getElementById("apiAuthMode").value,
           timeoutMs: Number(document.getElementById("apiTimeout").value),
-          apiKey: document.getElementById("apiKey").value.trim() || state.settings.apiKey
+          apiKey,
+          apiKeyService: apiKey ? service : ""
         };
       }
 
@@ -2904,19 +3081,34 @@
         renderModelSelect([], selectedModel);
       }
 
+      function updateApiKeyPlaceholder(service = document.getElementById("apiService").value) {
+        const input = document.getElementById("apiKey");
+        const reusable = Boolean(state.settings.apiKey && state.settings.apiKeyService === service);
+        input.placeholder = reusable
+          ? `${serviceLabel(service)} 저장된 키 있음 · 교체할 때만 입력`
+          : `${serviceLabel(service)} API 키`;
+      }
+
       function renderSettings() {
         document.getElementById("className").value = state.classInfo.className || "";
         document.getElementById("silentDays").value = String(state.settings.silentDays);
         document.getElementById("privateTerms").value = (state.settings.privateTerms || []).join("|");
-        document.getElementById("apiProtocol").value = state.settings.protocol;
-        document.getElementById("apiEndpoint").value = state.settings.endpoint;
-        document.getElementById("apiAuthMode").value = state.settings.authMode;
-        document.getElementById("apiTimeout").value = String(state.settings.timeoutMs);
-        document.getElementById("apiKey").value = "";
-        document.getElementById("apiKey").placeholder = state.settings.apiKey ? "저장된 키 있음 · 교체할 때만 입력" : "API 키";
-        const signature = modelCatalogSignature(state.settings);
-        const catalog = state.settings.modelCatalogSignature === signature ? state.settings.modelCatalog : [];
-        renderModelSelect(catalog, state.settings.model);
+        const apiForm = document.getElementById("apiForm");
+        if (apiForm.dataset.initialized !== "true") {
+          document.getElementById("apiService").value = state.settings.service;
+          document.getElementById("apiProtocol").value = state.settings.protocol;
+          document.getElementById("apiEndpoint").value = state.settings.endpoint;
+          document.getElementById("apiAuthMode").value = state.settings.authMode;
+          document.getElementById("apiTimeout").value = String(state.settings.timeoutMs);
+          document.getElementById("apiKey").value = "";
+          const signature = modelCatalogSignature(state.settings);
+          const catalog = state.settings.modelCatalogSignature === signature && state.settings.modelCatalog.length
+            ? state.settings.modelCatalog
+            : [...SERVICE_PRESETS[state.settings.service].models];
+          renderModelSelect(catalog, state.settings.model);
+          apiForm.dataset.initialized = "true";
+        }
+        updateApiKeyPlaceholder();
         document.getElementById("providerStatus").textContent = providerStatusText();
         document.getElementById("rosterImportStatus").textContent = ui.rosterImportMessage || "예시 파일을 내려받아 수정한 뒤 업로드하세요.";
         renderRoster();
@@ -3046,25 +3238,17 @@
 
       function saveMemo(date, text) {
         if (date > effectiveToday()) throw new Error("FUTURE_DATE_NOT_ALLOWED");
-        const normalizedText = text.normalize("NFC").trim();
-        let memo = state.memos.find((item) => item.date === date);
-        if (memo) {
-          const replacement = createMemo(memo.id, date, normalizedText, state.students, memo);
-          Object.assign(memo, replacement);
-        } else {
-          memo = createMemo(nextId("M", state.memos), date, normalizedText, state.students);
-          state.memos.push(memo);
-        }
-        memo.analysisVersion = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        const memos = appendMemoEntries(state, date, text);
+        if (!memos.length) return;
+        for (const memo of memos) memo.analysisVersion = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
         const expectedContextVersion = bumpAnalysisContext();
-        state.memos.sort((a, b) => a.date.localeCompare(b.date));
         state.mirror = null;
         persistState();
-        const mentioned = new Set(memo.mentions.map((mention) => mention.studentId)).size;
+        const mentioned = new Set(memos.flatMap((memo) => memo.mentions.map((mention) => mention.studentId))).size;
         const dateLabel = date === effectiveToday() ? "오늘" : formatKoreanDate(date);
-        ui.feedback = `${storagePersistent ? "저장됨" : "임시 저장됨"} · ${dateLabel} 언급 ${mentioned}명 / 미언급 ${Math.max(0, state.students.length - mentioned)}명`;
+        ui.feedback = `${storagePersistent ? "저장됨" : "임시 저장됨"} · ${dateLabel} ${memos.length}줄 · 언급 ${mentioned}명 / 미언급 ${Math.max(0, state.students.length - mentioned)}명`;
         renderAll();
-        enhanceMemoInBackground(memo, memo.analysisVersion, expectedContextVersion);
+        for (const memo of memos) enhanceMemoInBackground(memo, memo.analysisVersion, expectedContextVersion);
       }
 
       function openStudentDialog(studentId) {
@@ -3120,17 +3304,45 @@
         ui.modelCatalogDraft = null;
         bumpAnalysisContext();
         state.mirror = null;
-        ui.providerMessage = "모델 설정을 저장했습니다. 연결 시험 전까지 규칙 기반 모드입니다.";
+        ui.providerMessage = state.settings.apiKey
+          ? `${serviceLabel(state.settings.service)} API 키와 ${state.settings.model} 모델을 이 브라우저에 저장했습니다. 실제 사용 가능 여부는 연결 시험에서 확인하세요.`
+          : `${serviceLabel(state.settings.service)} · ${state.settings.model} 모델을 저장했습니다. API 키가 없어 규칙 기반 모드입니다.`;
         persistState();
+        document.getElementById("apiKey").value = "";
+      }
+
+      function serviceDraftChanged() {
+        const service = document.getElementById("apiService").value;
+        const preset = SERVICE_PRESETS[service];
+        document.getElementById("apiProtocol").value = preset.protocol;
+        document.getElementById("apiEndpoint").value = preset.endpoint;
+        document.getElementById("apiAuthMode").value = preset.authMode;
+        document.getElementById("apiKey").value = "";
+        ui.modelCatalogDraft = null;
+        renderModelSelect([...preset.models], preset.model);
+        updateApiKeyPlaceholder(service);
+        ui.providerMessage = `${preset.label}를 선택했습니다. ${preset.label} 키를 입력한 뒤 추론 모델을 불러오세요.`;
+        document.getElementById("providerStatus").textContent = ui.providerMessage;
       }
 
       function protocolDraftChanged() {
         const protocol = document.getElementById("apiProtocol").value;
-        const defaults = PROVIDER_DEFAULTS[protocol];
+        const serviceSelect = document.getElementById("apiService");
+        const previousService = serviceSelect.value;
+        let service = previousService;
+        if (protocol === "gemini-generate-content") service = "gemini";
+        else if (protocol === "anthropic-messages") service = "claude";
+        else if (protocol === "openai-responses") service = "openai";
+        else if (protocol === "openai-chat" && previousService !== "upstage") service = "openai";
+        serviceSelect.value = service;
+        const preset = SERVICE_PRESETS[service];
+        const defaults = protocol === preset.protocol ? preset : PROVIDER_DEFAULTS[protocol];
         document.getElementById("apiEndpoint").value = defaults.endpoint;
         document.getElementById("apiAuthMode").value = defaults.authMode;
+        if (service !== previousService) document.getElementById("apiKey").value = "";
         ui.modelCatalogDraft = null;
-        renderModelSelect([], defaults.model);
+        renderModelSelect(protocol === preset.protocol ? [...preset.models] : [], defaults.model);
+        updateApiKeyPlaceholder(service);
       }
 
       async function loadModelCatalogFromDraft() {
@@ -3139,10 +3351,22 @@
         if (draft.authMode !== "none" && !draft.apiKey) throw new Error("PROVIDER_API_KEY_REQUIRED");
         const signature = modelCatalogSignature(draft);
         const currentModel = draft.model;
-        const models = await fetchModelCatalog(draft);
-        ui.modelCatalogDraft = { signature, models, fetchedAt: new Date().toISOString() };
+        let models;
+        let verified = true;
+        let fallbackCode = null;
+        try {
+          models = await fetchModelCatalog(draft);
+        } catch (error) {
+          const code = error instanceof Error ? error.message : "PROVIDER_FAILED";
+          if (!["PROVIDER_MODELS_INVALID", "PROVIDER_MODELS_REJECTED", "PROVIDER_NETWORK_FAILED"].includes(code)) throw error;
+          models = filterReasoningModels(draft.service, [...SERVICE_PRESETS[draft.service].models]);
+          if (!models.length) throw error;
+          verified = false;
+          fallbackCode = code;
+        }
+        ui.modelCatalogDraft = { signature, models, fetchedAt: new Date().toISOString(), verified, fallbackCode };
         renderModelSelect(models, models.includes(currentModel) ? currentModel : models[0]);
-        return models;
+        return { models, verified, fallbackCode, service: draft.service };
       }
 
       function runSelfTests() {
@@ -3151,6 +3375,7 @@
         try {
           const demo = buildDemoState(normalizeSettings({}));
           check("학생 25명", demo.students.length === 25);
+          check("데모 명단 별칭·모둠·번호 완비", demo.students.every((student) => student.aliases.length >= 1 && Number.isInteger(student.group) && student.group > 0 && Number.isInteger(student.number) && student.number > 0) && new Set(demo.students.map((student) => student.number)).size === demo.students.length);
           check("메모 9건", demo.memos.length === 9);
           check("확정 언급 26건", demo.memos.flatMap((memo) => memo.mentions).length === 26);
           check("pending 1건", unresolvedPendings(demo).length === 1);
@@ -3159,7 +3384,20 @@
           const resolved = deepClone(demo);
           const pending = unresolvedPendings(resolved)[0];
           applyPendingResolution(resolved, pending.memoId, pending.id, "S12");
-          check("서지안 확인 후 4명", silentStudents(14, resolved, DEMO_TODAY).length === 4);
+          check("미해결 참조 소급 연결 후 4명", silentStudents(14, resolved, DEMO_TODAY).length === 4 && resolved.memos.some((memo) => memo.id === pending.memoId && memo.mentions.some((mention) => mention.studentId === "S12")));
+          const appendFixture = deepClone(demo);
+          appendFixture.memos = [];
+          appendMemoEntries(appendFixture, DEMO_TODAY, "안경이 친구를 도와줌\n박시우가 자료를 정리함\n오태경이 발표를 이끎");
+          appendMemoEntries(appendFixture, DEMO_TODAY, "안경이 질문함\n박시우가 도와줌\n오태경이 정리함");
+          const appendedToday = appendFixture.memos.filter((memo) => memo.date === DEMO_TODAY);
+          check("같은 날짜 3줄씩 두 번 누적", appendedToday.length === 6 && new Set(appendedToday.map((memo) => memo.id)).size === 6 && appendedToday.every((memo) => memo.text && !memo.text.includes("\n")));
+          check("별칭 줄별 학생 연결", appendedToday.filter((memo) => memo.mentions.some((mention) => mention.studentId === "S07")).length === 2);
+          const weekendFixture = deepClone(demo);
+          weekendFixture.settings.demoMode = false;
+          weekendFixture.memos = [];
+          appendMemoEntries(weekendFixture, "2026-08-29", "안경이 질문하고 친구를 도와줌");
+          const weekendMirror = mirrorSummary(weekendFixture, "2026-08-29");
+          check("주말 관찰 교사의 시선 반영", weekendMirror.memoCount === 1 && weekendMirror.mentionCount === 1 && weekendMirror.mentionedStudents === 1);
           check("관찰 기록 안정 ID·초기 상태", demo.memos.every((memo) => memo.mentions.every((mention) => mention.evidenceId === `${memo.id}-${mention.studentId}` && mention.reviewStatus === "미확인")));
           const reviewFixture = deepClone(demo.memos[0]);
           reviewFixture.mentions[0].reviewStatus = "교사수정";
@@ -3201,8 +3439,26 @@
           check("모델 중립 프로토콜 4종", protocolRequests.length === 4 && protocolRequests.every((request) => request.init.method === "POST" && JSON.parse(request.init.body)));
           const catalogEndpoints = Object.entries(PROVIDER_DEFAULTS).map(([protocol, defaults]) => modelCatalogEndpoint(normalizeSettings({ protocol, endpoint: defaults.endpoint, authMode: "none" })));
           check("모델 목록 endpoint 4종", catalogEndpoints.join("|") === "https://api.anthropic.com/v1/models|https://api.openai.com/v1/models|https://api.openai.com/v1/models|https://generativelanguage.googleapis.com/v1beta/models");
-          check("OpenAI 호환 모델 목록 파싱", parseModelCatalog("openai-chat", { data: [{ id: "gpt-z" }, { id: "gpt-a" }, { id: "gpt-a" }] }).join(",") === "gpt-a,gpt-z");
-          check("Gemini 생성 모델만 파싱", parseModelCatalog("gemini-generate-content", { models: [{ name: "models/gemini-a", supportedGenerationMethods: ["generateContent"] }, { name: "models/embed-a", supportedGenerationMethods: ["embedContent"] }] }).join(",") === "gemini-a");
+          check("기존 endpoint 서비스 마이그레이션", normalizeSettings({ protocol: "openai-chat", endpoint: "https://api.upstage.ai/v1/chat/completions" }).service === "upstage");
+          check("API 키 서비스 소속 저장", normalizeSettings({ service: "openai", apiKey: "self-test-key" }).apiKeyService === "openai");
+          check("복사한 API 키 머리말·공백 정리", normalizeApiKey('  "Authorization: Bearer up_test_ key"\n') === "up_test_key");
+          check("공급자 invalid_api_key 구분", providerAuthFailureCode({ error: { code: "invalid_api_key", message: "Your API key is invalid" } }) === "PROVIDER_API_KEY_INVALID");
+          check("OpenAI 추론 모델만 파싱", parseModelCatalog(
+            { service: "openai", protocol: "openai-responses" },
+            { data: [{ id: "gpt-5.6-terra" }, { id: "gpt-image-1" }, { id: "text-embedding-3-large" }] }
+          ).join(",") === "gpt-5.6-terra");
+          check("Gemini 생성 모델만 파싱", parseModelCatalog(
+            { service: "gemini", protocol: "gemini-generate-content" },
+            { models: [{ name: "models/gemini-3.6-flash", supportedGenerationMethods: ["generateContent"] }, { name: "models/gemini-embedding-001", supportedGenerationMethods: ["embedContent"] }] }
+          ).join(",") === "gemini-3.6-flash");
+          check("Claude 추론 모델만 파싱", parseModelCatalog(
+            { service: "claude", protocol: "anthropic-messages" },
+            { data: [{ id: "claude-sonnet-5" }, { id: "embedding-model" }] }
+          ).join(",") === "claude-sonnet-5");
+          check("Upstage 추론 모델만 파싱", parseModelCatalog(
+            { service: "upstage", protocol: "openai-chat" },
+            { data: [{ id: "solar-pro4" }, { id: "embedding-passage" }] }
+          ).join(",") === "solar-pro4");
           const rosterFixture = rosterRecordsFromRows([["학생명", "별칭", "조", "출석번호"], ["가상학생", "가상|학생", "2", "7"], ["오류학생", "", "99", "8"]]);
           check("Excel 명단 머리글·값 검증", rosterFixture.records.length === 1 && rosterFixture.records[0].group === 2 && rosterFixture.records[0].aliases.length === 2 && rosterFixture.issues.length === 1);
           const rosterExample = buildRosterExamplePackage(new Date("2026-09-13T03:04:05+09:00"));
@@ -3234,6 +3490,12 @@
           const formulaPackage = buildXlsxPackage(formulaFixture, "2026-09-01", "2026-09-12", new Date("2026-09-13T03:04:05+09:00"));
           const formulaObservationXml = String(formulaPackage.entries.find((entry) => entry.name === "xl/worksheets/sheet3.xml")?.data || "");
           check("수식형 입력 일반 문자열", formulaObservationXml.includes("=HYPERLINK") && !formulaObservationXml.includes("<f>HYPERLINK"));
+          const apiKeyInput = document.getElementById("apiKey");
+          const originalApiKeyDraft = apiKeyInput.value;
+          apiKeyInput.value = "self-test-draft-key";
+          renderSettings();
+          check("API 키 입력 재렌더 보존", apiKeyInput.value === "self-test-draft-key");
+          apiKeyInput.value = originalApiKeyDraft;
         } catch (error) {
           tests.push({ name: error instanceof Error ? error.message : "self-test", pass: false });
         }
@@ -3367,7 +3629,7 @@
         event.preventDefault();
         try {
           saveApiDraft();
-          showToast("모델 설정을 저장했습니다.");
+          showToast(state.settings.apiKey ? "API 키와 모델을 저장했습니다." : "모델 설정을 저장했습니다.");
           renderAll();
         } catch (error) {
           const code = error instanceof Error ? error.message : "PROVIDER_ENDPOINT_INVALID";
@@ -3378,6 +3640,7 @@
         }
       });
 
+      document.getElementById("apiService").addEventListener("change", serviceDraftChanged);
       document.getElementById("apiProtocol").addEventListener("change", protocolDraftChanged);
       document.getElementById("apiEndpoint").addEventListener("change", () => invalidateModelCatalogDraft());
       document.getElementById("apiAuthMode").addEventListener("change", () => invalidateModelCatalogDraft());
@@ -3394,21 +3657,18 @@
         ui.providerMessage = "API 키 권한으로 사용 가능한 모델 목록을 불러오고 있습니다…";
         document.getElementById("providerStatus").textContent = ui.providerMessage;
         try {
-          const models = await loadModelCatalogFromDraft();
-          ui.providerMessage = `${models.length}개 모델을 불러왔습니다. 드롭다운에서 사용할 모델을 선택한 뒤 설정을 저장하세요.`;
-          showToast(`${models.length}개 모델을 불러왔습니다.`);
+          const result = await loadModelCatalogFromDraft();
+          const label = serviceLabel(result.service);
+          if (result.verified) {
+            ui.providerMessage = `${label} 키 권한으로 추론 모델 ${result.models.length}개를 확인했습니다. 사용할 모델을 선택한 뒤 저장하세요.`;
+            showToast(`${label} 추론 모델 ${result.models.length}개를 불러왔습니다.`);
+          } else {
+            ui.providerMessage = `${label} 모델 목록 조회가 브라우저에서 차단되어 공식 기본 추론 모델 ${result.models.length}개를 표시합니다. 모델을 선택한 뒤 연결 시험으로 실제 권한을 확인하세요.`;
+            showToast(`${label} 기본 추론 모델을 표시했습니다.`);
+          }
         } catch (error) {
           const code = error instanceof Error ? error.message : "PROVIDER_FAILED";
-          const messages = {
-            PROVIDER_API_KEY_REQUIRED: "API 키를 먼저 입력해 주세요.",
-            PROVIDER_AUTH_FAILED: "API 키가 거부되었습니다. 키와 권한을 확인해 주세요.",
-            PROVIDER_RATE_LIMITED: "공급자 호출 한도에 도달했습니다. 잠시 후 다시 시도해 주세요.",
-            PROVIDER_TIMEOUT: "모델 목록 조회 시간이 초과되었습니다.",
-            PROVIDER_MODELS_INVALID: "공급자가 사용할 수 있는 모델 목록을 반환하지 않았습니다. 직접 입력을 사용할 수 있습니다.",
-            PROVIDER_MODELS_REJECTED: "이 endpoint에서는 모델 목록 조회가 허용되지 않습니다. 직접 입력을 사용할 수 있습니다.",
-            PROVIDER_NETWORK_FAILED: "브라우저 CORS 또는 네트워크 문제로 목록을 불러오지 못했습니다."
-          };
-          ui.providerMessage = messages[code] || "모델 목록을 불러오지 못했습니다. 직접 입력을 사용할 수 있습니다.";
+          ui.providerMessage = providerErrorText(code, document.getElementById("apiService").value);
         } finally {
           button.disabled = false;
           document.getElementById("providerStatus").textContent = ui.providerMessage;
@@ -3429,7 +3689,7 @@
         } catch (error) {
           const code = error instanceof Error ? error.message : "PROVIDER_FAILED";
           markConnection(false, code);
-          ui.providerMessage = `연결하지 못했습니다 · ${code} · 규칙 기반 모드를 유지합니다.`;
+          ui.providerMessage = `연결하지 못했습니다 · ${providerErrorText(code, state.settings.service)} · 규칙 기반 모드를 유지합니다.`;
         } finally {
           button.disabled = false;
           renderAll();
@@ -3439,6 +3699,8 @@
       document.getElementById("deleteApiKey").addEventListener("click", () => {
         bumpAnalysisContext();
         state.settings.apiKey = "";
+        state.settings.apiKeyService = "";
+        document.getElementById("apiKey").value = "";
         state.settings.lastTest = { ok: false, at: null, errorCode: null };
         state.mirror = null;
         ui.providerMessage = "API 키를 삭제했습니다. 규칙 기반 모드입니다.";
@@ -3468,6 +3730,8 @@
         }
         try {
           const result = await restorePortableBackup(file);
+          delete document.getElementById("apiForm").dataset.initialized;
+          ui.modelCatalogDraft = null;
           ui.selectedStudentId = state.students[0]?.id || null;
           ui.feedback = "백업에서 작업을 복원했습니다.";
           ui.providerMessage = "API 키는 보안을 위해 백업에서 제외되었습니다.";
@@ -3488,6 +3752,7 @@
         if ((state.students.length || state.memos.length) && !confirm("현재 《빈자리》 학급과 메모를 가상 데모 데이터로 교체할까요? API 설정은 유지됩니다.")) return;
         bumpAnalysisContext();
         state = buildDemoState(state.settings, state.privateTokens);
+        document.getElementById("memoDate").value = effectiveToday();
         ui.selectedStudentId = "S02";
         ui.feedback = "데모 데이터가 준비되었습니다 · 확인 요청에서 서지안을 선택해 보세요";
         ui.providerMessage = "";
@@ -3503,6 +3768,7 @@
         for (const key of Object.values(KEYS)) storageRemove(key);
         bumpAnalysisContext();
         state = loadState();
+        delete document.getElementById("apiForm").dataset.initialized;
         ui = { ...ui, activeTab: "today", selectedStudentId: null, dialogStudentId: null, feedback: "", providerMessage: "", rosterImportMessage: "", modelCatalogDraft: null, mirrorLoading: false };
         document.getElementById("memoText").value = "";
         document.getElementById("memoDate").value = effectiveToday();
