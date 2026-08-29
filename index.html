@@ -5,10 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
   <title>빈자리 · 교사의 시선 레이더</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
       --paper: #eff1ee;
@@ -22,8 +18,8 @@
       --line: #d6dad6;
       --white: #fff;
       --danger: #8b3d3d;
-      --display: "Gowun Batang", Georgia, serif;
-      --body: Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      --display: Batang, "AppleMyungjo", "Noto Serif KR", serif;
+      --body: "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
       --mono: "IBM Plex Mono", Consolas, monospace;
       --content: 1120px;
     }
@@ -456,7 +452,7 @@
         <section class="card" aria-labelledby="csvHeading">
           <div class="section-heading">
             <h2 id="csvHeading">학생 명단 일괄 등록</h2>
-            <a class="button small" href="examples/학생명단_업로드_예시.xlsx" download>예시 Excel 받기</a>
+            <button id="downloadRosterExample" class="button small" type="button">예시 Excel 받기</button>
           </div>
           <form id="rosterUploadForm" class="stack">
             <label class="file-picker">작성한 Excel 파일
@@ -510,7 +506,9 @@
         <section class="card wide" aria-labelledby="dataHeading">
           <h2 id="dataHeading">시연과 데이터</h2>
           <p>가상 학생과 가상 메모만 들어 있는 고정 데모를 불러옵니다. 기존 《빈자리》 데이터는 교체됩니다.</p>
-          <div class="button-row"><button id="loadDemo" class="button primary" type="button">데모 데이터 넣기</button><button id="resetAll" class="button danger" type="button">전체 초기화</button></div>
+          <div class="button-row"><button id="loadDemo" class="button primary" type="button">데모 데이터 넣기</button><button id="downloadBackup" class="button" type="button">작업 백업 저장</button><label class="button" for="restoreBackup">백업 불러오기</label><input id="restoreBackup" type="file" accept=".json,application/json" hidden><button id="resetAll" class="button danger" type="button">전체 초기화</button></div>
+          <p class="helper">다운로드한 HTML을 직접 열 때 브라우저 저장 정책이 달라도 복원할 수 있도록 작업 백업을 보관하세요. 백업에는 학생 자료가 포함되며 API 키는 제외됩니다.</p>
+          <p id="backupStatus" class="import-status" role="status" aria-live="polite"></p>
           <p id="selfTestStatus" class="self-test"></p>
         </section>
       </div>
@@ -556,7 +554,7 @@
       const DOMAINS = ["행동", "학업", "정서", "관계", "건강"];
       const TONES = ["긍정", "중립", "우려"];
       const REVIEW_STATUSES = ["미확인", "확인", "교사수정", "제외"];
-      const APP_VERSION = "2.1.0";
+      const APP_VERSION = "2.2.0";
       const MAX_ROSTER_IMPORT = 200;
       const PROVIDER_SIGNAL_WORDS = Object.freeze([
         "지각", "미제출", "안 챙", "떠들", "주의", "다툼", "늦", "안 함", "못 함", "산만", "휴대폰",
@@ -624,6 +622,19 @@
           storagePersistent = false;
           memoryStorage.delete(key);
         }
+      }
+
+      function probePersistentStorage() {
+        const key = "binjari.storageProbe";
+        const value = `${Date.now()}-${Math.random()}`;
+        try {
+          localStorage.setItem(key, value);
+          storagePersistent = localStorage.getItem(key) === value;
+          localStorage.removeItem(key);
+        } catch {
+          storagePersistent = false;
+        }
+        return storagePersistent;
       }
 
       function readJson(key, fallback) {
@@ -753,6 +764,7 @@
         };
       }
 
+      probePersistentStorage();
       let state = loadState();
       let analysisContextVersion = 0;
       let ui = {
@@ -1018,6 +1030,143 @@
           view.setUint16(20, 0, true);
         });
         return concatBytes([...localParts, centralDirectory, end]);
+      }
+
+      function downloadArtifact(data, filename, type) {
+        const blob = data instanceof Blob ? data : new Blob([data], { type });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = filename;
+        document.body.append(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+
+      function buildRosterExamplePackage(modifiedAt = new Date()) {
+        const cell = (value, style = 0) => ({ value: value ?? "", style });
+        const headers = ["이름", "별칭", "모둠", "번호"];
+        const examples = [
+          ["강민준", "민준|축구", 1, 1],
+          ["고서연", "서연", 1, 2],
+          ["권하늘", "", 2, 3],
+          ["김도윤", "도윤|정리왕", 2, 4],
+          ["김서우", "서우", 3, 5]
+        ];
+        const rosterRows = [
+          { index: 1, cells: headers.map((value) => cell(value, 1)) },
+          ...examples.map((row, index) => ({ index: index + 2, cells: row.map((value) => cell(value)) })),
+          ...Array.from({ length: 25 }, (_, index) => ({ index: index + 7, cells: headers.map(() => cell("")) }))
+        ];
+        const guideRows = [
+          { index: 1, cells: [cell("《빈자리》 학생 명단 업로드 예시", 1), cell("")] },
+          { index: 3, cells: [cell("항목", 1), cell("작성 방법", 1)] },
+          { index: 4, cells: [cell("이름"), cell("필수 · 학생 이름을 한 행에 한 명씩 입력합니다.")] },
+          { index: 5, cells: [cell("별칭"), cell("선택 · 여러 개라면 | 로 구분합니다. 예: 민준|축구")] },
+          { index: 6, cells: [cell("모둠"), cell("선택 · 1~30 사이의 숫자를 입력합니다.")] },
+          { index: 7, cells: [cell("번호"), cell("선택 · 1~999 사이의 출석번호를 입력합니다.")] },
+          { index: 8, cells: [cell("첫 행"), cell("이름·별칭·모둠·번호 머리글을 유지합니다.")] },
+          { index: 9, cells: [cell("등록 방식"), cell("빈자리 설정 → 학생 명단 일괄 등록에서 이 .xlsx 파일을 선택합니다.")] },
+          { index: 10, cells: [cell("개인정보"), cell("실제 명단 파일은 개인정보입니다. 승인된 위치에 보관하고 공유 범위를 제한하세요.")] }
+        ];
+        const rosterRef = "A1:D31";
+        const sheets = [
+          { name: "학생명단", xml: worksheetXml({ rows: rosterRows, columnWidths: [18, 30, 12, 12], freezeRows: 1, table: { ref: rosterRef } }) },
+          { name: "작성안내", xml: worksheetXml({ rows: guideRows, columnWidths: [18, 72], freezeRows: 3, merges: ["A1:B1"] }) }
+        ];
+        const workbook = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><bookViews><workbookView/></bookViews><sheets>${sheets.map((sheet, index) => `<sheet name="${xmlText(sheet.name)}" sheetId="${index + 1}" r:id="rId${index + 1}"/>`).join("")}</sheets></workbook>`;
+        const styles = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="10"/><name val="Arial"/></font><font><b/><color rgb="FFFFFFFF"/><sz val="11"/><name val="Arial"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF176B5B"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`;
+        const workbookRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`;
+        const contentTypes = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/tables/table1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.table+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/><Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/></Types>`;
+        const timestamp = modifiedAt.toISOString();
+        const entries = [
+          { name: "[Content_Types].xml", data: contentTypes },
+          { name: "_rels/.rels", data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/></Relationships>` },
+          { name: "docProps/core.xml", data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>빈자리 학생 명단 업로드 예시</dc:title><dc:creator>빈자리</dc:creator><dcterms:created xsi:type="dcterms:W3CDTF">${timestamp}</dcterms:created><dcterms:modified xsi:type="dcterms:W3CDTF">${timestamp}</dcterms:modified></cp:coreProperties>` },
+          { name: "docProps/app.xml", data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"><Application>빈자리</Application><AppVersion>${APP_VERSION}</AppVersion></Properties>` },
+          { name: "xl/workbook.xml", data: workbook },
+          { name: "xl/_rels/workbook.xml.rels", data: workbookRels },
+          { name: "xl/styles.xml", data: styles },
+          { name: "xl/worksheets/sheet1.xml", data: sheets[0].xml },
+          { name: "xl/worksheets/sheet2.xml", data: sheets[1].xml },
+          { name: "xl/worksheets/_rels/sheet1.xml.rels", data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/table" Target="../tables/table1.xml"/></Relationships>` },
+          { name: "xl/tables/table1.xml", data: tableXml("Table1", rosterRef, headers) }
+        ];
+        return { bytes: zipStore(entries, modifiedAt), entries, filename: "학생명단_업로드_예시.xlsx" };
+      }
+
+      function portableBackupPayload(model = state, exportedAt = new Date()) {
+        const settings = {
+          ...deepClone(model.settings),
+          apiKey: "",
+          modelCatalog: [],
+          modelCatalogSignature: "",
+          modelCatalogFetchedAt: "",
+          lastTest: { ok: false, at: null, errorCode: null }
+        };
+        return {
+          format: "binjari-backup",
+          formatVersion: 1,
+          appVersion: APP_VERSION,
+          exportedAt: exportedAt.toISOString(),
+          data: {
+            classInfo: deepClone(model.classInfo),
+            students: deepClone(model.students),
+            memos: deepClone(model.memos),
+            contacts: deepClone(model.contacts),
+            settings,
+            todayQueue: deepClone(model.todayQueue),
+            privateTokens: deepClone(model.privateTokens || [])
+          }
+        };
+      }
+
+      function stateFromPortableBackup(payload) {
+        if (!payload || payload.format !== "binjari-backup" || payload.formatVersion !== 1 || !payload.data || typeof payload.data !== "object") throw new Error("BACKUP_FORMAT_INVALID");
+        const source = payload.data;
+        if (!Array.isArray(source.students) || !Array.isArray(source.memos) || !Array.isArray(source.contacts)) throw new Error("BACKUP_FORMAT_INVALID");
+        if (source.students.length > 500 || source.memos.length > 50000 || source.contacts.length > 50000) throw new Error("BACKUP_TOO_LARGE");
+        const settings = normalizeSettings({
+          ...(source.settings || {}),
+          apiKey: "",
+          modelCatalog: [],
+          modelCatalogSignature: "",
+          modelCatalogFetchedAt: "",
+          lastTest: { ok: false, at: null, errorCode: null }
+        });
+        const classInfo = source.classInfo && typeof source.classInfo === "object" ? source.classInfo : {};
+        return {
+          classInfo: {
+            className: typeof classInfo.className === "string" ? classInfo.className.slice(0, 40) : "",
+            createdAt: /^\d{4}-\d{2}-\d{2}$/.test(classInfo.createdAt || "") ? classInfo.createdAt : localToday()
+          },
+          students: normalizeStudents(source.students),
+          memos: normalizeMemos(source.memos),
+          contacts: normalizeContacts(source.contacts),
+          settings,
+          todayQueue: source.todayQueue && typeof source.todayQueue === "object" ? deepClone(source.todayQueue) : null,
+          mirror: null,
+          privateTokens: Array.isArray(source.privateTokens) ? source.privateTokens.map((value) => String(value).normalize("NFC").trim()).filter((value) => value.length >= 2).slice(0, 2000) : []
+        };
+      }
+
+      function downloadPortableBackup() {
+        const now = new Date();
+        const filename = `binjari_backup_${ymdFromDate(now).replace(/-/g, "")}.json`;
+        const text = JSON.stringify(portableBackupPayload(state, now), null, 2);
+        downloadArtifact(text, filename, "application/json;charset=utf-8");
+        return { filename, bytes: utf8Bytes(text).length };
+      }
+
+      async function restorePortableBackup(file) {
+        if (!file || file.size > 5 * 1024 * 1024) throw new Error("BACKUP_TOO_LARGE");
+        const restored = stateFromPortableBackup(JSON.parse(await file.text()));
+        bumpAnalysisContext();
+        state = restored;
+        refreshDirectiveCandidates(state);
+        persistState();
+        return { students: state.students.length, memos: state.memos.length, contacts: state.contacts.length };
       }
 
       function findZipEnd(view) {
@@ -1365,15 +1514,7 @@
 
       function downloadXlsxPackage(from, to) {
         const artifact = buildXlsxPackage(state, from, to, new Date());
-        const blob = new Blob([artifact.bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = artifact.filename;
-        document.body.append(link);
-        link.click();
-        link.remove();
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        downloadArtifact(artifact.bytes, artifact.filename, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         return artifact;
       }
 
@@ -3064,6 +3205,14 @@
           check("Gemini 생성 모델만 파싱", parseModelCatalog("gemini-generate-content", { models: [{ name: "models/gemini-a", supportedGenerationMethods: ["generateContent"] }, { name: "models/embed-a", supportedGenerationMethods: ["embedContent"] }] }).join(",") === "gemini-a");
           const rosterFixture = rosterRecordsFromRows([["학생명", "별칭", "조", "출석번호"], ["가상학생", "가상|학생", "2", "7"], ["오류학생", "", "99", "8"]]);
           check("Excel 명단 머리글·값 검증", rosterFixture.records.length === 1 && rosterFixture.records[0].group === 2 && rosterFixture.records[0].aliases.length === 2 && rosterFixture.issues.length === 1);
+          const rosterExample = buildRosterExamplePackage(new Date("2026-09-13T03:04:05+09:00"));
+          const rosterExampleEntries = new Map(rosterExample.entries.map((entry) => [entry.name, String(entry.data)]));
+          check("예시 Excel 단일 파일 내장", rosterExample.bytes[0] === 0x50 && rosterExample.bytes[1] === 0x4B && rosterExampleEntries.get("xl/workbook.xml")?.includes("학생명단") && rosterExampleEntries.get("xl/worksheets/sheet1.xml")?.includes("강민준"));
+          const backupFixture = deepClone(demo);
+          backupFixture.settings.apiKey = "private-test-value";
+          const backup = portableBackupPayload(backupFixture, new Date("2026-09-13T03:04:05+09:00"));
+          const restoredBackup = stateFromPortableBackup(backup);
+          check("작업 백업 복원·API 키 제외", !JSON.stringify(backup).includes("private-test-value") && restoredBackup.settings.apiKey === "" && restoredBackup.students.length === 25 && restoredBackup.memos.length === 9);
           check("concernOnly 2회 하한", !concernOnlyStudents(14, demo, DEMO_TODAY).some((student) => student.name === "문채원"));
           const safe = makeSafePrompt("김도윤 확인", demo);
           check("익명화 게이트 표식", safe[SAFE_PROMPT] === true && safe.text.includes("S04"));
@@ -3153,6 +3302,19 @@
         document.getElementById("csvInput").value = "";
         showToast(`${added}명을 추가했습니다.`);
         renderAll();
+      });
+
+      document.getElementById("downloadRosterExample").addEventListener("click", () => {
+        try {
+          const artifact = buildRosterExamplePackage(new Date());
+          downloadArtifact(artifact.bytes, artifact.filename, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+          ui.rosterImportMessage = `${artifact.filename}을 만들었습니다. 내용을 수정한 뒤 아래에서 불러오세요.`;
+          document.getElementById("rosterImportStatus").textContent = ui.rosterImportMessage;
+          showToast("예시 Excel을 만들었습니다.");
+        } catch {
+          ui.rosterImportMessage = "예시 Excel을 만들지 못했습니다. 최신 Chrome 또는 Edge를 사용해 주세요.";
+          document.getElementById("rosterImportStatus").textContent = ui.rosterImportMessage;
+        }
       });
 
       document.getElementById("rosterUploadForm").addEventListener("submit", async (event) => {
@@ -3282,6 +3444,44 @@
         ui.providerMessage = "API 키를 삭제했습니다. 규칙 기반 모드입니다.";
         persistState();
         renderAll();
+      });
+
+      document.getElementById("downloadBackup").addEventListener("click", () => {
+        const status = document.getElementById("backupStatus");
+        try {
+          const artifact = downloadPortableBackup();
+          status.textContent = `${artifact.filename} · API 키 제외 · 학생 자료가 포함되므로 안전한 위치에 보관하세요.`;
+          showToast("작업 백업을 저장했습니다.");
+        } catch {
+          status.textContent = "작업 백업을 만들지 못했습니다. 브라우저의 다운로드 권한을 확인해 주세요.";
+        }
+      });
+
+      document.getElementById("restoreBackup").addEventListener("change", async (event) => {
+        const input = event.currentTarget;
+        const file = input.files?.[0];
+        const status = document.getElementById("backupStatus");
+        if (!file) return;
+        if ((state.students.length || state.memos.length || state.contacts.length) && !confirm("현재 학급·메모·후속조치를 선택한 백업으로 교체할까요? API 키는 복원되지 않습니다.")) {
+          input.value = "";
+          return;
+        }
+        try {
+          const result = await restorePortableBackup(file);
+          ui.selectedStudentId = state.students[0]?.id || null;
+          ui.feedback = "백업에서 작업을 복원했습니다.";
+          ui.providerMessage = "API 키는 보안을 위해 백업에서 제외되었습니다.";
+          renderAll();
+          runSelfTests();
+          status.textContent = `${file.name} 복원 완료 · 학생 ${result.students}명 · 메모 ${result.memos}건 · 후속조치 ${result.contacts}건 · API 키 제외`;
+          setTab("settings");
+          showToast("작업 백업을 복원했습니다.");
+        } catch (error) {
+          const code = error instanceof Error ? error.message : "BACKUP_FORMAT_INVALID";
+          status.textContent = code === "BACKUP_TOO_LARGE" ? "백업 파일이 너무 큽니다. 5MB 이하 파일을 사용해 주세요." : "빈자리 작업 백업 형식을 확인해 주세요.";
+        } finally {
+          input.value = "";
+        }
       });
 
       document.getElementById("loadDemo").addEventListener("click", () => {
