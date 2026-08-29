@@ -122,8 +122,30 @@
 
     .focus-card { display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: center; padding: 20px 22px; border: 1.5px solid var(--signal); border-radius: 14px; background: var(--signal-soft); }
     .focus-card h2 { margin-bottom: 5px; }
+    .focus-card h3 { margin-bottom: 5px; font: 700 25px/1.25 var(--display); letter-spacing: -.025em; }
     .focus-clue { color: #395348; }
     .focus-clue q { font-family: var(--display); }
+    .today-focus-stack { display: grid; gap: 10px; margin-bottom: 32px; }
+    .today-focus-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+    .today-focus-heading h2 { margin: 0; }
+    .dashboard-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 18px; }
+    .dashboard-metric { padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+    .dashboard-metric strong { display: block; margin: 3px 0 5px; font: 700 34px/1 var(--display); }
+    .dashboard-metric span { color: var(--muted); font-size: 12px; }
+    .dashboard-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; align-items: start; }
+    .dashboard-card { min-width: 0; padding: 20px; }
+    .dashboard-card .section-heading { align-items: baseline; margin-bottom: 13px; }
+    .dashboard-card .helper { margin-bottom: 14px; }
+    .dashboard-list { display: grid; gap: 9px; }
+    .dashboard-item { display: grid; gap: 7px; padding: 12px 0; border-top: 1px solid var(--line); }
+    .dashboard-item:first-child { padding-top: 0; border-top: 0; }
+    .dashboard-item header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .dashboard-item .name-button { min-width: 0; font-size: 17px; text-align: left; }
+    .dashboard-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+    .dashboard-tag { padding: 3px 7px; border-radius: 999px; color: #5f4a30; background: var(--warn-soft); font-size: 10px; }
+    .dashboard-tag.queued { color: var(--signal); background: var(--signal-soft); }
+    .dashboard-date { flex: 0 0 auto; font: 700 12px/1.3 var(--mono); color: var(--signal); }
+    .dashboard-clue { margin: 0; color: var(--muted); font-size: 12px; }
     .memo-form { display: grid; gap: 14px; }
     .memo-form textarea { min-height: 96px; font-size: 16px; }
     .save-line { min-height: 24px; margin: 10px 0 0; color: var(--signal); font-weight: 700; }
@@ -296,7 +318,7 @@
       .brand span { display: none; }
       .tab { padding: 0 14px; }
       main { padding-top: 32px; }
-      .field-grid, .field-grid.three, .field-grid.four, .radar-groups, .settings-grid, .mirror-grid, .report-metrics, .ledger-toolbar { grid-template-columns: 1fr; }
+      .field-grid, .field-grid.three, .field-grid.four, .radar-groups, .settings-grid, .mirror-grid, .report-metrics, .ledger-toolbar, .dashboard-metrics, .dashboard-grid { grid-template-columns: 1fr; }
       .settings-grid .wide { grid-column: auto; }
       .focus-card { grid-template-columns: 1fr; }
       .student-row { grid-template-columns: 1fr 1fr; padding: 12px 0; gap: 5px 12px; }
@@ -338,6 +360,760 @@
       .report-section, .report-sheet { break-inside: avoid; }
       .report-note { color: #000; }
     }
+    /*
+     * Quiet Observation Desk
+     * CSS-only design reference. The DOM and application script remain unchanged.
+     */
+    :root {
+      --paper: #f3f2ed;
+      --surface: #fffdf9;
+      --surface-subtle: #f8f7f2;
+      --surface-strong: #eeeee8;
+      --ink: #202722;
+      --ink-soft: #39443e;
+      --muted: #626e67;
+      --muted-strong: #536058;
+      --signal: #285d49;
+      --signal-hover: #204d3c;
+      --signal-soft: #e2eee7;
+      --signal-faint: #f0f6f2;
+      --warn: #8a631f;
+      --warn-soft: #f3e7cf;
+      --warn-faint: #fbf7ed;
+      --danger: #8a433d;
+      --danger-hover: #71352f;
+      --danger-soft: #f8eae7;
+      --line: #d8ddd7;
+      --line-strong: #c3cbc3;
+      --white: #ffffff;
+      --focus-ring: rgba(40, 93, 73, .24);
+      --display: Batang, "AppleMyungjo", "Noto Serif KR", serif;
+      --body: "Pretendard Variable", Pretendard, "SUIT Variable", "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif;
+      --mono: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+      --content: 1160px;
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 24px;
+      --space-6: 32px;
+      --space-7: 48px;
+      --space-8: 64px;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+      --control-height: 44px;
+      --shadow-1: 0 1px 2px rgba(31, 46, 38, .05);
+      --shadow-2: 0 12px 30px rgba(31, 46, 38, .07);
+      --duration-fast: 140ms;
+      --duration-normal: 200ms;
+      --ease-standard: cubic-bezier(.2, 0, 0, 1);
+    }
+
+    ::selection { color: var(--ink); background: #cfe3d7; }
+    html { background: var(--paper); color: var(--ink); }
+    body {
+      color: var(--ink);
+      background: var(--paper);
+      font-size: 15px;
+      line-height: 1.65;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input, textarea, select, summary {
+      transition:
+        color var(--duration-fast) var(--ease-standard),
+        background-color var(--duration-fast) var(--ease-standard),
+        border-color var(--duration-fast) var(--ease-standard),
+        box-shadow var(--duration-fast) var(--ease-standard),
+        opacity var(--duration-fast) var(--ease-standard);
+    }
+    button:disabled { opacity: .48; }
+    a { color: var(--signal); text-underline-offset: 3px; }
+    :focus-visible {
+      outline: 2px solid var(--signal);
+      outline-offset: 3px;
+      box-shadow: 0 0 0 4px var(--focus-ring);
+    }
+    [role="tabpanel"]:focus-visible {
+      border-radius: var(--radius-sm);
+      outline-offset: 8px;
+      box-shadow: none;
+    }
+    .muted { color: var(--muted); }
+
+    .app-header {
+      border-bottom-color: var(--line);
+      background: var(--surface);
+      box-shadow: var(--shadow-1);
+    }
+    .header-inner { width: min(100% - 40px, var(--content)); }
+    .brand-row { min-height: 76px; gap: var(--space-5); }
+    .brand { align-items: center; gap: var(--space-3); min-width: 0; }
+    .brand::before {
+      content: "";
+      width: 22px;
+      height: 22px;
+      flex: 0 0 22px;
+      background: center / contain no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23285d49' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4'/%3E%3Cpath d='M2 6h4M2 10h4M2 14h4M2 18h4'/%3E%3Cpath d='M21.378 5.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z'/%3E%3C/svg%3E");
+    }
+    .brand strong {
+      color: var(--ink);
+      font-size: 27px;
+      letter-spacing: -.045em;
+      white-space: nowrap;
+    }
+    .brand span {
+      overflow: hidden;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .mode-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 10px;
+      border-color: var(--line);
+      color: var(--muted-strong);
+      background: var(--surface-subtle);
+      font: 650 11px/1 var(--body);
+      letter-spacing: -.01em;
+      box-shadow: var(--shadow-1);
+    }
+    .mode-badge::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border: 1px solid var(--muted);
+      border-radius: 50%;
+      background: var(--surface);
+    }
+    .mode-badge.connected {
+      border-color: #9bb9aa;
+      color: var(--signal);
+      background: var(--signal-faint);
+    }
+    .mode-badge.connected::before { border-color: var(--signal); background: var(--signal); }
+
+    .tabs { gap: var(--space-1); overflow-y: visible; }
+    .tab {
+      min-height: 46px;
+      margin-bottom: -1px;
+      padding: 0 17px;
+      border: 1px solid transparent;
+      border-bottom: 0;
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      color: var(--muted);
+      background: transparent;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .tab:hover { color: var(--ink); background: var(--surface-subtle); }
+    .tab[aria-selected="true"] {
+      border-color: var(--line);
+      color: var(--signal);
+      background: var(--paper);
+      box-shadow: inset 0 3px 0 var(--signal);
+    }
+    .tab:focus-visible { position: relative; z-index: 1; outline-offset: -3px; }
+
+    main { width: min(100% - 40px, var(--content)); padding: 54px 0 104px; }
+    .page-heading { max-width: 780px; margin-bottom: 36px; }
+    .eyebrow {
+      margin-bottom: var(--space-2);
+      color: var(--signal);
+      font: 750 12px/1.4 var(--body);
+      letter-spacing: .08em;
+    }
+    h1 {
+      margin-bottom: var(--space-3);
+      color: var(--ink);
+      font-size: clamp(34px, 4.4vw, 48px);
+      line-height: 1.18;
+      letter-spacing: -.045em;
+    }
+    h2 { margin-bottom: var(--space-4); color: var(--ink); font-size: 25px; line-height: 1.32; }
+    h3 { color: var(--ink); font-size: 16px; line-height: 1.4; }
+    .lede { max-width: 720px; margin-bottom: 0; color: var(--muted-strong); font-size: 16px; line-height: 1.72; }
+
+    .stack { gap: var(--space-4); }
+    .section-block { margin-top: 52px; }
+    .section-heading { align-items: center; margin-bottom: var(--space-4); }
+    .section-heading h2, .section-heading h3 { line-height: 1.3; }
+    .card {
+      border-color: var(--line);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      box-shadow: var(--shadow-1);
+    }
+    .card-pad { padding: var(--space-5); }
+    .quiet-rule { margin: var(--space-7) 0; border-top-color: var(--line); }
+
+    label { gap: var(--space-2); color: var(--ink-soft); font-size: 13px; font-weight: 720; }
+    input, textarea, select {
+      border-color: var(--line-strong);
+      border-radius: 10px;
+      color: var(--ink);
+      background: var(--white);
+      box-shadow: inset 0 1px 1px rgba(31, 46, 38, .025);
+    }
+    input, select { min-height: var(--control-height); padding: 0 var(--space-3); }
+    textarea { min-height: 104px; padding: 13px 14px; line-height: 1.68; }
+    input:hover, textarea:hover, select:hover { border-color: #9eaaa1; }
+    input:focus, textarea:focus, select:focus,
+    input:focus-visible, textarea:focus-visible, select:focus-visible {
+      border-color: var(--signal);
+      outline: 0;
+      box-shadow: 0 0 0 3px var(--focus-ring);
+    }
+    input::placeholder, textarea::placeholder { color: #7d8982; opacity: 1; }
+    input:disabled, textarea:disabled, select:disabled { color: var(--muted); background: var(--surface-strong); }
+    .field-grid { gap: var(--space-4); }
+    .button-row { gap: var(--space-2); }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: var(--control-height);
+      padding: 0 var(--space-4);
+      border-color: var(--line-strong);
+      border-radius: 10px;
+      color: var(--ink-soft);
+      background: var(--surface);
+      font-size: 14px;
+      font-weight: 760;
+      line-height: 1.2;
+      box-shadow: var(--shadow-1);
+    }
+    .button:hover { border-color: #9eaaa1; color: var(--ink); background: var(--surface-subtle); }
+    .button:active { background: var(--surface-strong); box-shadow: inset 0 1px 2px rgba(31, 46, 38, .08); }
+    .button.primary { border-color: var(--signal); color: var(--white); background: var(--signal); }
+    .button.primary:hover { border-color: var(--signal-hover); color: var(--white); background: var(--signal-hover); }
+    .button.quiet { border-color: #8eb09f; color: var(--signal); background: var(--signal-faint); }
+    .button.quiet:hover { border-color: var(--signal); background: var(--signal-soft); }
+    .button.danger { border-color: #d6aaa5; color: var(--danger); background: #fffafa; }
+    .button.danger:hover { border-color: var(--danger); color: var(--danger-hover); background: var(--danger-soft); }
+    .button.small { min-height: 36px; padding: 0 var(--space-3); font-size: 12px; }
+
+    .memo-form {
+      position: relative;
+      gap: var(--space-4);
+      padding: 26px 28px;
+      overflow: hidden;
+      border-color: #c8d2ca;
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      box-shadow: var(--shadow-2);
+    }
+    .memo-form::before {
+      content: "";
+      position: absolute;
+      inset: 22px auto 22px 0;
+      width: 3px;
+      border-radius: 0 3px 3px 0;
+      background: var(--signal);
+    }
+    .memo-form textarea { min-height: 114px; font-size: 16px; background: #fffefb; }
+    .memo-form .button-row { justify-content: flex-end; }
+    .memo-form .button.primary { min-width: 96px; }
+    .save-line { min-height: 26px; margin-top: var(--space-2); color: var(--signal); font-size: 13px; }
+
+    .focus-card {
+      padding: 20px 22px;
+      border: 1px solid #aac3b4;
+      border-left: 4px solid var(--signal);
+      border-radius: var(--radius-md);
+      background: var(--signal-faint);
+      box-shadow: var(--shadow-1);
+    }
+    .focus-card h3 { margin-bottom: var(--space-1); font: 700 19px/1.4 var(--display); }
+    .focus-clue { margin-bottom: 0; color: var(--ink-soft); }
+    .today-focus-stack { gap: var(--space-3); margin-bottom: 38px; }
+    .today-focus-heading { align-items: center; }
+
+    .pending-card {
+      padding: 22px 24px;
+      border: 1px solid #dfceb0;
+      border-left: 4px solid var(--warn);
+      border-radius: var(--radius-md);
+      background: var(--warn-faint);
+      box-shadow: var(--shadow-1);
+    }
+    .pending-card blockquote { margin-bottom: var(--space-2); color: #493a22; font-size: 20px; }
+    .candidate-list { gap: var(--space-2); margin-top: var(--space-4); }
+    .candidate-list button {
+      min-height: 38px;
+      padding: 0 14px;
+      border-color: #cbb487;
+      color: #59431e;
+      background: var(--surface);
+      font-weight: 720;
+    }
+    .candidate-list button:hover { border-color: var(--warn); background: var(--warn-soft); }
+    .candidate-list .none { color: var(--muted-strong); border-color: var(--line-strong); }
+
+    .memo-list { gap: 0; border-color: var(--line); border-radius: var(--radius-md); background: var(--surface); }
+    .memo-item { padding: 19px 21px; border-bottom: 1px solid var(--line); background: var(--surface); }
+    .memo-item:last-child { border-bottom: 0; }
+    .memo-item:hover { background: var(--signal-faint); }
+    .memo-item header { margin-bottom: var(--space-2); }
+    .memo-date { color: var(--muted-strong); font-size: 12px; }
+    .memo-text { margin-bottom: var(--space-3); color: var(--ink-soft); font-size: 15px; line-height: 1.7; }
+    .chips { gap: 5px; }
+    .chip {
+      padding: 4px 9px;
+      border: 1px solid #cdd7d0;
+      color: #46554d;
+      background: var(--signal-faint);
+      font-size: 11px;
+      font-weight: 650;
+    }
+    .chip.concern { border-color: #dbc69f; color: #684c1d; background: var(--warn-soft); }
+
+    .dashboard-metrics { gap: var(--space-4); margin-bottom: var(--space-5); }
+    .dashboard-metric {
+      position: relative;
+      padding: 20px 22px;
+      overflow: hidden;
+      border-color: var(--line);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      box-shadow: var(--shadow-1);
+    }
+    .dashboard-metric::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 3px;
+      background: var(--signal-soft);
+    }
+    .dashboard-metric strong { margin: var(--space-2) 0 6px; color: var(--signal); font-size: 36px; }
+    .dashboard-metric span { color: var(--muted); font-size: 13px; }
+    .dashboard-grid { gap: var(--space-4); }
+    .dashboard-card { padding: 22px; }
+    .dashboard-card h2 { font-size: 21px; }
+    .dashboard-card .helper { min-height: 39px; margin-bottom: var(--space-4); }
+    .dashboard-list { gap: 0; }
+    .dashboard-item { gap: var(--space-2); padding: 14px 0; border-top-color: var(--line); }
+    .dashboard-item .name-button { font-size: 18px; }
+    .dashboard-tag { padding: 4px 8px; color: #654b1d; background: var(--warn-soft); font-size: 11px; }
+    .dashboard-tag.queued { color: var(--signal); background: var(--signal-soft); }
+    .dashboard-date { font-size: 11px; }
+    .dashboard-clue { color: var(--muted-strong); font-size: 13px; line-height: 1.55; }
+
+    .radar-header { gap: var(--space-2); margin-bottom: var(--space-2); }
+    .radar-header strong { color: var(--ink); font-size: clamp(27px, 4vw, 39px); }
+    .radar-notice { font-size: 14px; }
+    .pending-jump {
+      margin-top: var(--space-4);
+      padding: 13px 15px;
+      border-left-color: var(--warn);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      color: #60481f;
+      background: var(--warn-faint);
+    }
+    .radar-groups { gap: var(--space-4); }
+    .radar-group {
+      min-height: 164px;
+      padding: 22px;
+      border-color: var(--line);
+      border-left: 3px solid #aac2b5;
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      box-shadow: var(--shadow-1);
+    }
+    .radar-group header { align-items: center; margin-bottom: var(--space-4); }
+    .radar-group header h3 { color: var(--ink-soft); font-size: 15px; }
+    .radar-group header strong { color: var(--signal); font-size: 14px; }
+    .name-grid { gap: var(--space-2) var(--space-4); }
+    .name-button {
+      min-height: 34px;
+      padding: 2px 0;
+      color: var(--ink);
+      font-size: 18px;
+      text-underline-offset: 4px;
+    }
+    .name-button:hover { border-bottom-color: var(--signal); color: var(--signal); }
+    .name-button:focus-visible { border-radius: 3px; }
+    .group-line { margin-top: var(--space-2); gap: var(--space-3); }
+    .group-detail { color: var(--muted-strong); font-size: 13px; }
+    .streak { margin-bottom: 0; color: var(--signal); font-size: 13px; }
+
+    .heatmap-wrap {
+      padding: var(--space-4);
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      box-shadow: var(--shadow-1);
+    }
+    .heatmap { min-width: 760px; border-spacing: 6px; }
+    .heatmap th { padding: 5px 3px; color: var(--muted-strong); font-size: 10px; }
+    .heatmap .student-col {
+      min-width: 112px;
+      padding-right: var(--space-3);
+      background: var(--surface);
+      box-shadow: 8px 0 10px -12px rgba(31, 46, 38, .55);
+    }
+    .heat-cell { min-width: 40px; height: 40px; border-radius: 7px; font-weight: 800; }
+    .heat-cell.empty { border: 1px dashed #9fac9f; background: var(--surface-subtle); }
+    .heat-cell.empty:hover { border-color: var(--signal); background: var(--signal-faint); }
+    .heat-cell.seen { border-color: #b8cbbf; color: var(--signal); background: var(--signal-soft); }
+    .heat-cell.concern { border-color: #dbc69f; color: #714f18; background: var(--warn-soft); }
+    .heat-cell::after { border-radius: var(--radius-sm); box-shadow: var(--shadow-2); }
+    .heat-cell:hover::after, .heat-cell:focus-visible::after { visibility: visible; opacity: 1; }
+    .heatmap-legend { gap: var(--space-4); margin-top: var(--space-3); font-size: 12px; }
+    .legend-swatch.empty { border: 1px dashed #9fac9f; background: var(--surface-subtle); }
+    .legend-swatch.seen { border: 1px solid #b8cbbf; background: var(--signal-soft); }
+    .legend-swatch.concern { border: 1px solid #dbc69f; background: var(--warn-soft); }
+
+    .mirror { padding: 34px 0; border-color: var(--line); }
+    .mirror-grid { gap: var(--space-6); }
+    .mirror-summary strong { color: var(--signal); font-size: 44px; }
+    .bar-list { gap: var(--space-3); }
+    .bar-row { grid-template-columns: 78px 44px 1fr; }
+    .bar-track { height: 11px; overflow: hidden; border-color: var(--line-strong); border-radius: 999px; background: var(--surface-strong); }
+    .bar-fill { border-radius: inherit; background: var(--signal); }
+    .mirror-sentences { color: var(--ink-soft); }
+
+    .student-toolbar { margin-bottom: var(--space-4); }
+    .student-toolbar label { color: var(--muted-strong); }
+    .student-list {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      box-shadow: var(--shadow-1);
+    }
+    .student-row {
+      min-height: 70px;
+      padding: 0 20px;
+      border-bottom-color: var(--line);
+      background: var(--surface);
+    }
+    .student-row:last-child { border-bottom: 0; }
+    .student-row:hover { background: var(--signal-faint); }
+    .student-row span { color: var(--muted-strong); font-size: 13px; }
+
+    .trend-list { gap: var(--space-3); }
+    .trend-track { overflow: hidden; border-left: 0; border-radius: 4px; background: var(--surface-strong); }
+    .trend-fill { border-radius: inherit; background: var(--signal); }
+    .ledger-toolbar { gap: var(--space-3); padding: var(--space-5); }
+    .ledger-toolbar .button { min-height: var(--control-height); }
+    .export-status { min-height: 22px; color: var(--muted-strong); font-size: 13px; }
+    .report-sheet {
+      margin-top: var(--space-6);
+      padding: 38px;
+      border-color: #7b877f;
+      border-radius: 2px;
+      background: #fffefa;
+      box-shadow: var(--shadow-2);
+    }
+    .report-title { padding-bottom: 19px; border-bottom-color: var(--ink); }
+    .report-title h2 { font-size: 32px; }
+    .report-metrics { gap: var(--space-3) var(--space-5); padding: 26px 0; }
+    .metric { grid-template-columns: 100px 1fr; }
+    .metric dt { color: var(--muted-strong); font-size: 13px; }
+    .report-section { padding: 22px 0; border-top-color: var(--line); }
+    .report-section li { margin-bottom: var(--space-2); }
+
+    .evidence-ledger { margin-top: 34px; }
+    .evidence-summary { gap: var(--space-2); }
+    .evidence-card {
+      gap: var(--space-4);
+      padding: 20px 22px;
+      border-color: var(--line);
+      border-left: 3px solid #b8c8bd;
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      box-shadow: var(--shadow-1);
+    }
+    .evidence-card + .evidence-card { margin-top: var(--space-3); }
+    .evidence-card.excluded { border-left-color: #c39b97; background: #f5f2ef; opacity: .76; }
+    .evidence-meta { gap: var(--space-2); color: var(--muted-strong); font-size: 11px; }
+    .status-pill {
+      min-height: 27px;
+      padding: 0 10px;
+      border-color: var(--line-strong);
+      color: var(--muted-strong);
+      background: var(--surface-subtle);
+    }
+    .status-pill.reviewed { border-color: #9fb9aa; color: var(--signal); background: var(--signal-faint); }
+    .status-pill.excluded { border-color: #d6aaa5; color: var(--danger); background: var(--danger-soft); }
+    .evidence-original {
+      padding: 13px 15px;
+      border-left-color: #aeb8b0;
+      color: var(--ink-soft);
+      background: var(--surface-subtle);
+      line-height: 1.7;
+    }
+    .privacy-boundary {
+      padding: 13px 15px;
+      border-left-color: var(--signal);
+      color: #345346;
+      background: var(--signal-faint);
+      font-size: 13px;
+    }
+
+    .settings-grid { gap: var(--space-5); }
+    .settings-grid > .card { padding: 26px; }
+    .settings-grid > .card > h2:first-child,
+    .settings-grid > .card > .section-heading:first-child { margin-top: 0; }
+    .helper { color: var(--muted-strong); font-size: 13px; line-height: 1.6; }
+    .warning-copy {
+      padding: 13px 15px;
+      border-left-color: var(--warn);
+      color: #5d4824;
+      background: var(--warn-faint);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+    .file-picker {
+      padding: var(--space-4);
+      border-color: #8daf9d;
+      border-radius: var(--radius-md);
+      color: var(--signal);
+      background: var(--signal-faint);
+    }
+    .import-status, .provider-status { min-height: 24px; color: var(--muted-strong); font-size: 13px; }
+    .paste-fallback, .api-advanced { border-top-color: var(--line); }
+    .paste-fallback summary, .api-advanced summary {
+      padding: 4px 0;
+      color: var(--muted-strong);
+      font-size: 13px;
+      text-underline-offset: 3px;
+    }
+    .paste-fallback summary:hover, .api-advanced summary:hover { color: var(--signal); }
+    .model-picker-note { color: var(--muted-strong); font-size: 13px; line-height: 1.65; }
+    .roster { gap: 0; border-top: 1px solid var(--line); }
+    .roster-row { min-height: 60px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+    .roster-row strong { color: var(--ink); font-size: 16px; }
+    .roster-row input { min-height: 38px; }
+    .self-test { padding-top: var(--space-2); font-size: 12px; }
+
+    dialog {
+      border-color: var(--line-strong);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      box-shadow: 0 22px 60px rgba(20, 34, 27, .24);
+    }
+    dialog::backdrop { background: rgba(22, 30, 26, .56); }
+    .dialog-body { padding: 28px; }
+    .dialog-close { border-color: var(--line-strong); background: var(--surface); }
+    .dialog-close:hover { color: var(--signal); background: var(--signal-soft); }
+    .toast {
+      padding: 13px 16px;
+      border-color: var(--signal-hover);
+      border-radius: var(--radius-sm);
+      background: var(--signal-hover);
+      box-shadow: var(--shadow-2);
+    }
+
+    @media (max-width: 980px) {
+      .dashboard-grid { grid-template-columns: 1fr; }
+      .dashboard-card .helper { min-height: 0; }
+      .ledger-toolbar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .ledger-toolbar .button { align-self: end; }
+    }
+
+    @media (max-width: 840px) {
+      .settings-grid, .radar-groups { grid-template-columns: 1fr; }
+      .settings-grid .wide { grid-column: auto; }
+      .field-grid.four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .dashboard-metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .dashboard-metric { padding: 18px; }
+      .dashboard-metric strong { font-size: 31px; }
+    }
+
+    @media (max-width: 760px) {
+      .header-inner, main { width: min(100% - 28px, var(--content)); }
+      .brand-row { min-height: 66px; }
+      .brand::before { width: 20px; height: 20px; flex-basis: 20px; }
+      .brand strong { font-size: 25px; }
+      .tab { min-height: 44px; padding: 0 14px; font-size: 13px; }
+      main { padding: 38px 0 80px; }
+      .page-heading { margin-bottom: 30px; }
+      h1 { font-size: clamp(33px, 10vw, 40px); }
+      h2 { font-size: 23px; }
+      .lede { font-size: 15px; }
+      .section-block { margin-top: 44px; }
+      .card-pad, .settings-grid > .card { padding: 20px; }
+      .memo-form { padding: 21px 20px; }
+      .memo-form::before { inset-block: 18px; }
+      .memo-form .button-row, .memo-form .button { width: 100%; }
+      .dashboard-metrics, .ledger-toolbar { grid-template-columns: 1fr; }
+      .dashboard-metric { padding: 19px 20px; }
+      .dashboard-metric strong { font-size: 34px; }
+      .dashboard-card { padding: 20px; }
+      .radar-group { padding: 20px; }
+      .heatmap-wrap { padding: var(--space-3); }
+      .student-row { min-height: 76px; padding: 13px 16px; }
+      .report-sheet { padding: 24px 20px; }
+      .evidence-card { padding: 18px; }
+      .dialog-body { padding: 22px; }
+    }
+
+    @media (max-width: 520px) {
+      .section-heading { align-items: flex-start; flex-wrap: wrap; gap: var(--space-2); }
+      .mode-badge { padding: 6px 8px; font-size: 10px; }
+      .field-grid.four { grid-template-columns: 1fr; }
+      .candidate-list button { flex-basis: calc(50% - 4px); }
+      .student-toolbar { justify-content: stretch; }
+      .student-toolbar label, .student-toolbar select { width: 100%; }
+      .student-row { grid-template-columns: minmax(0, 1fr) auto; gap: 5px 12px; }
+      .student-row .name-button { grid-row: auto; grid-column: 1; }
+      .student-row span:first-of-type { grid-column: 1 / -1; }
+      .roster-row { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2); padding: var(--space-4) 0; }
+      .roster-row strong, .roster-row input[data-role="aliases"], .roster-row .button-row { grid-column: 1 / -1; }
+      .roster-row .button-row { justify-content: flex-end; }
+      .roster-row .button { min-width: 68px; }
+      .dialog-actions .button { min-height: 46px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto !important; }
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+
+    @media print {
+      :root { --ink: #000; --muted: #333; --line: #999; }
+      body { color: #000; background: #fff; font-size: 10pt; }
+      main { max-width: none; }
+      .report-sheet { box-shadow: none; background: #fff; }
+      .report-title, .report-section, .report-note { border-color: #333; }
+      .report-section li { break-inside: avoid; }
+      a { color: #000; text-decoration: none; }
+    }
+
+    .refinement {
+      display: grid;
+      gap: var(--space-4);
+      margin: 18px 0 0;
+      padding: 26px 28px;
+      border-left: 4px solid var(--signal);
+      background: var(--surface);
+      box-shadow: var(--shadow-2);
+    }
+    .refinement[hidden] { display: none; }
+    .refinement .section-heading { margin-bottom: 0; }
+    .refinement-records { display: grid; gap: var(--space-3); }
+    .refinement-record {
+      display: grid;
+      gap: var(--space-3);
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--surface-subtle);
+    }
+    .refinement-record header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2); }
+    .refinement-record textarea { min-height: 82px; background: var(--white); }
+    .refinement-record .chips { align-items: center; }
+    .refinement-loading { position: relative; overflow: hidden; }
+    .refinement-loading::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, .62) 50%, transparent 70%);
+      transform: translateX(-100%);
+      animation: refinement-scan 1.2s infinite;
+      pointer-events: none;
+    }
+    @keyframes refinement-scan { to { transform: translateX(100%); } }
+
+    .weekly-brief {
+      display: grid;
+      gap: var(--space-5);
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-top: 4px solid var(--signal);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      box-shadow: var(--shadow-2);
+    }
+    .weekly-brief-header { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: var(--space-3); }
+    .weekly-brief-header h3 { margin: 0 0 4px; font: 700 23px/1.35 var(--display); }
+    .weekly-brief-source { display: inline-flex; align-items: center; gap: 6px; color: var(--signal); font-size: 12px; font-weight: 750; }
+    .weekly-brief-source::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--signal); }
+    .weekly-facts { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+    .weekly-facts li { position: relative; padding: 12px 14px 12px 38px; border-radius: 10px; color: var(--ink-soft); background: var(--surface-subtle); }
+    .weekly-facts li::before { content: "✓"; position: absolute; left: 14px; top: 12px; color: var(--signal); font-weight: 900; }
+    .weekly-followup { padding-top: var(--space-5); border-top: 1px solid var(--line); }
+    .weekly-followup h3 { margin-bottom: var(--space-2); }
+    .weekly-followup-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
+    .weekly-followup-card { display: grid; gap: 7px; padding: 14px 16px; border: 1px solid #dbc69f; border-radius: 10px; background: var(--warn-faint); }
+    .weekly-followup-card .name-button { justify-self: start; font-size: 17px; }
+    .weekly-student-details { padding-top: var(--space-4); border-top: 1px solid var(--line); }
+    .weekly-student-details summary { color: var(--signal); cursor: pointer; font-weight: 760; }
+    .weekly-student-list { display: grid; gap: 1px; margin-top: var(--space-4); overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--line); }
+    .weekly-student-row { display: grid; grid-template-columns: minmax(110px, 1.1fr) .65fr .8fr 1.5fr; gap: var(--space-3); align-items: center; min-height: 58px; padding: 10px 14px; background: var(--surface); }
+    .weekly-student-row .name-button { justify-self: start; font-size: 17px; }
+    .weekly-student-row span { color: var(--muted-strong); font-size: 12px; }
+
+    .setup-dialog { width: min(860px, calc(100% - 28px)); max-height: min(92vh, 900px); overflow: auto; }
+    .setup-shell { display: grid; gap: var(--space-5); padding: 32px; }
+    .setup-header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-5); }
+    .setup-header h1 { margin-bottom: 8px; font-size: clamp(30px, 5vw, 42px); }
+    .setup-header .lede { font-size: 15px; }
+    .setup-progress { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin: 0; padding: 0; list-style: none; }
+    .setup-progress li { position: relative; display: flex; align-items: center; gap: 9px; padding: 11px 12px; border-bottom: 2px solid var(--line); color: var(--muted); font-size: 13px; font-weight: 720; }
+    .setup-progress li span { display: inline-grid; width: 24px; height: 24px; place-items: center; border: 1px solid var(--line-strong); border-radius: 50%; background: var(--surface); font: 700 11px/1 var(--mono); }
+    .setup-progress li[aria-current="step"] { border-bottom-color: var(--signal); color: var(--signal); }
+    .setup-progress li[aria-current="step"] span { border-color: var(--signal); color: var(--white); background: var(--signal); }
+    .setup-status { min-height: 22px; margin: -10px 0 0; color: var(--danger); font-size: 13px; font-weight: 700; }
+    .setup-step { display: grid; gap: var(--space-5); min-height: 300px; }
+    .setup-step[hidden] { display: none; }
+    .setup-step-copy { padding-bottom: var(--space-4); border-bottom: 1px solid var(--line); }
+    .setup-step-copy h2 { margin-bottom: 7px; }
+    .setup-step-copy p:last-child { margin-bottom: 0; color: var(--muted-strong); }
+    .setup-choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
+    .setup-choice { display: flex; grid-template-columns: none; align-items: flex-start; gap: var(--space-3); padding: 16px; border: 1px solid var(--line); border-radius: var(--radius-md); color: var(--ink); background: var(--surface-subtle); cursor: pointer; }
+    .setup-choice:has(input:checked) { border-color: var(--signal); background: var(--signal-faint); box-shadow: 0 0 0 2px var(--focus-ring); }
+    .setup-choice input { width: 18px; min-height: 18px; margin: 3px 0 0; padding: 0; accent-color: var(--signal); }
+    .setup-choice span { display: grid; gap: 3px; }
+    .setup-choice strong { font-size: 14px; }
+    .setup-choice small { color: var(--muted); font-size: 12px; font-weight: 500; }
+    .setup-roster-panel { padding: var(--space-4); border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface-subtle); }
+    .setup-roster-panel[hidden] { display: none; }
+    .setup-footer { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding-top: var(--space-5); border-top: 1px solid var(--line); }
+
+    /* 고정 의미: 기록이 없는 칸이 채워진 칸보다 먼저 보여야 한다. */
+    .heat-cell.empty {
+      border: 2px solid var(--signal);
+      background: var(--white);
+      box-shadow: inset 0 0 0 2px var(--signal-faint), 0 1px 4px rgba(36, 89, 67, .12);
+    }
+    .heat-cell.empty:hover { border-color: var(--signal-dark); background: var(--signal-faint); }
+    .heat-cell.seen { border-color: transparent; color: #7d8982; background: #e7eae7; box-shadow: none; }
+    .heat-cell.concern { border-color: transparent; color: #806637; background: #efe9dc; box-shadow: none; }
+    .legend-swatch.empty { border: 2px solid var(--signal); background: var(--white); box-shadow: inset 0 0 0 1px var(--signal-faint); }
+    .legend-swatch.seen { border-color: transparent; background: #e7eae7; }
+    .legend-swatch.concern { border-color: transparent; background: #efe9dc; }
+
+    @media (max-width: 760px) {
+      .refinement, .weekly-brief { padding: 20px; }
+      .weekly-followup-grid, .setup-choices { grid-template-columns: 1fr; }
+      .weekly-student-row { grid-template-columns: minmax(0, 1fr) auto; gap: 5px 12px; }
+      .weekly-student-row span:last-child { grid-column: 1 / -1; }
+      .setup-shell { padding: 22px; }
+      .setup-step { min-height: 0; }
+    }
+
+    @media (max-width: 520px) {
+      .setup-progress li { justify-content: center; padding-inline: 4px; font-size: 0; }
+      .setup-progress li span { font-size: 11px; }
+      .setup-footer { align-items: stretch; flex-direction: column; }
+      .setup-footer .button-row, .setup-footer .button { width: 100%; }
+      .refinement .button-row, .refinement .button { width: 100%; }
+      .weekly-brief-header { display: grid; }
+    }
   </style>
 </head>
 <body>
@@ -349,6 +1125,7 @@
       </div>
       <nav id="tabs" class="tabs" role="tablist" aria-label="주 화면">
         <button class="tab" id="tab-today" role="tab" aria-controls="panel-today" aria-selected="true" data-tab="today">오늘</button>
+        <button class="tab" id="tab-dashboard" role="tab" aria-controls="panel-dashboard" aria-selected="false" data-tab="dashboard" tabindex="-1">대시보드</button>
         <button class="tab" id="tab-radar" role="tab" aria-controls="panel-radar" aria-selected="false" data-tab="radar" tabindex="-1">주간 레이더</button>
         <button class="tab" id="tab-students" role="tab" aria-controls="panel-students" aria-selected="false" data-tab="students" tabindex="-1">학생</button>
         <button class="tab" id="tab-report" role="tab" aria-controls="panel-report" aria-selected="false" data-tab="report" tabindex="-1">기록 장부</button>
@@ -368,9 +1145,18 @@
       <form id="memoForm" class="memo-form card card-pad">
         <label>날짜<input id="memoDate" type="date" required></label>
         <label>오늘의 메모<textarea id="memoText" rows="3" maxlength="4000" placeholder="오늘 있었던 일을 편하게 적어 주세요. 양식 없습니다." required></textarea></label>
-        <div class="button-row"><button class="button primary" type="submit">저장</button></div>
+        <p class="helper">분석·정리는 문장을 브라우저 안에서 나누고, API 연결 시 실명 없는 고정 관찰 신호의 영역·성격만 분류합니다.</p>
+        <div class="button-row"><button id="refineMemo" class="button primary" type="submit">분석·정리</button><button id="quickSaveMemo" class="button" type="button">원문 바로 저장</button></div>
       </form>
       <p id="saveFeedback" class="save-line" role="status" aria-live="polite"></p>
+
+      <section id="refinementSection" class="refinement card" aria-labelledby="refinementHeading" hidden>
+        <div class="section-heading"><div><p class="eyebrow">저장 전 교사 확인</p><h2 id="refinementHeading">관찰 기록 정리본</h2></div><span id="refinementMode" class="status-pill"></span></div>
+        <p id="refinementStatus" class="helper" role="status" aria-live="polite"></p>
+        <div id="refinementRecords" class="refinement-records"></div>
+        <p class="privacy-boundary">학생 이름과 문장은 이 브라우저에서만 표시됩니다. 외부 모델에는 익명 ID와 고정 관찰 신호만 보내며, 아래 문장은 교사가 확인·수정한 뒤 저장합니다.</p>
+        <div class="button-row"><button id="saveRefinement" class="button primary" type="button">확인한 정리본 저장</button><button id="cancelRefinement" class="button" type="button">취소</button></div>
+      </section>
 
       <section id="pendingSection" class="section-block" aria-labelledby="pendingHeading" hidden>
         <div class="section-heading"><h2 id="pendingHeading">확인 요청</h2><span id="pendingCount" class="mono muted"></span></div>
@@ -381,6 +1167,37 @@
         <div class="section-heading"><h2 id="weekHeading">이번 주 기록</h2></div>
         <div id="weeklyMemos"></div>
       </section>
+
+      <section id="weeklyBriefSection" class="section-block" aria-labelledby="weeklyBriefHeading">
+        <div class="section-heading"><div><p class="eyebrow">최근 7일 · 교사 확인용</p><h2 id="weeklyBriefHeading">주간 요약 보고서</h2></div><button id="refreshWeeklyBrief" class="button small" type="button">요약 새로 만들기</button></div>
+        <div id="weeklyBriefContainer"></div>
+      </section>
+    </section>
+
+    <section id="panel-dashboard" role="tabpanel" aria-labelledby="tab-dashboard" tabindex="0" hidden>
+      <header class="page-heading">
+        <p class="eyebrow">교사의 후속 행동</p>
+        <h1>교사 대시보드</h1>
+        <p class="lede">기록 공백과 반복된 관찰 맥락, 이미 잡아 둔 상담 날짜를 한눈에 확인합니다. 학생에 대한 평가나 AI 판단이 아닙니다.</p>
+      </header>
+      <div id="dashboardMetrics" class="dashboard-metrics"></div>
+      <div class="dashboard-grid">
+        <section class="card dashboard-card" aria-labelledby="dashboardTalkHeading">
+          <div class="section-heading"><h2 id="dashboardTalkHeading">오늘 말 걸기</h2><span id="dashboardTalkCount" class="mono muted"></span></div>
+          <p class="helper">학생 메뉴에서 등록한 오늘의 대화 목록입니다.</p>
+          <div id="dashboardTalkList" class="dashboard-list"></div>
+        </section>
+        <section class="card dashboard-card" aria-labelledby="dashboardAttentionHeading">
+          <div class="section-heading"><h2 id="dashboardAttentionHeading">관심을 줄 학생</h2><span id="dashboardAttentionCount" class="mono muted"></span></div>
+          <p class="helper">로컬 규칙: 기록 공백 또는 최근 우려 맥락만 반복된 경우입니다.</p>
+          <div id="dashboardAttentionList" class="dashboard-list"></div>
+        </section>
+        <section class="card dashboard-card" aria-labelledby="dashboardConsultationHeading">
+          <div class="section-heading"><h2 id="dashboardConsultationHeading">상담 예정</h2><span id="dashboardConsultationCount" class="mono muted"></span></div>
+          <p class="helper">오늘 이후로 예약된 상담을 날짜순으로 표시합니다.</p>
+          <div id="dashboardConsultationList" class="dashboard-list"></div>
+        </section>
+      </div>
     </section>
 
     <section id="panel-radar" role="tabpanel" aria-labelledby="tab-radar" tabindex="0" hidden>
@@ -442,7 +1259,7 @@
 
       <div class="settings-grid">
         <section class="card" aria-labelledby="classSettingsHeading">
-          <h2 id="classSettingsHeading">학급 설정</h2>
+          <div class="section-heading"><h2 id="classSettingsHeading">학급 설정</h2><button id="reopenSetup" class="button small" type="button">초기 설정 다시 열기</button></div>
           <form id="classForm" class="stack">
             <label>학급·집단 이름<input id="className" maxlength="40" placeholder="예: 3-2, 2학년 과학"></label>
             <label>미언급 기준<select id="silentDays"><option value="7">최근 7일</option><option value="14">최근 14일</option><option value="21">최근 21일</option></select></label>
@@ -524,12 +1341,64 @@
     </section>
   </main>
 
+  <dialog id="setupDialog" class="setup-dialog" aria-labelledby="setupTitle">
+    <form id="setupForm" class="setup-shell">
+      <header class="setup-header">
+        <div><p class="eyebrow">처음 한 번만</p><h1 id="setupTitle">빈자리 시작 설정</h1><p class="lede">학급·명단·AI 연결을 먼저 준비한 뒤 바로 기록을 시작합니다.</p></div>
+        <button id="setupClose" class="dialog-close" type="button" aria-label="초기 설정 닫기" hidden>×</button>
+      </header>
+      <ol class="setup-progress" aria-label="초기 설정 단계">
+        <li data-setup-progress="1" aria-current="step"><span>1</span>학급</li>
+        <li data-setup-progress="2"><span>2</span>명단</li>
+        <li data-setup-progress="3"><span>3</span>AI 연결</li>
+      </ol>
+      <p id="setupStatus" class="setup-status" role="status" aria-live="polite"></p>
+
+      <section class="setup-step" data-setup-step="1" aria-labelledby="setupClassHeading">
+        <div class="setup-step-copy"><p class="eyebrow">STEP 1</p><h2 id="setupClassHeading">학급 기준을 정합니다</h2><p>학급 이름은 화면에만 사용되며 API로 전송하지 않습니다.</p></div>
+        <div class="field-grid">
+          <label>학급·집단 이름<input id="setupClassName" maxlength="40" placeholder="예: 3-2, 2학년 과학" required></label>
+          <label>기록 공백 기준<select id="setupSilentDays"><option value="7">최근 7일</option><option value="14">최근 14일</option><option value="21">최근 21일</option></select></label>
+          <label class="field-span">추가 비공개 단어<input id="setupPrivateTerms" maxlength="200" placeholder="학교명|교사명"></label>
+        </div>
+      </section>
+
+      <section class="setup-step" data-setup-step="2" aria-labelledby="setupRosterHeading" hidden>
+        <div class="setup-step-copy"><p class="eyebrow">STEP 2</p><h2 id="setupRosterHeading">학생 명단을 준비합니다</h2><p>Excel과 붙여넣기는 브라우저 안에서만 처리합니다. 나중에 설정에서 추가할 수도 있습니다.</p></div>
+        <div class="setup-choices" role="radiogroup" aria-label="명단 준비 방식">
+          <label class="setup-choice"><input type="radio" name="setupRosterChoice" value="keep" checked><span><strong>현재 명단 유지</strong><small id="setupCurrentRoster">등록 0명 · 나중에 추가 가능</small></span></label>
+          <label class="setup-choice"><input type="radio" name="setupRosterChoice" value="xlsx"><span><strong>Excel 명단 불러오기</strong><small>이름·별칭·모둠·번호 일괄 등록</small></span></label>
+          <label class="setup-choice"><input type="radio" name="setupRosterChoice" value="paste"><span><strong>텍스트로 붙여넣기</strong><small>한 줄에 이름, 별칭, 모둠, 번호</small></span></label>
+          <label class="setup-choice"><input type="radio" name="setupRosterChoice" value="demo"><span><strong>25명 가상 데모</strong><small>실제 학생 자료 없이 기능 확인</small></span></label>
+        </div>
+        <div class="setup-roster-panel" data-setup-roster-panel="xlsx" hidden><label class="file-picker">학생 명단 Excel<input id="setupRosterFile" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"></label></div>
+        <div class="setup-roster-panel" data-setup-roster-panel="paste" hidden><label>학생 명단<textarea id="setupRosterPaste" rows="6" placeholder="강민준,민준이,1,1&#10;고서연,서연이,1,2"></textarea></label></div>
+      </section>
+
+      <section class="setup-step" data-setup-step="3" aria-labelledby="setupApiHeading" hidden>
+        <div class="setup-step-copy"><p class="eyebrow">STEP 3</p><h2 id="setupApiHeading">AI 연결은 선택 사항입니다</h2><p>키가 없어도 규칙 기반 정리·레이더·보고서가 모두 동작합니다. 키는 현재 브라우저에만 저장됩니다.</p></div>
+        <div class="field-grid">
+          <label>AI 서비스<select id="setupApiService"><option value="gemini">Gemini</option><option value="openai">OpenAI</option><option value="claude">Claude</option><option value="upstage">Upstage</option></select></label>
+          <label>추천 모델<select id="setupApiModel"></select></label>
+          <label class="field-span">API 키 · 선택<input id="setupApiKey" type="password" autocomplete="off" spellcheck="false" placeholder="키 없이 규칙 기반으로 시작할 수 있습니다"></label>
+        </div>
+        <p class="helper">키 권한으로 실제 사용 가능한 모델 전체를 확인하거나 고급 endpoint를 바꾸려면 시작 후 설정 › 모델 API를 사용하세요.</p>
+        <p class="warning-copy">외부 모델에는 학생 실명·별칭·학급명·원문 문장을 보내지 않습니다. 익명 ID, 고정 관찰 신호, 숫자 집계와 사전에 만들어 둔 사실 문장만 전송합니다.</p>
+      </section>
+
+      <footer class="setup-footer">
+        <span id="setupStepLabel" class="mono muted">1 / 3</span>
+        <div class="button-row"><button id="setupBack" class="button" type="button" hidden>이전</button><button id="setupNext" class="button primary" type="button">다음</button><button id="setupFinish" class="button primary" type="submit" hidden>설정 마치고 시작</button></div>
+      </footer>
+    </form>
+  </dialog>
+
   <dialog id="studentDialog" aria-labelledby="dialogTitle">
     <div class="dialog-body">
       <header class="dialog-header"><div><p class="eyebrow">교사의 다음 행동</p><h2 id="dialogTitle"></h2></div><button id="closeDialog" class="dialog-close" type="button" aria-label="닫기">×</button></header>
       <p id="dialogClue" class="muted"></p>
       <div class="dialog-actions">
-        <button class="button primary" type="button" data-dialog-action="queue">오늘 말 걸기</button>
+        <button id="queueTodayButton" class="button primary" type="button" data-dialog-action="queue">오늘 말 걸기</button>
         <button class="button" type="button" data-dialog-action="schedule">상담 예약</button>
         <button class="button" type="button" data-dialog-action="snooze">괜찮음</button>
       </div>
@@ -558,12 +1427,14 @@
         settings: "binjari.settings",
         todayQueue: "binjari.todayQueue",
         mirror: "binjari.mirror",
+        weeklyBrief: "binjari.weeklyBrief",
+        onboarding: "binjari.onboarding",
         privateTokens: "binjari.privateTokens"
       });
       const DOMAINS = ["행동", "학업", "정서", "관계", "건강"];
       const TONES = ["긍정", "중립", "우려"];
       const REVIEW_STATUSES = ["미확인", "확인", "교사수정", "제외"];
-      const APP_VERSION = "2.3.1";
+      const APP_VERSION = "3.0.0";
       const MAX_ROSTER_IMPORT = 200;
       const PROVIDER_SIGNAL_WORDS = Object.freeze([
         "지각", "미제출", "안 챙", "떠들", "주의", "다툼", "늦", "안 함", "못 함", "산만", "휴대폰",
@@ -595,7 +1466,7 @@
         },
         "gemini-generate-content": {
           endpoint: "https://generativelanguage.googleapis.com/v1beta/models",
-          model: "gemini-3.6-flash",
+          model: "gemini-3.7-flash",
           authMode: "x-goog-api-key"
         }
       });
@@ -605,8 +1476,8 @@
           protocol: "gemini-generate-content",
           endpoint: "https://generativelanguage.googleapis.com/v1beta/models",
           authMode: "x-goog-api-key",
-          model: "gemini-3.6-flash",
-          models: Object.freeze(["gemini-3.1-pro-preview", "gemini-3.6-flash", "gemini-3.5-flash", "gemini-2.5-pro"])
+          model: "gemini-3.7-flash",
+          models: Object.freeze(["gemini-3.7-flash", "gemini-3.6-flash", "gemini-3.5-flash", "gemini-3.1-pro-preview", "gemini-2.5-pro"])
         }),
         openai: Object.freeze({
           label: "OpenAI",
@@ -820,23 +1691,66 @@
         }));
       }
 
+      function normalizeTodayQueue(value, students = [], defaultDate = localToday()) {
+        if (!value || typeof value !== "object") return null;
+        const date = /^\d{4}-\d{2}-\d{2}$/.test(value.date || "") ? value.date : defaultDate;
+        const sourceItems = Array.isArray(value.items) ? value.items : value.studentId ? [value] : [];
+        const validStudentIds = new Set(students.map((student) => student.id));
+        const seen = new Set();
+        const items = [];
+        for (const item of sourceItems) {
+          const studentId = typeof item?.studentId === "string" ? item.studentId : "";
+          if (!studentId || seen.has(studentId) || !validStudentIds.has(studentId)) continue;
+          seen.add(studentId);
+          const clue = item.clue && typeof item.clue === "object" && typeof item.clue.quote === "string"
+            ? {
+                date: /^\d{4}-\d{2}-\d{2}$/.test(item.clue.date || "") ? item.clue.date : date,
+                quote: item.clue.quote
+              }
+            : null;
+          items.push({
+            studentId,
+            clue,
+            addedAt: typeof item.addedAt === "string" && item.addedAt ? item.addedAt : null
+          });
+        }
+        return items.length ? { date, items } : null;
+      }
+
+      function normalizeOnboarding(value, students = [], classInfo = {}) {
+        if (value && typeof value === "object" && value.completed === true) {
+          return {
+            completed: true,
+            completedAt: typeof value.completedAt === "string" ? value.completedAt : null,
+            version: Number.isFinite(Number(value.version)) ? Number(value.version) : 1
+          };
+        }
+        if (students.length || String(classInfo.className || "").trim()) {
+          return { completed: true, completedAt: null, version: 1 };
+        }
+        return { completed: false, completedAt: null, version: 1 };
+      }
+
       function loadState() {
         const settings = normalizeSettings(readJson(KEYS.settings, {}));
         const classInfo = readJson(KEYS.classInfo, { className: "", createdAt: settings.demoMode ? "2026-09-01" : localToday() });
         const students = normalizeStudents(readJson(KEYS.students, []));
         const memos = normalizeMemos(readJson(KEYS.memos, []));
         const contacts = normalizeContacts(readJson(KEYS.contacts, []));
+        const normalizedClassInfo = {
+          className: typeof classInfo.className === "string" ? classInfo.className : "",
+          createdAt: /^\d{4}-\d{2}-\d{2}$/.test(classInfo.createdAt || "") ? classInfo.createdAt : localToday()
+        };
         return {
-          classInfo: {
-            className: typeof classInfo.className === "string" ? classInfo.className : "",
-            createdAt: /^\d{4}-\d{2}-\d{2}$/.test(classInfo.createdAt || "") ? classInfo.createdAt : localToday()
-          },
+          classInfo: normalizedClassInfo,
           students,
           memos,
           contacts,
           settings,
-          todayQueue: readJson(KEYS.todayQueue, null),
+          todayQueue: normalizeTodayQueue(readJson(KEYS.todayQueue, null), students, settings.demoMode ? DEMO_TODAY : localToday()),
           mirror: readJson(KEYS.mirror, null),
+          weeklyBrief: readJson(KEYS.weeklyBrief, null),
+          onboarding: normalizeOnboarding(readJson(KEYS.onboarding, null), students, normalizedClassInfo),
           privateTokens: Array.isArray(readJson(KEYS.privateTokens, [])) ? readJson(KEYS.privateTokens, []) : []
         };
       }
@@ -853,6 +1767,10 @@
         rosterImportMessage: "",
         modelCatalogDraft: null,
         mirrorLoading: false,
+        weeklyBriefLoading: false,
+        refinementLoading: false,
+        refinementDraft: null,
+        setupStep: 1,
         toastTimer: null
       };
 
@@ -871,6 +1789,9 @@
         else storageRemove(KEYS.todayQueue);
         if (state.mirror) writeJson(KEYS.mirror, state.mirror);
         else storageRemove(KEYS.mirror);
+        if (state.weeklyBrief) writeJson(KEYS.weeklyBrief, state.weeklyBrief);
+        else storageRemove(KEYS.weeklyBrief);
+        writeJson(KEYS.onboarding, state.onboarding || { completed: false, completedAt: null, version: 1 });
         writeJson(KEYS.privateTokens, state.privateTokens || []);
       }
 
@@ -1215,17 +2136,20 @@
           lastTest: { ok: false, at: null, errorCode: null }
         });
         const classInfo = source.classInfo && typeof source.classInfo === "object" ? source.classInfo : {};
+        const students = normalizeStudents(source.students);
         return {
           classInfo: {
             className: typeof classInfo.className === "string" ? classInfo.className.slice(0, 40) : "",
             createdAt: /^\d{4}-\d{2}-\d{2}$/.test(classInfo.createdAt || "") ? classInfo.createdAt : localToday()
           },
-          students: normalizeStudents(source.students),
+          students,
           memos: normalizeMemos(source.memos),
           contacts: normalizeContacts(source.contacts),
           settings,
-          todayQueue: source.todayQueue && typeof source.todayQueue === "object" ? deepClone(source.todayQueue) : null,
+          todayQueue: normalizeTodayQueue(source.todayQueue, students, settings.demoMode ? DEMO_TODAY : localToday()),
           mirror: null,
+          weeklyBrief: null,
+          onboarding: { completed: true, completedAt: new Date().toISOString(), version: 1 },
           privateTokens: Array.isArray(source.privateTokens) ? source.privateTokens.map((value) => String(value).normalize("NFC").trim()).filter((value) => value.length >= 2).slice(0, 2000) : []
         };
       }
@@ -1430,6 +2354,12 @@
         return { records, issues, headerRow: headerIndex + 1 };
       }
 
+      function rosterRecordsFromText(text) {
+        const lines = String(text || "").normalize("NFC").split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+        const rows = [["학생명", "별칭", "모둠", "출석번호"], ...lines.map((line) => line.split(",").map((part) => part.trim()))];
+        return rosterRecordsFromRows(rows);
+      }
+
       function appendRosterRecords(records) {
         const names = new Set(state.students.map((student) => student.name));
         let maxId = state.students.reduce((current, student) => Math.max(current, Number(student.id.replace(/\D/g, "")) || 0), 0);
@@ -1458,6 +2388,7 @@
           state.students.sort((a, b) => a.id.localeCompare(b.id));
           refreshDirectiveCandidates();
           state.mirror = null;
+          state.weeklyBrief = null;
           persistState();
         }
         return { added, skipped };
@@ -1783,7 +2714,119 @@
         return created;
       }
 
-      function buildDemoState(existingSettings = state.settings, existingPrivateTokens = []) {
+      function splitObservationUnits(text) {
+        const units = [];
+        const lines = String(text || "").normalize("NFC").replace(/\r\n/g, "\n").split(/\n+/);
+        for (const rawLine of lines) {
+          const line = rawLine.replace(/\s+/g, " ").trim();
+          if (!line) continue;
+          const sentences = line.match(/[^.!?。！？]+[.!?。！？]?/g) || [line];
+          for (const sentence of sentences) {
+            const clean = sentence.replace(/\s+/g, " ").trim();
+            if (!clean) continue;
+            units.push(/[.!?。！？]$/.test(clean) ? clean : `${clean}.`);
+            if (units.length >= 30) return units;
+          }
+        }
+        return units;
+      }
+
+      function buildRefinementDraft(date, text, model = state) {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(date || "") || date > effectiveToday(model)) throw new Error("FUTURE_DATE_NOT_ALLOWED");
+        const units = splitObservationUnits(text);
+        if (!units.length) throw new Error("REFINEMENT_EMPTY");
+        return {
+          date,
+          mode: "rules",
+          errorCode: null,
+          createdAt: new Date().toISOString(),
+          records: units.map((unit, index) => ({
+            key: `R${index + 1}`,
+            text: unit,
+            originalText: unit,
+            memo: createMemo(`D${String(index + 1).padStart(3, "0")}`, date, unit, model.students)
+          }))
+        };
+      }
+
+      function refinementSignalItems(draft, model = state) {
+        const items = [];
+        for (const record of draft?.records || []) {
+          for (const mention of record.memo?.mentions || []) {
+            const key = `${record.key}:${mention.studentId}`;
+            items.push({ key, studentId: mention.studentId, observation: providerObservation(mention.context || record.text, model) });
+          }
+        }
+        return items;
+      }
+
+      function validateRefinementResult(parsed, allowedKeys) {
+        if (!Array.isArray(parsed) || parsed.length !== allowedKeys.length) return null;
+        const allowed = new Set(allowedKeys);
+        const accepted = new Map();
+        for (const item of parsed) {
+          if (!allowed.has(item?.key) || accepted.has(item.key) || !TONES.includes(item.tone) || !DOMAINS.includes(item.domain)) return null;
+          accepted.set(item.key, { tone: item.tone, domain: item.domain });
+        }
+        return accepted.size === allowed.size ? accepted : null;
+      }
+
+      async function analyzeRefinementDraft(draft, model = state) {
+        const items = refinementSignalItems(draft, model);
+        if (!hasProviderConfig() || !items.length) return { ...draft, mode: "rules", errorCode: null };
+        const rawPrompt = `당신은 교사의 관찰 기록을 구조화하는 분류 도구입니다.\n원문 문장과 학생 실명은 제공되지 않습니다. 아래 익명 키별 고정 관찰 신호만 분류하십시오.\n규칙:\n- tone은 긍정 / 중립 / 우려 중 하나\n- domain은 학업 / 관계 / 정서 / 행동 / 건강 중 하나\n- 새로운 사실, 학생 평가, 진단, 조언, 권고 문장을 만들지 마십시오\n- 모든 key를 정확히 한 번씩 반환하십시오\n관찰 신호:\n${items.map((item) => `${item.key}: ${item.observation}`).join("\n")}\nJSON 배열로만 답하십시오.\n[{"key":"${items[0].key}","tone":"중립","domain":"행동"}]`;
+        try {
+          const parsed = await callJsonModel(rawPrompt);
+          const accepted = validateRefinementResult(parsed, items.map((item) => item.key));
+          if (!accepted) throw new Error("MODEL_SCHEMA_INVALID");
+          const records = draft.records.map((record) => ({
+            ...record,
+            memo: {
+              ...record.memo,
+              mentions: (record.memo.mentions || []).map((mention) => {
+                const result = accepted.get(`${record.key}:${mention.studentId}`);
+                return result ? { ...mention, tone: result.tone, domain: result.domain, source: "ai_classification" } : mention;
+              })
+            }
+          }));
+          return { ...draft, records, mode: "ai", errorCode: null };
+        } catch (error) {
+          return { ...draft, mode: "rules", errorCode: error instanceof Error ? error.message : "PROVIDER_FAILED" };
+        }
+      }
+
+      function commitRefinementDraft(draft, editedTexts, model = state) {
+        if (!draft || !Array.isArray(draft.records)) return [];
+        const created = [];
+        for (let index = 0; index < draft.records.length; index += 1) {
+          const record = draft.records[index];
+          const text = String(editedTexts[index] || "").normalize("NFC").replace(/\s+/g, " ").trim();
+          if (!text) continue;
+          const memo = createMemo(nextId("M", model.memos), draft.date, text, model.students);
+          const unchanged = text === record.text;
+          if (unchanged) {
+            const classified = new Map((record.memo.mentions || []).map((mention) => [mention.studentId, mention]));
+            memo.mentions = memo.mentions.map((mention) => {
+              const prior = classified.get(mention.studentId);
+              return prior ? { ...mention, tone: prior.tone, domain: prior.domain, source: prior.source } : mention;
+            });
+          }
+          memo.analysisVersion = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+          model.memos.push(memo);
+          created.push(memo);
+        }
+        model.memos.sort((a, b) => a.date.localeCompare(b.date));
+        if (!created.length) return [];
+        model.mirror = null;
+        model.weeklyBrief = null;
+        if (model === state) {
+          bumpAnalysisContext();
+          persistState();
+        }
+        return created;
+      }
+
+      function buildDemoState(existingSettings = state.settings, existingPrivateTokens = [], existingOnboarding = state.onboarding) {
         const rows = [
           ["S01", "강민준", 1, 1, ["민준이"]], ["S02", "고서연", 2, 1, ["서연이"]], ["S03", "권하늘", 3, 1, ["하늘이"]],
           ["S04", "김도윤", 4, 1, ["도윤이"]], ["S05", "김서준", 5, 2, ["서준이"]], ["S06", "김지호", 6, 2, ["지호"]],
@@ -1816,6 +2859,8 @@
           settings: normalizeSettings({ ...existingSettings, demoMode: true }),
           todayQueue: null,
           mirror: null,
+          weeklyBrief: null,
+          onboarding: normalizeOnboarding(existingOnboarding, students, { className: "3-2" }),
           privateTokens: [...new Set(existingPrivateTokens)]
         };
       }
@@ -1940,6 +2985,69 @@
         if (!candidates.length) return null;
         const latest = candidates[0];
         return { date: latest.date, quote: latest.context || latest.memoText };
+      }
+
+      function todayQueueItems(model = state, today = effectiveToday(model)) {
+        const queue = normalizeTodayQueue(model.todayQueue, model.students, today);
+        return queue?.date === today ? queue.items : [];
+      }
+
+      function addTodayQueueStudent(studentId, model = state) {
+        const student = studentById(studentId, model);
+        if (!student) return false;
+        const today = effectiveToday(model);
+        let queue = normalizeTodayQueue(model.todayQueue, model.students, today);
+        if (!queue || queue.date !== today) queue = { date: today, items: [] };
+        if (queue.items.some((item) => item.studentId === studentId)) return false;
+        queue.items.push({ studentId, clue: clueForStudent(studentId, model), addedAt: new Date().toISOString() });
+        model.todayQueue = queue;
+        return true;
+      }
+
+      function removeTodayQueueStudent(studentId, model = state) {
+        const today = effectiveToday(model);
+        const queue = normalizeTodayQueue(model.todayQueue, model.students, today);
+        if (!queue || !queue.items.some((item) => item.studentId === studentId)) return false;
+        const items = queue.items.filter((item) => item.studentId !== studentId);
+        model.todayQueue = items.length ? { date: queue.date, items } : null;
+        return true;
+      }
+
+      function attentionStudentRows(model = state, today = effectiveToday(model)) {
+        const silentIds = new Set(silentStudents(model.settings.silentDays, model, today).map((student) => student.id));
+        const concernIds = new Set(concernOnlyStudents(model.settings.silentDays, model, today).map((student) => student.id));
+        return model.students
+          .filter((student) => silentIds.has(student.id) || concernIds.has(student.id))
+          .map((student) => {
+            const last = lastMentionedAt(student.id, model, today);
+            const concernCount = concernIds.has(student.id)
+              ? toneBreakdown(student.id, addDays(today, -model.settings.silentDays), today, model).우려
+              : 0;
+            const reasons = [];
+            if (silentIds.has(student.id)) reasons.push(last ? `${daysBetween(last, today)}일간 기록 없음` : "관찰 기록 없음");
+            if (concernIds.has(student.id)) reasons.push(`우려 맥락만 ${concernCount}회`);
+            return { student, silent: silentIds.has(student.id), concern: concernIds.has(student.id), reasons, last };
+          })
+          .sort((a, b) => {
+            const scoreA = Number(a.silent) + Number(a.concern);
+            const scoreB = Number(b.silent) + Number(b.concern);
+            if (scoreA !== scoreB) return scoreB - scoreA;
+            if (a.last !== b.last) return String(a.last || "").localeCompare(String(b.last || ""));
+            return (a.student.number || 9999) - (b.student.number || 9999) || a.student.name.localeCompare(b.student.name, "ko");
+          });
+      }
+
+      function upcomingConsultations(model = state, today = effectiveToday(model)) {
+        return model.contacts
+          .filter((contact) => contact.type === "상담예약" && /^\d{4}-\d{2}-\d{2}$/.test(contact.date || "") && contact.date >= today)
+          .map((contact) => ({ contact, student: studentById(contact.studentId, model) }))
+          .filter((item) => item.student)
+          .sort((a, b) => a.contact.date.localeCompare(b.contact.date) || (a.student.number || 9999) - (b.student.number || 9999) || a.student.name.localeCompare(b.student.name, "ko"));
+      }
+
+      function consultationDateLabel(date, today = effectiveToday()) {
+        const days = daysBetween(today, date);
+        return days === 0 ? "오늘" : `D-${days}`;
       }
 
       function analysisDates(model = state, today = effectiveToday(model)) {
@@ -2468,13 +3576,13 @@
 
       function renderModeBadge() {
         const badge = document.getElementById("modeBadge");
-        const connected = Boolean(!state.settings.demoMode && state.settings.lastTest?.ok && hasProviderConfig());
+        const connected = Boolean(state.settings.lastTest?.ok && hasProviderConfig());
         badge.textContent = !storagePersistent ? "임시 저장 모드" : connected ? "AI 연결됨" : "규칙 기반 모드";
         badge.classList.toggle("connected", connected);
       }
 
       function setTab(name, focus = false) {
-        if (!["today", "radar", "students", "report", "settings"].includes(name)) return;
+        if (!["today", "dashboard", "radar", "students", "report", "settings"].includes(name)) return;
         ui.activeTab = name;
         for (const tab of document.querySelectorAll("[role=tab]")) {
           const active = tab.dataset.tab === name;
@@ -2484,25 +3592,37 @@
         }
         for (const panel of document.querySelectorAll("[role=tabpanel]")) panel.hidden = panel.id !== `panel-${name}`;
         if (name === "radar") maybeGenerateMirror();
+        if (name === "today") void maybeGenerateWeeklyBrief();
       }
 
       function renderTodayFocus() {
         const container = document.getElementById("todayFocus");
         container.replaceChildren();
-        if (!state.todayQueue || state.todayQueue.date !== effectiveToday() || !studentById(state.todayQueue.studentId)) return;
-        const student = studentById(state.todayQueue.studentId);
-        const clue = state.todayQueue.clue;
-        const clueLine = clue
-          ? element("p", { className: "focus-clue" }, [
-              element("span", { className: "mono", text: formatShortDate(clue.date) }),
-              "  ", element("q", { text: clue.quote })
-            ])
-          : element("p", { className: "focus-clue", text: "최근 긍정·중립 기록이 없습니다" });
-        container.append(element("section", { className: "focus-card", attrs: { "aria-label": "오늘 볼 아이" } }, [
-          element("div", {}, [element("p", { className: "eyebrow", text: "오늘 볼 아이" }), element("h2", { text: student.name }), clueLine]),
-          element("button", { className: "button primary", text: "대화함", type: "button", dataset: { action: "contact-done" } })
+        const items = todayQueueItems();
+        if (!items.length) return;
+        const list = element("div", { className: "stack" });
+        for (const item of items) {
+          const student = studentById(item.studentId);
+          if (!student) continue;
+          const clue = item.clue || clueForStudent(student.id);
+          const clueLine = clue
+            ? element("p", { className: "focus-clue" }, [
+                element("span", { className: "mono", text: formatShortDate(clue.date) }),
+                "  ", element("q", { text: clue.quote })
+              ])
+            : element("p", { className: "focus-clue", text: "최근 긍정·중립 기록이 없습니다" });
+          list.append(element("article", { className: "focus-card" }, [
+            element("div", {}, [element("h3", { text: student.name }), clueLine]),
+            element("button", { className: "button primary", text: "대화함", type: "button", dataset: { action: "contact-done", studentId: student.id } })
+          ]));
+        }
+        container.append(element("section", { className: "today-focus-stack", attrs: { "aria-labelledby": "todayFocusHeading" } }, [
+          element("div", { className: "today-focus-heading" }, [
+            element("h2", { id: "todayFocusHeading", text: "오늘 말 걸기" }),
+            element("strong", { className: "mono muted", text: `${items.length}명` })
+          ]),
+          list
         ]));
-        container.append(element("div", { attrs: { style: "height:32px" } }));
       }
 
       function renderPendingCards() {
@@ -2560,14 +3680,121 @@
         container.append(list);
       }
 
+      function renderRefinementDraft() {
+        const section = document.getElementById("refinementSection");
+        const container = document.getElementById("refinementRecords");
+        const mode = document.getElementById("refinementMode");
+        const status = document.getElementById("refinementStatus");
+        const saveButton = document.getElementById("saveRefinement");
+        const draft = ui.refinementDraft;
+        section.hidden = !draft;
+        section.classList.toggle("refinement-loading", Boolean(ui.refinementLoading));
+        container.replaceChildren();
+        if (!draft) return;
+        mode.textContent = ui.refinementLoading ? "분석 중" : draft.mode === "ai" ? "AI 신호 분류" : "규칙 기반";
+        mode.className = `status-pill${draft.mode === "ai" ? " reviewed" : ""}`;
+        const linkedCount = draft.records.reduce((count, record) => count + (record.memo.mentions || []).length, 0);
+        status.textContent = ui.refinementLoading
+          ? "익명 ID와 고정 관찰 신호만 모델에 보내 분류하고 있습니다…"
+          : draft.mode === "ai"
+            ? `${draft.records.length}개 관찰 단위로 정리했습니다. 문장을 확인하거나 고친 뒤 저장하세요.`
+            : draft.errorCode
+              ? `API 정리에 실패해 규칙 기반 결과를 표시합니다 · ${providerErrorText(draft.errorCode)}`
+              : !linkedCount
+                ? `${draft.records.length}개 관찰 단위로 나눴습니다. 연결된 학생이 없어 외부 모델을 호출하지 않았습니다.`
+                : !hasProviderConfig()
+                  ? `${draft.records.length}개 관찰 단위로 나눴습니다. API 키가 없어 규칙 기반 분류를 사용합니다.`
+                  : `${draft.records.length}개 관찰 단위로 나눴습니다. 안전한 규칙 기반 결과를 사용합니다.`;
+        saveButton.disabled = ui.refinementLoading;
+        for (let index = 0; index < draft.records.length; index += 1) {
+          const record = draft.records[index];
+          const mentionChips = (record.memo.mentions || []).map((mention) => {
+            const student = studentById(mention.studentId);
+            return element("span", { className: `chip${mention.tone === "우려" ? " concern" : ""}`, text: `${student?.name || mention.studentId} · ${mention.domain} · ${mention.tone}` });
+          });
+          if (!mentionChips.length) mentionChips.push(element("span", { className: "chip", text: "연결 학생 없음" }));
+          const unresolved = (record.memo.pending || []).filter((pending) => !pending.resolved).length;
+          if (unresolved) mentionChips.push(element("span", { className: "chip concern", text: `확인 요청 ${unresolved}건` }));
+          container.append(element("article", { className: "refinement-record" }, [
+            element("header", {}, [element("strong", { text: `관찰 ${index + 1}` }), element("span", { className: "mono muted", text: draft.date })]),
+            element("label", {}, ["저장할 사실 문장", element("textarea", { value: record.text, attrs: { rows: 3, maxlength: 1000, disabled: ui.refinementLoading, "aria-label": `관찰 ${index + 1} 저장 문장` }, dataset: { refinementIndex: index } })]),
+            element("div", { className: "chips" }, mentionChips)
+          ]));
+        }
+      }
+
       function renderToday() {
         renderTodayFocus();
         renderPendingCards();
         renderWeeklyMemos();
+        renderRefinementDraft();
+        renderWeeklyBrief();
         const dateInput = document.getElementById("memoDate");
         dateInput.max = effectiveToday();
         if (!dateInput.value) dateInput.value = effectiveToday();
         document.getElementById("saveFeedback").textContent = ui.feedback;
+      }
+
+      function renderDashboard() {
+        const queueItems = todayQueueItems();
+        const attentionRows = attentionStudentRows();
+        const consultations = upcomingConsultations();
+        const metrics = document.getElementById("dashboardMetrics");
+        metrics.replaceChildren(...[
+          ["오늘 말 걸기", queueItems.length, "오늘 등록된 학생"],
+          ["관심을 줄 학생", attentionRows.length, "기록 공백·반복 맥락"],
+          ["상담 예정", consultations.length, "오늘 이후 예약"]
+        ].map(([label, value, detail]) => element("article", { className: "dashboard-metric" }, [
+          element("p", { className: "eyebrow", text: label }),
+          element("strong", { text: `${value}명` }),
+          element("span", { text: detail })
+        ])));
+
+        document.getElementById("dashboardTalkCount").textContent = `${queueItems.length}명`;
+        document.getElementById("dashboardAttentionCount").textContent = `${attentionRows.length}명`;
+        document.getElementById("dashboardConsultationCount").textContent = `${consultations.length}건`;
+
+        const talkList = document.getElementById("dashboardTalkList");
+        talkList.replaceChildren();
+        for (const item of queueItems) {
+          const student = studentById(item.studentId);
+          if (!student) continue;
+          const clue = item.clue || clueForStudent(student.id);
+          talkList.append(element("article", { className: "dashboard-item" }, [
+            element("header", {}, [
+              studentButton(student),
+              element("button", { className: "button primary small", text: "대화함", type: "button", dataset: { action: "contact-done", studentId: student.id } })
+            ]),
+            element("p", { className: "dashboard-clue", text: clue ? `${formatShortDate(clue.date)} · ${clue.quote}` : "최근 긍정·중립 기록 없음" })
+          ]));
+        }
+        if (!talkList.children.length) talkList.append(element("p", { className: "muted", text: "오늘 말 걸기로 등록한 학생이 없습니다." }));
+
+        const queuedIds = new Set(queueItems.map((item) => item.studentId));
+        const attentionList = document.getElementById("dashboardAttentionList");
+        attentionList.replaceChildren();
+        for (const row of attentionRows) {
+          const tags = row.reasons.map((reason) => element("span", { className: "dashboard-tag", text: reason }));
+          if (queuedIds.has(row.student.id)) tags.push(element("span", { className: "dashboard-tag queued", text: "오늘 말 걸기 등록" }));
+          attentionList.append(element("article", { className: "dashboard-item" }, [
+            element("header", {}, [studentButton(row.student)]),
+            element("div", { className: "dashboard-tags" }, tags)
+          ]));
+        }
+        if (!attentionList.children.length) attentionList.append(element("p", { className: "muted", text: "현재 규칙에 해당하는 학생이 없습니다." }));
+
+        const consultationList = document.getElementById("dashboardConsultationList");
+        consultationList.replaceChildren();
+        for (const item of consultations) {
+          consultationList.append(element("article", { className: "dashboard-item" }, [
+            element("header", {}, [
+              studentButton(item.student),
+              element("span", { className: "dashboard-date", text: `${formatKoreanDate(item.contact.date)} · ${consultationDateLabel(item.contact.date)}` })
+            ]),
+            item.contact.note ? element("p", { className: "dashboard-clue", text: item.contact.note }) : null
+          ]));
+        }
+        if (!consultationList.children.length) consultationList.append(element("p", { className: "muted", text: "예정된 상담이 없습니다." }));
       }
 
       function streakText(student) {
@@ -2688,6 +3915,225 @@
           element("span", {}, [element("i", { className: "legend-swatch concern", attrs: { "aria-hidden": "true" } }), "우려 언급"])
         ]);
         container.append(element("div", { className: "heatmap-wrap" }, table), legend);
+      }
+
+      function weeklyObservationWindow(model = state, today = effectiveToday(model)) {
+        const from = addDays(today, -6);
+        const memos = model.memos.filter((memo) => memo.date >= from && memo.date <= today).sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
+        return { from, to: today, memos };
+      }
+
+      function observationSignals(text, model = state) {
+        const safe = anonymize(text, model);
+        assertPrivacy(safe, model);
+        return PROVIDER_SIGNAL_WORDS.filter((word) => safe.includes(word));
+      }
+
+      function weeklyStudentRows(model = state, today = effectiveToday(model)) {
+        const { from, to } = weeklyObservationWindow(model, today);
+        const attention = new Map(attentionStudentRows(model, today).map((row) => [row.student.id, row]));
+        return model.students.map((student) => {
+          const mentions = mentionsForStudent(student.id, model, from, to);
+          const tones = Object.fromEntries(TONES.map((tone) => [tone, mentions.filter((mention) => mention.tone === tone).length]));
+          const domains = Object.fromEntries(DOMAINS.map((domain) => [domain, mentions.filter((mention) => mention.domain === domain).length]));
+          const topDomain = mentions.length ? Object.entries(domains).sort((a, b) => b[1] - a[1])[0][0] : null;
+          const aiCount = mentions.filter((mention) => mention.source === "ai_classification").length;
+          return {
+            student,
+            count: mentions.length,
+            last: mentions.map((mention) => mention.date).sort().at(-1) || null,
+            tones,
+            domains,
+            topDomain,
+            aiCount,
+            attention: attention.get(student.id) || null
+          };
+        }).sort((a, b) => Number(Boolean(b.attention)) - Number(Boolean(a.attention)) || b.count - a.count || (a.student.number || 9999) - (b.student.number || 9999));
+      }
+
+      function weeklyBriefFactCatalog(model = state, today = effectiveToday(model)) {
+        const windowData = weeklyObservationWindow(model, today);
+        const mentions = windowData.memos.flatMap((memo) => (memo.mentions || []).filter((mention) => normalizeMentionRecord(mention, memo.id).reviewStatus !== "제외"));
+        const mentionedStudents = new Set(mentions.map((mention) => mention.studentId)).size;
+        const domains = Object.fromEntries(DOMAINS.map((domain) => [domain, mentions.filter((mention) => mention.domain === domain).length]));
+        const tones = Object.fromEntries(TONES.map((tone) => [tone, mentions.filter((mention) => mention.tone === tone).length]));
+        const facts = [];
+        const add = (category, text) => facts.push({ id: `F${facts.length + 1}`, category, text });
+        add("overview", `${formatKoreanDate(windowData.from)}부터 ${formatKoreanDate(windowData.to)}까지 메모 ${windowData.memos.length}건이 기록되었습니다.`);
+        add("overview", `최근 7일 기록에는 학생 ${mentionedStudents}명이 연결되었고 확정 언급은 ${mentions.length}건입니다.`);
+
+        const byDate = new Map();
+        for (const memo of windowData.memos) {
+          if (!byDate.has(memo.date)) byDate.set(memo.date, { count: 0, signals: new Set() });
+          const entry = byDate.get(memo.date);
+          entry.count += 1;
+          for (const signal of observationSignals(memo.text, model)) entry.signals.add(signal);
+        }
+        for (const [date, entry] of byDate) {
+          const signals = [...entry.signals].slice(0, 5);
+          add("event", signals.length
+            ? `${formatKoreanDate(date)}에는 ${signals.join("·")} 관련 관찰 신호가 기록되었습니다.`
+            : `${formatKoreanDate(date)}에는 메모 ${entry.count}건이 기록되었습니다.`);
+        }
+        for (const domain of DOMAINS) if (domains[domain] > 0) add("distribution", `${domain} 영역으로 분류된 언급은 ${domains[domain]}건입니다.`);
+        add("distribution", `기록 성격 분포는 긍정 ${tones.긍정}건, 중립 ${tones.중립}건, 우려 ${tones.우려}건입니다.`);
+        const silent = silentStudents(model.settings.silentDays, model, today);
+        const concern = concernOnlyStudents(model.settings.silentDays, model, today);
+        add("followup", `설정된 기록 공백 기준에 해당하는 학생은 ${silent.length}명입니다.`);
+        add("followup", `최근 기록이 우려 맥락만 2회 이상인 학생은 ${concern.length}명입니다.`);
+        const consultations = upcomingConsultations(model, today);
+        if (consultations.length) add("followup", `오늘 이후 상담 예약은 ${consultations.length}건입니다.`);
+        return { ...windowData, facts, mentions, mentionedStudents, domains, tones };
+      }
+
+      function fallbackWeeklyFactIds(catalog) {
+        const picked = [];
+        for (const category of ["overview", "event", "distribution", "followup"]) {
+          const fact = catalog.facts.find((item) => item.category === category && !picked.includes(item.id));
+          if (fact) picked.push(fact.id);
+        }
+        for (const fact of catalog.facts) {
+          if (picked.length >= 5) break;
+          if (!picked.includes(fact.id)) picked.push(fact.id);
+        }
+        return picked.slice(0, 5);
+      }
+
+      function validateWeeklyBriefResult(parsed, catalog) {
+        if (!Array.isArray(parsed?.factIds) || parsed.factIds.length < 2 || parsed.factIds.length > 5) return null;
+        const factById = new Map(catalog.facts.map((fact) => [fact.id, fact]));
+        const allowed = new Set(factById.keys());
+        const ids = parsed.factIds.map((id) => typeof id === "string" ? id : "");
+        if (ids.some((id) => !allowed.has(id)) || new Set(ids).size !== ids.length) return null;
+        const selectedCategories = new Set(ids.map((id) => factById.get(id)?.category));
+        const requiredCategories = ["overview"];
+        if (catalog.facts.some((fact) => fact.category === "event")) requiredCategories.push("event");
+        if (catalog.facts.some((fact) => fact.category === "followup")) requiredCategories.push("followup");
+        if (requiredCategories.some((category) => !selectedCategories.has(category))) return null;
+        return ids;
+      }
+
+      function weeklyBriefKey(model = state, today = effectiveToday(model)) {
+        const catalog = weeklyBriefFactCatalog(model, today);
+        const memoSnapshot = catalog.memos.map((memo) => [
+          memo.id,
+          memo.date,
+          memo.analysisVersion || "",
+          (memo.mentions || []).map((mention) => [mention.studentId, mention.tone, mention.domain, mention.reviewStatus || "미확인", mention.source || "local_match"])
+        ]);
+        const followupSnapshot = attentionStudentRows(model, today).map((row) => [row.student.id, row.reasons]);
+        const contactSnapshot = model.contacts.map((contact) => [contact.id, contact.studentId, contact.type, contact.date]);
+        return JSON.stringify([
+          catalog.from,
+          catalog.to,
+          memoSnapshot,
+          followupSnapshot,
+          contactSnapshot,
+          model.settings.service,
+          model.settings.protocol,
+          model.settings.endpoint,
+          model.settings.model
+        ]);
+      }
+
+      function currentWeeklyBrief(model = state, today = effectiveToday(model)) {
+        const catalog = weeklyBriefFactCatalog(model, today);
+        const key = weeklyBriefKey(model, today);
+        const cached = model.weeklyBrief?.key === key && validateWeeklyBriefResult({ factIds: model.weeklyBrief.factIds }, catalog)
+          ? model.weeklyBrief
+          : null;
+        return {
+          key,
+          catalog,
+          brief: cached || { key, factIds: fallbackWeeklyFactIds(catalog), source: "rules", generatedAt: null, errorCode: null }
+        };
+      }
+
+      function renderWeeklyBrief() {
+        const container = document.getElementById("weeklyBriefContainer");
+        const refreshButton = document.getElementById("refreshWeeklyBrief");
+        const { catalog, brief } = currentWeeklyBrief();
+        container.replaceChildren();
+        refreshButton.disabled = ui.weeklyBriefLoading || !catalog.memos.length;
+        refreshButton.textContent = ui.weeklyBriefLoading ? "요약 구성 중…" : "요약 새로 만들기";
+        if (!catalog.memos.length) {
+          container.append(emptyMessage("요약할 이번 주 기록이 없습니다.", "오늘의 장면을 저장하면 규칙 기반 보고서가 바로 만들어집니다."));
+          return;
+        }
+        const factsById = new Map(catalog.facts.map((fact) => [fact.id, fact]));
+        const selectedFacts = brief.factIds.map((id) => factsById.get(id)).filter(Boolean);
+        const attention = attentionStudentRows();
+        const sourceText = ui.weeklyBriefLoading
+          ? "익명 집계로 AI 요약 항목 선택 중"
+          : brief.source === "ai" ? "AI가 사실 항목을 선택한 초안" : brief.errorCode ? "API 실패 · 규칙 기반 요약" : "규칙 기반 요약";
+        const followupCards = attention.map((row) => element("article", { className: "weekly-followup-card" }, [
+          studentButton(row.student),
+          element("div", { className: "dashboard-tags" }, row.reasons.map((reason) => element("span", { className: "dashboard-tag", text: reason })))
+        ]));
+        const studentRows = weeklyStudentRows();
+        const studentList = element("div", { className: "weekly-student-list" }, studentRows.map((row) => {
+          const distribution = row.count
+            ? `${row.topDomain} 중심 · 긍 ${row.tones.긍정} / 중 ${row.tones.중립} / 우 ${row.tones.우려}${row.aiCount ? ` · AI분류 ${row.aiCount}` : ""}`
+            : row.attention?.reasons.join(" · ") || "최근 7일 연결 기록 없음";
+          return element("article", { className: "weekly-student-row" }, [
+            studentButton(row.student),
+            element("span", { text: `기록 ${row.count}건` }),
+            element("span", { text: row.last ? `마지막 ${formatShortDate(row.last)}` : "마지막 —" }),
+            element("span", { text: distribution })
+          ]);
+        }));
+        container.append(element("article", { className: `weekly-brief${ui.weeklyBriefLoading ? " refinement-loading" : ""}` }, [
+          element("header", { className: "weekly-brief-header" }, [
+            element("div", {}, [
+              element("h3", { text: `${formatKoreanDate(catalog.from)} – ${formatKoreanDate(catalog.to)}` }),
+              element("p", { className: "muted", text: "기록된 사실과 분류 집계만 사용하며 학생 평가는 만들지 않습니다." })
+            ]),
+            element("span", { className: "weekly-brief-source", text: sourceText })
+          ]),
+          element("ul", { className: "weekly-facts" }, selectedFacts.map((fact) => element("li", { text: fact.text }))),
+          element("section", { className: "weekly-followup", attrs: { "aria-labelledby": "weeklyFollowupHeading" } }, [
+            element("h3", { id: "weeklyFollowupHeading", text: "더 살펴볼 학생 · 로컬 기준" }),
+            element("p", { className: "helper", text: "AI가 대상을 고르지 않습니다. 기록 공백과 반복된 우려 맥락이라는 현재 설정 기준을 그대로 적용합니다." }),
+            followupCards.length ? element("div", { className: "weekly-followup-grid" }, followupCards) : element("p", { className: "muted", text: "현재 기준에 해당하는 학생이 없습니다." })
+          ]),
+          element("details", { className: "weekly-student-details", attrs: { open: true } }, [
+            element("summary", { text: `학생별 주간 관찰 데이터 ${studentRows.length}명` }),
+            element("p", { className: "helper", text: "API 연결 시 익명 신호 분류 결과를 포함합니다. 건수·마지막 날짜·분류 분포는 브라우저에서 계산합니다." }),
+            studentList
+          ])
+        ]));
+      }
+
+      async function maybeGenerateWeeklyBrief(force = false) {
+        if (ui.weeklyBriefLoading) return;
+        const initial = currentWeeklyBrief();
+        if (!initial.catalog.memos.length) return;
+        if (!force && state.weeklyBrief?.key === initial.key) return;
+        if (!hasProviderConfig()) {
+          state.weeklyBrief = { key: initial.key, factIds: fallbackWeeklyFactIds(initial.catalog), source: "rules", generatedAt: new Date().toISOString(), errorCode: null };
+          persistState();
+          renderWeeklyBrief();
+          return;
+        }
+        ui.weeklyBriefLoading = true;
+        renderWeeklyBrief();
+        const prompt = `당신은 교사의 주간 관찰 기록을 정리하는 도구입니다.\n학생 실명, 별칭, 학급명, 원문 문장은 제공되지 않습니다. 아래 문장은 브라우저가 숫자 집계와 고정 관찰 신호로 미리 만든 사실 문장입니다.\n규칙:\n- 한 주의 흐름을 이해하는 데 유용한 factId를 2~5개 선택하십시오\n- overview, event, followup 범주가 목록에 있으면 각 범주에서 적어도 하나를 반드시 선택하십시오\n- 문장을 수정하거나 새로운 사실, 학생 평가, 진단, 조언, 위험 판단을 만들지 마십시오\n- JSON으로만 답하십시오\n사실 목록:\n${initial.catalog.facts.map((fact) => `${fact.id} [${fact.category}] ${fact.text}`).join("\n")}\n예시 형식:\n${JSON.stringify({ factIds: fallbackWeeklyFactIds(initial.catalog) })}`;
+        let generated;
+        try {
+          const parsed = await callJsonModel(prompt);
+          const factIds = validateWeeklyBriefResult(parsed, initial.catalog);
+          if (!factIds) throw new Error("MODEL_SCHEMA_INVALID");
+          generated = { key: initial.key, factIds, source: "ai", generatedAt: new Date().toISOString(), errorCode: null };
+        } catch (error) {
+          generated = { key: initial.key, factIds: fallbackWeeklyFactIds(initial.catalog), source: "rules", generatedAt: new Date().toISOString(), errorCode: error instanceof Error ? error.message : "PROVIDER_FAILED" };
+        }
+        if (weeklyBriefKey() === initial.key) {
+          state.weeklyBrief = generated;
+          persistState();
+        }
+        ui.weeklyBriefLoading = false;
+        renderModeBadge();
+        renderWeeklyBrief();
       }
 
       function mirrorSummary(model = state, today = effectiveToday(model)) {
@@ -3027,7 +4473,13 @@
           PROVIDER_REQUEST_REJECTED: `${label}가 요청을 거부했습니다. endpoint·모델·권한을 확인해 주세요.`,
           PROVIDER_UNAVAILABLE: `${label} 서비스가 일시적으로 응답하지 않습니다.`,
           PROVIDER_RESPONSE_INVALID: `${label} 응답 형식을 읽지 못했습니다.`,
-          PROVIDER_TEST_SCHEMA_INVALID: `${label} 연결 응답이 필요한 JSON 형식이 아닙니다.`
+          PROVIDER_JSON_INVALID: `${label}가 JSON이 아닌 응답을 반환했습니다. 같은 모델로 다시 시도하거나 다른 추론 모델을 선택해 주세요.`,
+          PROVIDER_TEST_SCHEMA_INVALID: `${label} 연결 응답이 필요한 JSON 형식이 아닙니다.`,
+          MODEL_SCHEMA_INVALID: `${label} 응답이 빈자리의 안전한 분류 형식과 맞지 않아 적용하지 않았습니다.`,
+          PRIVACY_GATE_BLOCKED: "개인정보 차단 검사를 통과하지 못해 외부 전송을 중단했습니다.",
+          PROVIDER_CONTEXT_STALE: "분석 중 API 설정이 바뀌어 이전 응답을 적용하지 않았습니다.",
+          PROVIDER_MODEL_REQUIRED: "사용할 추론 모델을 선택해 주세요.",
+          PROVIDER_ENDPOINT_INVALID: "API endpoint 주소를 확인해 주세요."
         };
         return messages[code] || `연결 오류 ${code || "PROVIDER_FAILED"}`;
       }
@@ -3114,9 +4566,212 @@
         renderRoster();
       }
 
+      function renderSetupModelOptions(service = state.settings.service, selectedModel = "") {
+        const preset = SERVICE_PRESETS[service] || SERVICE_PRESETS.gemini;
+        const select = document.getElementById("setupApiModel");
+        const current = String(selectedModel || preset.model).trim();
+        const models = [...new Set([current, ...preset.models].filter(Boolean))];
+        select.replaceChildren(...models.map((model) => element("option", {
+          value: model,
+          text: model === preset.model ? `${model} · 추천` : model
+        })));
+        select.value = models.includes(current) ? current : preset.model;
+      }
+
+      function selectedSetupRosterChoice() {
+        return document.querySelector('input[name="setupRosterChoice"]:checked')?.value || "keep";
+      }
+
+      function updateSetupRosterPanels() {
+        const choice = selectedSetupRosterChoice();
+        for (const panel of document.querySelectorAll("[data-setup-roster-panel]")) {
+          panel.hidden = panel.dataset.setupRosterPanel !== choice;
+        }
+      }
+
+      function renderSetupStep() {
+        ui.setupStep = Math.max(1, Math.min(3, Number(ui.setupStep) || 1));
+        for (const section of document.querySelectorAll("[data-setup-step]")) {
+          section.hidden = Number(section.dataset.setupStep) !== ui.setupStep;
+        }
+        for (const item of document.querySelectorAll("[data-setup-progress]")) {
+          const active = Number(item.dataset.setupProgress) === ui.setupStep;
+          if (active) item.setAttribute("aria-current", "step");
+          else item.removeAttribute("aria-current");
+        }
+        document.getElementById("setupBack").hidden = ui.setupStep === 1;
+        document.getElementById("setupNext").hidden = ui.setupStep === 3;
+        document.getElementById("setupFinish").hidden = ui.setupStep !== 3;
+        document.getElementById("setupStepLabel").textContent = `${ui.setupStep} / 3`;
+        updateSetupRosterPanels();
+      }
+
+      function setupStepIsValid(step = ui.setupStep) {
+        const status = document.getElementById("setupStatus");
+        status.textContent = "";
+        if (step === 1) {
+          const className = document.getElementById("setupClassName");
+          if (!className.value.normalize("NFC").trim()) {
+            status.textContent = "학급·집단 이름을 입력해 주세요.";
+            className.focus();
+            return false;
+          }
+        }
+        if (step === 2) {
+          const choice = selectedSetupRosterChoice();
+          if (choice === "xlsx" && !document.getElementById("setupRosterFile").files?.[0]) {
+            status.textContent = "불러올 Excel 명단 파일을 선택해 주세요.";
+            document.getElementById("setupRosterFile").focus();
+            return false;
+          }
+          if (choice === "paste" && !document.getElementById("setupRosterPaste").value.trim()) {
+            status.textContent = "붙여넣을 학생 명단을 한 줄 이상 입력해 주세요.";
+            document.getElementById("setupRosterPaste").focus();
+            return false;
+          }
+        }
+        return true;
+      }
+
+      function openSetupDialog(force = false) {
+        if (!force && state.onboarding?.completed) return;
+        const dialog = document.getElementById("setupDialog");
+        document.getElementById("setupClassName").value = state.classInfo.className || "";
+        document.getElementById("setupSilentDays").value = String(state.settings.silentDays);
+        document.getElementById("setupPrivateTerms").value = (state.settings.privateTerms || []).join("|");
+        document.getElementById("setupCurrentRoster").textContent = `등록 ${state.students.length}명 · 나중에 추가 가능`;
+        document.querySelector('input[name="setupRosterChoice"][value="keep"]').checked = true;
+        document.getElementById("setupRosterFile").value = "";
+        document.getElementById("setupRosterPaste").value = "";
+        document.getElementById("setupApiService").value = state.settings.service;
+        document.getElementById("setupApiKey").value = "";
+        document.getElementById("setupApiKey").placeholder = state.settings.apiKey && state.settings.apiKeyService === state.settings.service
+          ? `${serviceLabel(state.settings.service)} 저장된 키 유지 · 교체할 때만 입력`
+          : "키 없이 규칙 기반으로 시작할 수 있습니다";
+        renderSetupModelOptions(state.settings.service, state.settings.model);
+        document.getElementById("setupClose").hidden = !state.onboarding?.completed;
+        document.getElementById("setupStatus").textContent = "";
+        ui.setupStep = 1;
+        renderSetupStep();
+        if (!dialog.open) dialog.showModal();
+        requestAnimationFrame(() => document.getElementById("setupClassName").focus());
+      }
+
+      function closeSetupDialog() {
+        if (!state.onboarding?.completed) return false;
+        const dialog = document.getElementById("setupDialog");
+        if (dialog.open) dialog.close();
+        return true;
+      }
+
+      function setupRosterErrorText(code) {
+        const messages = {
+          ROSTER_XLSX_REQUIRED: "Excel(.xlsx) 명단 파일을 선택해 주세요.",
+          ROSTER_XLSX_TOO_LARGE: "명단 파일이 너무 큽니다. 2MB 이하 파일을 사용해 주세요.",
+          ROSTER_XLSX_UNSUPPORTED: "이 브라우저에서는 Excel 압축 파일을 읽을 수 없습니다. 최신 Chrome 또는 Edge를 사용해 주세요.",
+          ROSTER_HEADER_REQUIRED: "학생명·이름 열을 찾지 못했습니다. 예시 Excel의 머리글을 유지해 주세요.",
+          ROSTER_NO_VALID_ROWS: "등록 가능한 학생 행이 없습니다. 이름·별칭·모둠·번호를 확인해 주세요.",
+          ROSTER_XLSX_INVALID: "Excel 파일 구조를 읽지 못했습니다. 예시 파일로 다시 작성해 주세요."
+        };
+        return messages[code] || "명단을 읽지 못했습니다. 입력 형식을 확인해 주세요.";
+      }
+
+      async function finishInitialSetup() {
+        if (!setupStepIsValid(1) || !setupStepIsValid(2)) return false;
+        const finish = document.getElementById("setupFinish");
+        const status = document.getElementById("setupStatus");
+        const rosterChoice = selectedSetupRosterChoice();
+        const className = document.getElementById("setupClassName").value.normalize("NFC").trim();
+        const silentDays = Number(document.getElementById("setupSilentDays").value);
+        const privateTerms = document.getElementById("setupPrivateTerms").value
+          .split("|")
+          .map((term) => term.normalize("NFC").trim())
+          .filter((term) => term.length >= 2);
+        const service = document.getElementById("setupApiService").value;
+        const preset = SERVICE_PRESETS[service] || SERVICE_PRESETS.gemini;
+        const model = document.getElementById("setupApiModel").value || preset.model;
+        const typedKey = normalizeApiKey(document.getElementById("setupApiKey").value);
+        const storedKey = state.settings.apiKeyService === service ? state.settings.apiKey : "";
+        const apiKey = typedKey || storedKey;
+        let rosterResult = { records: [], issues: [] };
+
+        finish.disabled = true;
+        status.textContent = rosterChoice === "xlsx" ? "Excel 명단을 브라우저 안에서 확인하고 있습니다…" : "설정을 안전하게 저장하고 있습니다…";
+        try {
+          if (rosterChoice === "xlsx") {
+            rosterResult = rosterRecordsFromRows(await readFirstWorksheetRows(document.getElementById("setupRosterFile").files[0]));
+          } else if (rosterChoice === "paste") {
+            rosterResult = rosterRecordsFromText(document.getElementById("setupRosterPaste").value);
+          }
+          if (["xlsx", "paste"].includes(rosterChoice) && !rosterResult.records.length) throw new Error("ROSTER_NO_VALID_ROWS");
+          if (rosterChoice === "demo" && (state.students.length || state.memos.length || state.contacts.length)
+            && !confirm("현재 학급·관찰·상담 데이터를 25명 가상 데모로 교체할까요? API 설정은 유지됩니다.")) {
+            status.textContent = "현재 데이터를 유지했습니다. 다른 명단 방식을 선택해 주세요.";
+            return false;
+          }
+
+          const previousSettings = state.settings;
+          const sameProvider = previousSettings.service === service
+            && previousSettings.model === model
+            && (!typedKey || typedKey === previousSettings.apiKey);
+          if (rosterChoice === "demo") {
+            state = buildDemoState(previousSettings, state.privateTokens, state.onboarding);
+          } else if (["xlsx", "paste"].includes(rosterChoice)) {
+            state.settings.demoMode = false;
+          }
+
+          rememberPrivateTokens(state.classInfo.className, state.settings.privateTerms || []);
+          state.classInfo = {
+            className,
+            createdAt: /^\d{4}-\d{2}-\d{2}$/.test(state.classInfo.createdAt || "") ? state.classInfo.createdAt : localToday()
+          };
+          state.settings = normalizeSettings({
+            ...state.settings,
+            service,
+            protocol: sameProvider ? previousSettings.protocol : preset.protocol,
+            endpoint: sameProvider ? previousSettings.endpoint : preset.endpoint,
+            authMode: sameProvider ? previousSettings.authMode : preset.authMode,
+            model,
+            apiKey,
+            apiKeyService: apiKey ? service : "",
+            silentDays,
+            privateTerms,
+            modelCatalog: sameProvider ? previousSettings.modelCatalog : [...preset.models],
+            modelCatalogSignature: sameProvider ? previousSettings.modelCatalogSignature : "",
+            modelCatalogFetchedAt: sameProvider ? previousSettings.modelCatalogFetchedAt : "",
+            lastTest: sameProvider && !typedKey ? previousSettings.lastTest : { ok: false, at: null, errorCode: null }
+          });
+          const appended = rosterResult.records.length ? appendRosterRecords(rosterResult.records) : { added: 0, skipped: 0 };
+          state.onboarding = { completed: true, completedAt: new Date().toISOString(), version: 1 };
+          state.mirror = null;
+          state.weeklyBrief = null;
+          ui.refinementDraft = null;
+          ui.providerMessage = apiKey
+            ? `${serviceLabel(service)} 키와 ${model} 모델을 저장했습니다. 설정에서 연결 시험을 실행할 수 있습니다.`
+            : "API 키 없이 규칙 기반 모드로 시작했습니다.";
+          bumpAnalysisContext();
+          persistState();
+          delete document.getElementById("apiForm").dataset.initialized;
+          renderAll();
+          runSelfTests();
+          closeSetupDialog();
+          const issueText = rosterResult.issues.length ? ` · 제외 ${rosterResult.issues.length}행` : "";
+          const rosterText = appended.added || appended.skipped ? ` · 학생 ${appended.added}명 등록${appended.skipped ? `, 중복 ${appended.skipped}명` : ""}${issueText}` : "";
+          showToast(`초기 설정을 마쳤습니다${rosterText}.`);
+          return true;
+        } catch (error) {
+          const code = error instanceof Error ? error.message : "SETUP_FAILED";
+          status.textContent = code.startsWith("ROSTER_") ? setupRosterErrorText(code) : "초기 설정을 저장하지 못했습니다. 입력값을 확인해 주세요.";
+          return false;
+        } finally {
+          finish.disabled = false;
+        }
+      }
+
       function renderAll() {
         renderModeBadge();
         renderToday();
+        renderDashboard();
         renderRadar();
         renderStudents();
         renderReport();
@@ -3149,6 +4804,7 @@
         found.memo.analysisVersion = `${Date.now()}-teacher-review`;
         bumpAnalysisContext();
         state.mirror = null;
+        state.weeklyBrief = null;
         persistState();
         return true;
       }
@@ -3166,6 +4822,7 @@
         found.memo.analysisVersion = `${Date.now()}-teacher-review`;
         bumpAnalysisContext();
         state.mirror = null;
+        state.weeklyBrief = null;
         persistState();
         return found.mention.reviewStatus;
       }
@@ -3190,13 +4847,14 @@
         } else {
           pending.ignored = true;
         }
+        model.mirror = null;
+        model.weeklyBrief = null;
         return true;
       }
 
       function resolvePending(memoId, pendingId, studentId, automatic = false) {
         const changed = applyPendingResolution(state, memoId, pendingId, studentId, automatic ? "ai_high_confidence" : "teacher_confirmation");
         if (!changed) return;
-        state.mirror = null;
         persistState();
         const student = studentId ? studentById(studentId) : null;
         showToast(student ? `${student.name}으로 확인했습니다.` : "아무도 아닌 것으로 확인했습니다.");
@@ -3243,6 +4901,7 @@
         for (const memo of memos) memo.analysisVersion = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
         const expectedContextVersion = bumpAnalysisContext();
         state.mirror = null;
+        state.weeklyBrief = null;
         persistState();
         const mentioned = new Set(memos.flatMap((memo) => memo.mentions.map((mention) => mention.studentId))).size;
         const dateLabel = date === effectiveToday() ? "오늘" : formatKoreanDate(date);
@@ -3258,6 +4917,11 @@
         document.getElementById("dialogTitle").textContent = student.name;
         const clue = clueForStudent(student.id);
         document.getElementById("dialogClue").textContent = clue ? `${formatShortDate(clue.date)}  “${clue.quote}”` : "긍정·중립 맥락의 최근 기록이 없습니다.";
+        const queueButton = document.getElementById("queueTodayButton");
+        const queued = todayQueueItems().some((item) => item.studentId === student.id);
+        queueButton.disabled = queued;
+        queueButton.textContent = queued ? "오늘 말 걸기 등록됨" : "오늘 말 걸기";
+        document.getElementById("scheduleDate").min = effectiveToday();
         document.getElementById("scheduleDate").value = effectiveToday();
         document.getElementById("snoozeReason").value = "";
         document.getElementById("scheduleForm").classList.remove("active");
@@ -3283,6 +4947,7 @@
         state.students.sort((a, b) => a.id.localeCompare(b.id));
         refreshDirectiveCandidates();
         state.mirror = null;
+        state.weeklyBrief = null;
         persistState();
         return true;
       }
@@ -3304,6 +4969,7 @@
         ui.modelCatalogDraft = null;
         bumpAnalysisContext();
         state.mirror = null;
+        state.weeklyBrief = null;
         ui.providerMessage = state.settings.apiKey
           ? `${serviceLabel(state.settings.service)} API 키와 ${state.settings.model} 모델을 이 브라우저에 저장했습니다. 실제 사용 가능 여부는 연결 시험에서 확인하세요.`
           : `${serviceLabel(state.settings.service)} · ${state.settings.model} 모델을 저장했습니다. API 키가 없어 규칙 기반 모드입니다.`;
@@ -3385,6 +5051,24 @@
           const pending = unresolvedPendings(resolved)[0];
           applyPendingResolution(resolved, pending.memoId, pending.id, "S12");
           check("미해결 참조 소급 연결 후 4명", silentStudents(14, resolved, DEMO_TODAY).length === 4 && resolved.memos.some((memo) => memo.id === pending.memoId && memo.mentions.some((mention) => mention.studentId === "S12")));
+          const legacyQueue = normalizeTodayQueue({ studentId: "S02", date: DEMO_TODAY, clue: null }, demo.students, DEMO_TODAY);
+          check("기존 단일 오늘 말 걸기 자동 변환", legacyQueue?.items.length === 1 && legacyQueue.items[0].studentId === "S02");
+          const queueFixture = deepClone(demo);
+          const firstQueued = addTodayQueueStudent("S02", queueFixture);
+          const secondQueued = addTodayQueueStudent("S03", queueFixture);
+          const duplicateQueued = addTodayQueueStudent("S02", queueFixture);
+          check("오늘 말 걸기 2명 이상 누적·중복 방지", firstQueued && secondQueued && !duplicateQueued && todayQueueItems(queueFixture, DEMO_TODAY).map((item) => item.studentId).join(",") === "S02,S03");
+          removeTodayQueueStudent("S02", queueFixture);
+          check("대화 완료 학생만 목록에서 제거", todayQueueItems(queueFixture, DEMO_TODAY).map((item) => item.studentId).join(",") === "S03");
+          const attentionFixture = attentionStudentRows(demo, DEMO_TODAY);
+          check("대시보드 관심 기준 합집합", attentionFixture.length === 7 && attentionFixture.filter((row) => row.silent).length === 5 && attentionFixture.filter((row) => row.concern).length === 2);
+          const consultationFixture = deepClone(demo);
+          consultationFixture.contacts.push(
+            { id: "C901", studentId: "S02", type: "상담예약", date: DEMO_TODAY, note: "" },
+            { id: "C902", studentId: "S03", type: "상담예약", date: addDays(DEMO_TODAY, 2), note: "" },
+            { id: "C903", studentId: "S04", type: "상담예약", date: addDays(DEMO_TODAY, -1), note: "" }
+          );
+          check("대시보드 예정 상담 날짜순", upcomingConsultations(consultationFixture, DEMO_TODAY).map((item) => item.contact.id).join(",") === "C901,C902");
           const appendFixture = deepClone(demo);
           appendFixture.memos = [];
           appendMemoEntries(appendFixture, DEMO_TODAY, "안경이 친구를 도와줌\n박시우가 자료를 정리함\n오태경이 발표를 이끎");
@@ -3392,6 +5076,33 @@
           const appendedToday = appendFixture.memos.filter((memo) => memo.date === DEMO_TODAY);
           check("같은 날짜 3줄씩 두 번 누적", appendedToday.length === 6 && new Set(appendedToday.map((memo) => memo.id)).size === 6 && appendedToday.every((memo) => memo.text && !memo.text.includes("\n")));
           check("별칭 줄별 학생 연결", appendedToday.filter((memo) => memo.mentions.some((mention) => mention.studentId === "S07")).length === 2);
+          check("신규 브라우저 초기 설정 필요", normalizeOnboarding(null, [], { className: "" }).completed === false);
+          check("기존 작업 초기 설정 자동 마이그레이션", normalizeOnboarding(null, demo.students, { className: "3-2" }).completed === true);
+          const refinedUnits = splitObservationUnits("안경이 질문함. 박시우가 자료를 정리함!\n오태경이 발표를 이끎");
+          check("관찰 원문 문장·줄 단위 분리", refinedUnits.length === 3 && refinedUnits.every((unit) => /[.!?。！？]$/.test(unit)));
+          const refinementDraft = buildRefinementDraft(DEMO_TODAY, "안경이 질문함.\n박시우가 자료를 정리함", demo);
+          check("정리 초안 별칭 연결", refinementDraft.records.length === 2 && refinementDraft.records[0].memo.mentions.some((mention) => mention.studentId === "S07") && refinementDraft.records[1].memo.mentions.some((mention) => mention.studentId === "S09"));
+          const refinementSignals = JSON.stringify(refinementSignalItems(refinementDraft, demo));
+          check("정리 API 입력 실명·별칭·원문 제외", refinementSignals.includes("S07") && refinementSignals.includes("S09") && !refinementSignals.includes("나은우") && !refinementSignals.includes("안경") && !refinementSignals.includes("박시우") && !refinementSignals.includes("자료를 정리함"));
+          check("정리 API 응답 허용키 전체 검증", validateRefinementResult([
+            { key: "R1:S07", tone: "중립", domain: "학업" },
+            { key: "R2:S09", tone: "긍정", domain: "행동" }
+          ], ["R1:S07", "R2:S09"]) instanceof Map && validateRefinementResult([{ key: "R1:S99", tone: "중립", domain: "학업" }], ["R1:S07"]) === null);
+          const refinementCommitFixture = deepClone(demo);
+          refinementCommitFixture.memos = [];
+          const committedRefinement = commitRefinementDraft(refinementDraft, refinementDraft.records.map((record) => record.text), refinementCommitFixture);
+          check("교사 확인 정리본 전체 저장", committedRefinement.length === 2 && refinementCommitFixture.memos.length === 2 && new Set(committedRefinement.map((memo) => memo.id)).size === 2);
+          const weeklyCatalog = weeklyBriefFactCatalog(demo, DEMO_TODAY);
+          const weeklyFactsText = weeklyCatalog.facts.map((fact) => fact.text).join(" ");
+          check("주간 사실 목록 브라우저 집계", weeklyCatalog.memos.length === 5 && weeklyCatalog.mentions.length > 0 && weeklyCatalog.facts.length >= 8);
+          check("주간 API 사실 목록 개인정보 제외", !demo.students.some((student) => weeklyFactsText.includes(student.name) || student.aliases.some((alias) => weeklyFactsText.includes(alias))) && !weeklyFactsText.includes(demo.classInfo.className) && !demo.memos.some((memo) => weeklyFactsText.includes(memo.text)));
+          const weeklyIds = fallbackWeeklyFactIds(weeklyCatalog);
+          check("주간 보고서 허용 사실 ID 검증", validateWeeklyBriefResult({ factIds: weeklyIds }, weeklyCatalog)?.length === weeklyIds.length && validateWeeklyBriefResult({ factIds: [weeklyIds[0], "F999"] }, weeklyCatalog) === null);
+          const overviewOnlyIds = weeklyCatalog.facts.filter((fact) => fact.category === "overview").slice(0, 2).map((fact) => fact.id);
+          check("주간 보고서 사건·후속 범주 필수", overviewOnlyIds.length === 2 && validateWeeklyBriefResult({ factIds: overviewOnlyIds }, weeklyCatalog) === null);
+          const weeklyRows = weeklyStudentRows(demo, DEMO_TODAY);
+          const eunwooWeek = weeklyRows.find((row) => row.student.id === "S07");
+          check("학생별 주간 데이터 산출", weeklyRows.length === 25 && eunwooWeek?.count === 2 && eunwooWeek.last === DEMO_TODAY);
           const weekendFixture = deepClone(demo);
           weekendFixture.settings.demoMode = false;
           weekendFixture.memos = [];
@@ -3466,9 +5177,11 @@
           check("예시 Excel 단일 파일 내장", rosterExample.bytes[0] === 0x50 && rosterExample.bytes[1] === 0x4B && rosterExampleEntries.get("xl/workbook.xml")?.includes("학생명단") && rosterExampleEntries.get("xl/worksheets/sheet1.xml")?.includes("강민준"));
           const backupFixture = deepClone(demo);
           backupFixture.settings.apiKey = "private-test-value";
+          addTodayQueueStudent("S02", backupFixture);
+          addTodayQueueStudent("S03", backupFixture);
           const backup = portableBackupPayload(backupFixture, new Date("2026-09-13T03:04:05+09:00"));
           const restoredBackup = stateFromPortableBackup(backup);
-          check("작업 백업 복원·API 키 제외", !JSON.stringify(backup).includes("private-test-value") && restoredBackup.settings.apiKey === "" && restoredBackup.students.length === 25 && restoredBackup.memos.length === 9);
+          check("작업 백업 복원·API 키 제외", !JSON.stringify(backup).includes("private-test-value") && restoredBackup.settings.apiKey === "" && restoredBackup.students.length === 25 && restoredBackup.memos.length === 9 && todayQueueItems(restoredBackup, DEMO_TODAY).length === 2);
           check("concernOnly 2회 하한", !concernOnlyStudents(14, demo, DEMO_TODAY).some((student) => student.name === "문채원"));
           const safe = makeSafePrompt("김도윤 확인", demo);
           check("익명화 게이트 표식", safe[SAFE_PROMPT] === true && safe.text.includes("S04"));
@@ -3508,6 +5221,54 @@
         return tests;
       }
 
+      document.getElementById("reopenSetup").addEventListener("click", () => openSetupDialog(true));
+
+      document.getElementById("setupApiService").addEventListener("change", (event) => {
+        const service = event.currentTarget.value;
+        renderSetupModelOptions(service, SERVICE_PRESETS[service]?.model);
+        document.getElementById("setupApiKey").value = "";
+        document.getElementById("setupApiKey").placeholder = state.settings.apiKey && state.settings.apiKeyService === service
+          ? `${serviceLabel(service)} 저장된 키 유지 · 교체할 때만 입력`
+          : `${serviceLabel(service)} API 키 · 선택`;
+      });
+
+      document.querySelectorAll('input[name="setupRosterChoice"]').forEach((input) => {
+        input.addEventListener("change", updateSetupRosterPanels);
+      });
+
+      document.getElementById("setupNext").addEventListener("click", () => {
+        if (!setupStepIsValid()) return;
+        ui.setupStep = Math.min(3, ui.setupStep + 1);
+        renderSetupStep();
+        document.getElementById("setupStatus").textContent = "";
+        document.querySelector(`[data-setup-step="${ui.setupStep}"] input, [data-setup-step="${ui.setupStep}"] select`)?.focus();
+      });
+
+      document.getElementById("setupBack").addEventListener("click", () => {
+        ui.setupStep = Math.max(1, ui.setupStep - 1);
+        renderSetupStep();
+        document.getElementById("setupStatus").textContent = "";
+      });
+
+      document.getElementById("setupForm").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        if (ui.setupStep < 3) {
+          if (!setupStepIsValid()) return;
+          ui.setupStep += 1;
+          renderSetupStep();
+          return;
+        }
+        await finishInitialSetup();
+      });
+
+      document.getElementById("setupClose").addEventListener("click", closeSetupDialog);
+      document.getElementById("setupDialog").addEventListener("cancel", (event) => {
+        if (!state.onboarding?.completed) event.preventDefault();
+      });
+      document.getElementById("setupDialog").addEventListener("click", (event) => {
+        if (event.target === event.currentTarget) closeSetupDialog();
+      });
+
       document.getElementById("tabs").addEventListener("click", (event) => {
         const tab = event.target.closest("[data-tab]");
         if (tab) setTab(tab.dataset.tab);
@@ -3530,14 +5291,70 @@
         const date = document.getElementById("memoDate").value;
         const text = document.getElementById("memoText").value.trim();
         if (!date || !text) return;
-        document.querySelector("#memoForm button[type=submit]").disabled = true;
+        const button = document.getElementById("refineMemo");
+        button.disabled = true;
         try {
-          await saveMemo(date, text);
-          document.getElementById("memoText").value = "";
+          const draft = buildRefinementDraft(date, text);
+          ui.refinementDraft = draft;
+          ui.refinementLoading = true;
+          renderRefinementDraft();
+          document.getElementById("refinementSection").scrollIntoView({ behavior: "smooth", block: "start" });
+          ui.refinementDraft = await analyzeRefinementDraft(draft);
+          ui.refinementLoading = false;
+          renderModeBadge();
+          renderRefinementDraft();
+        } catch (error) {
+          ui.refinementLoading = false;
+          ui.feedback = error instanceof Error && error.message === "FUTURE_DATE_NOT_ALLOWED" ? "미래 날짜의 기록은 저장할 수 없습니다." : "정리할 관찰 문장을 확인해 주세요.";
+          renderToday();
         } finally {
-          document.querySelector("#memoForm button[type=submit]").disabled = false;
+          button.disabled = false;
         }
       });
+
+      document.getElementById("quickSaveMemo").addEventListener("click", () => {
+        const date = document.getElementById("memoDate").value;
+        const text = document.getElementById("memoText").value.trim();
+        if (!date || !text) return;
+        try {
+          saveMemo(date, text);
+          ui.refinementDraft = null;
+          document.getElementById("memoText").value = "";
+          renderRefinementDraft();
+        } catch (error) {
+          ui.feedback = error instanceof Error && error.message === "FUTURE_DATE_NOT_ALLOWED" ? "미래 날짜의 기록은 저장할 수 없습니다." : "기록을 저장하지 못했습니다.";
+          renderToday();
+        }
+      });
+
+      document.getElementById("saveRefinement").addEventListener("click", () => {
+        if (!ui.refinementDraft || ui.refinementLoading) return;
+        const editedTexts = [...document.querySelectorAll("[data-refinement-index]")]
+          .sort((a, b) => Number(a.dataset.refinementIndex) - Number(b.dataset.refinementIndex))
+          .map((input) => input.value);
+        const draft = ui.refinementDraft;
+        const created = commitRefinementDraft(draft, editedTexts);
+        if (!created.length) {
+          showToast("저장할 사실 문장을 한 개 이상 남겨 주세요.");
+          return;
+        }
+        const mentioned = new Set(created.flatMap((memo) => memo.mentions.map((mention) => mention.studentId))).size;
+        const dateLabel = draft.date === effectiveToday() ? "오늘" : formatKoreanDate(draft.date);
+        ui.feedback = `${storagePersistent ? "저장됨" : "임시 저장됨"} · ${dateLabel} 정리 기록 ${created.length}건 · 연결 학생 ${mentioned}명`;
+        ui.refinementDraft = null;
+        document.getElementById("memoText").value = "";
+        renderAll();
+        showToast("교사가 확인한 정리본을 저장했습니다.");
+      });
+
+      document.getElementById("cancelRefinement").addEventListener("click", () => {
+        ui.refinementDraft = null;
+        ui.refinementLoading = false;
+        renderRefinementDraft();
+        document.getElementById("memoText").focus();
+      });
+
+      document.getElementById("refreshWeeklyBrief").addEventListener("click", () => void maybeGenerateWeeklyBrief(true));
 
       document.getElementById("classForm").addEventListener("submit", (event) => {
         event.preventDefault();
@@ -3547,6 +5364,7 @@
         state.settings.silentDays = Number(document.getElementById("silentDays").value);
         state.settings.privateTerms = document.getElementById("privateTerms").value.split("|").map((term) => term.normalize("NFC").trim()).filter((term) => term.length >= 2);
         state.mirror = null;
+        state.weeklyBrief = null;
         persistState();
         showToast("학급 설정을 저장했습니다.");
         renderAll();
@@ -3703,6 +5521,7 @@
         document.getElementById("apiKey").value = "";
         state.settings.lastTest = { ok: false, at: null, errorCode: null };
         state.mirror = null;
+        state.weeklyBrief = null;
         ui.providerMessage = "API 키를 삭제했습니다. 규칙 기반 모드입니다.";
         persistState();
         renderAll();
@@ -3769,12 +5588,13 @@
         bumpAnalysisContext();
         state = loadState();
         delete document.getElementById("apiForm").dataset.initialized;
-        ui = { ...ui, activeTab: "today", selectedStudentId: null, dialogStudentId: null, feedback: "", providerMessage: "", rosterImportMessage: "", modelCatalogDraft: null, mirrorLoading: false };
+        ui = { ...ui, activeTab: "today", selectedStudentId: null, dialogStudentId: null, feedback: "", providerMessage: "", rosterImportMessage: "", modelCatalogDraft: null, mirrorLoading: false, weeklyBriefLoading: false, refinementLoading: false, refinementDraft: null, setupStep: 1 };
         document.getElementById("memoText").value = "";
         document.getElementById("memoDate").value = effectiveToday();
         renderAll();
         runSelfTests();
         showToast("《빈자리》 데이터를 모두 초기화했습니다.");
+        openSetupDialog(false);
       });
 
       document.getElementById("studentSort").addEventListener("change", renderStudents);
@@ -3815,12 +5635,16 @@
         const student = studentById(ui.dialogStudentId);
         if (!student) return;
         if (action === "queue") {
-          state.todayQueue = { studentId: student.id, date: effectiveToday(), clue: clueForStudent(student.id) };
+          const added = addTodayQueueStudent(student.id);
+          if (!added) {
+            showToast(`${student.name}은 이미 오늘 말 걸기에 등록되어 있습니다.`);
+            return;
+          }
           persistState();
           closeStudentDialog();
           ui.activeTab = "today";
           renderAll();
-          showToast(`${student.name}을 오늘 볼 아이로 등록했습니다.`);
+          showToast(`${student.name}을 오늘 말 걸기에 추가했습니다. · ${todayQueueItems().length}명`);
           return;
         }
         document.getElementById("scheduleForm").classList.toggle("active", action === "schedule");
@@ -3834,7 +5658,12 @@
         const student = studentById(ui.dialogStudentId);
         const date = document.getElementById("scheduleDate").value;
         if (!student || !date) return;
+        if (date < effectiveToday()) {
+          showToast("상담 날짜는 오늘 이후로 선택해 주세요.");
+          return;
+        }
         state.contacts.push(createContact(student.id, "상담예약", date));
+        state.weeklyBrief = null;
         persistState();
         closeStudentDialog();
         renderAll();
@@ -3848,6 +5677,7 @@
         const note = document.getElementById("snoozeReason").value.normalize("NFC").trim();
         student.snoozeUntil = addDays(effectiveToday(), 28);
         state.contacts.push(createContact(student.id, "괜찮음", effectiveToday(), note));
+        state.weeklyBrief = null;
         persistState();
         closeStudentDialog();
         renderAll();
@@ -3880,10 +5710,12 @@
           setTab("today");
           document.getElementById("pendingSection").scrollIntoView({ block: "start" });
         } else if (action === "contact-done") {
-          if (!state.todayQueue) return;
-          state.contacts.push(createContact(state.todayQueue.studentId, "대화", effectiveToday(), "레이더 알림 후"));
-          const student = studentById(state.todayQueue.studentId);
-          state.todayQueue = null;
+          const targetStudentId = studentId || todayQueueItems()[0]?.studentId;
+          if (!targetStudentId || !todayQueueItems().some((item) => item.studentId === targetStudentId)) return;
+          state.contacts.push(createContact(targetStudentId, "대화", effectiveToday(), "레이더 알림 후"));
+          state.weeklyBrief = null;
+          const student = studentById(targetStudentId);
+          removeTodayQueueStudent(targetStudentId);
           persistState();
           renderAll();
           showToast(`${student?.name || "학생"}과 대화한 것으로 기록했습니다.`);
@@ -3899,6 +5731,8 @@
           const number = Number(row.querySelector("[data-role=number]").value);
           student.number = Number.isFinite(number) && number > 0 ? number : null;
           refreshDirectiveCandidates();
+          state.mirror = null;
+          state.weeklyBrief = null;
           persistState();
           renderAll();
           showToast(`${student.name} 정보를 저장했습니다.`);
@@ -3909,6 +5743,7 @@
           if (!student || !confirm(`${student.name}과 연결된 관찰 기록 ${linkedEvidence}건·후속조치 ${linkedContacts}건을 함께 삭제할까요? 삭제하면 다음 Excel 내보내기에서도 빠집니다.`)) return;
           bumpAnalysisContext();
           rememberPrivateTokens(studentPrivateTokens(student));
+          removeTodayQueueStudent(studentId);
           state.students = state.students.filter((item) => item.id !== studentId);
           refreshDirectiveCandidates();
           state.memos = state.memos.map((memo) => ({
@@ -3917,8 +5752,8 @@
             pending: (memo.pending || []).map((pending) => ({ ...pending, candidates: pending.candidates.filter((id) => id !== studentId) }))
           }));
           state.contacts = state.contacts.filter((contact) => contact.studentId !== studentId);
-          if (state.todayQueue?.studentId === studentId) state.todayQueue = null;
           state.mirror = null;
+          state.weeklyBrief = null;
           persistState();
           renderAll();
           showToast(`${student.name}을 삭제했습니다.`);
@@ -3928,13 +5763,27 @@
       document.getElementById("memoDate").value = effectiveToday();
       renderAll();
       runSelfTests();
+      openSetupDialog(false);
       window.__BINJARI__ = Object.freeze({
         anonymize,
         deanonymize,
         parseJson,
         extractMentionsFromText,
+        splitObservationUnits,
+        buildRefinementDraft,
+        validateRefinementResult,
+        refinementSignalItems,
         silentStudents,
         concernOnlyStudents,
+        todayQueueItems,
+        addTodayQueueStudent,
+        removeTodayQueueStudent,
+        attentionStudentRows,
+        upcomingConsultations,
+        weeklyBriefFactCatalog,
+        weeklyStudentRows,
+        validateWeeklyBriefResult,
+        normalizeOnboarding,
         buildDemoState,
         buildXlsxPackage,
         allEvidenceForStudent,
