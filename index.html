@@ -122,8 +122,30 @@
 
     .focus-card { display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: center; padding: 20px 22px; border: 1.5px solid var(--signal); border-radius: 14px; background: var(--signal-soft); }
     .focus-card h2 { margin-bottom: 5px; }
+    .focus-card h3 { margin-bottom: 5px; font: 700 25px/1.25 var(--display); letter-spacing: -.025em; }
     .focus-clue { color: #395348; }
     .focus-clue q { font-family: var(--display); }
+    .today-focus-stack { display: grid; gap: 10px; margin-bottom: 32px; }
+    .today-focus-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+    .today-focus-heading h2 { margin: 0; }
+    .dashboard-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 18px; }
+    .dashboard-metric { padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+    .dashboard-metric strong { display: block; margin: 3px 0 5px; font: 700 34px/1 var(--display); }
+    .dashboard-metric span { color: var(--muted); font-size: 12px; }
+    .dashboard-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; align-items: start; }
+    .dashboard-card { min-width: 0; padding: 20px; }
+    .dashboard-card .section-heading { align-items: baseline; margin-bottom: 13px; }
+    .dashboard-card .helper { margin-bottom: 14px; }
+    .dashboard-list { display: grid; gap: 9px; }
+    .dashboard-item { display: grid; gap: 7px; padding: 12px 0; border-top: 1px solid var(--line); }
+    .dashboard-item:first-child { padding-top: 0; border-top: 0; }
+    .dashboard-item header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .dashboard-item .name-button { min-width: 0; font-size: 17px; text-align: left; }
+    .dashboard-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+    .dashboard-tag { padding: 3px 7px; border-radius: 999px; color: #5f4a30; background: var(--warn-soft); font-size: 10px; }
+    .dashboard-tag.queued { color: var(--signal); background: var(--signal-soft); }
+    .dashboard-date { flex: 0 0 auto; font: 700 12px/1.3 var(--mono); color: var(--signal); }
+    .dashboard-clue { margin: 0; color: var(--muted); font-size: 12px; }
     .memo-form { display: grid; gap: 14px; }
     .memo-form textarea { min-height: 96px; font-size: 16px; }
     .save-line { min-height: 24px; margin: 10px 0 0; color: var(--signal); font-weight: 700; }
@@ -296,7 +318,7 @@
       .brand span { display: none; }
       .tab { padding: 0 14px; }
       main { padding-top: 32px; }
-      .field-grid, .field-grid.three, .field-grid.four, .radar-groups, .settings-grid, .mirror-grid, .report-metrics, .ledger-toolbar { grid-template-columns: 1fr; }
+      .field-grid, .field-grid.three, .field-grid.four, .radar-groups, .settings-grid, .mirror-grid, .report-metrics, .ledger-toolbar, .dashboard-metrics, .dashboard-grid { grid-template-columns: 1fr; }
       .settings-grid .wide { grid-column: auto; }
       .focus-card { grid-template-columns: 1fr; }
       .student-row { grid-template-columns: 1fr 1fr; padding: 12px 0; gap: 5px 12px; }
@@ -338,6 +360,639 @@
       .report-section, .report-sheet { break-inside: avoid; }
       .report-note { color: #000; }
     }
+    /*
+     * Quiet Observation Desk
+     * CSS-only design reference. The DOM and application script remain unchanged.
+     */
+    :root {
+      --paper: #f3f2ed;
+      --surface: #fffdf9;
+      --surface-subtle: #f8f7f2;
+      --surface-strong: #eeeee8;
+      --ink: #202722;
+      --ink-soft: #39443e;
+      --muted: #626e67;
+      --muted-strong: #536058;
+      --signal: #285d49;
+      --signal-hover: #204d3c;
+      --signal-soft: #e2eee7;
+      --signal-faint: #f0f6f2;
+      --warn: #8a631f;
+      --warn-soft: #f3e7cf;
+      --warn-faint: #fbf7ed;
+      --danger: #8a433d;
+      --danger-hover: #71352f;
+      --danger-soft: #f8eae7;
+      --line: #d8ddd7;
+      --line-strong: #c3cbc3;
+      --white: #ffffff;
+      --focus-ring: rgba(40, 93, 73, .24);
+      --display: Batang, "AppleMyungjo", "Noto Serif KR", serif;
+      --body: "Pretendard Variable", Pretendard, "SUIT Variable", "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif;
+      --mono: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+      --content: 1160px;
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 24px;
+      --space-6: 32px;
+      --space-7: 48px;
+      --space-8: 64px;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+      --control-height: 44px;
+      --shadow-1: 0 1px 2px rgba(31, 46, 38, .05);
+      --shadow-2: 0 12px 30px rgba(31, 46, 38, .07);
+      --duration-fast: 140ms;
+      --duration-normal: 200ms;
+      --ease-standard: cubic-bezier(.2, 0, 0, 1);
+    }
+
+    ::selection { color: var(--ink); background: #cfe3d7; }
+    html { background: var(--paper); color: var(--ink); }
+    body {
+      color: var(--ink);
+      background: var(--paper);
+      font-size: 15px;
+      line-height: 1.65;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input, textarea, select, summary {
+      transition:
+        color var(--duration-fast) var(--ease-standard),
+        background-color var(--duration-fast) var(--ease-standard),
+        border-color var(--duration-fast) var(--ease-standard),
+        box-shadow var(--duration-fast) var(--ease-standard),
+        opacity var(--duration-fast) var(--ease-standard);
+    }
+    button:disabled { opacity: .48; }
+    a { color: var(--signal); text-underline-offset: 3px; }
+    :focus-visible {
+      outline: 2px solid var(--signal);
+      outline-offset: 3px;
+      box-shadow: 0 0 0 4px var(--focus-ring);
+    }
+    [role="tabpanel"]:focus-visible {
+      border-radius: var(--radius-sm);
+      outline-offset: 8px;
+      box-shadow: none;
+    }
+    .muted { color: var(--muted); }
+
+    .app-header {
+      border-bottom-color: var(--line);
+      background: var(--surface);
+      box-shadow: var(--shadow-1);
+    }
+    .header-inner { width: min(100% - 40px, var(--content)); }
+    .brand-row { min-height: 76px; gap: var(--space-5); }
+    .brand { align-items: center; gap: var(--space-3); min-width: 0; }
+    .brand::before {
+      content: "";
+      width: 22px;
+      height: 22px;
+      flex: 0 0 22px;
+      background: center / contain no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23285d49' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4'/%3E%3Cpath d='M2 6h4M2 10h4M2 14h4M2 18h4'/%3E%3Cpath d='M21.378 5.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z'/%3E%3C/svg%3E");
+    }
+    .brand strong {
+      color: var(--ink);
+      font-size: 27px;
+      letter-spacing: -.045em;
+      white-space: nowrap;
+    }
+    .brand span {
+      overflow: hidden;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .mode-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 10px;
+      border-color: var(--line);
+      color: var(--muted-strong);
+      background: var(--surface-subtle);
+      font: 650 11px/1 var(--body);
+      letter-spacing: -.01em;
+      box-shadow: var(--shadow-1);
+    }
+    .mode-badge::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border: 1px solid var(--muted);
+      border-radius: 50%;
+      background: var(--surface);
+    }
+    .mode-badge.connected {
+      border-color: #9bb9aa;
+      color: var(--signal);
+      background: var(--signal-faint);
+    }
+    .mode-badge.connected::before { border-color: var(--signal); background: var(--signal); }
+
+    .tabs { gap: var(--space-1); overflow-y: visible; }
+    .tab {
+      min-height: 46px;
+      margin-bottom: -1px;
+      padding: 0 17px;
+      border: 1px solid transparent;
+      border-bottom: 0;
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      color: var(--muted);
+      background: transparent;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .tab:hover { color: var(--ink); background: var(--surface-subtle); }
+    .tab[aria-selected="true"] {
+      border-color: var(--line);
+      color: var(--signal);
+      background: var(--paper);
+      box-shadow: inset 0 3px 0 var(--signal);
+    }
+    .tab:focus-visible { position: relative; z-index: 1; outline-offset: -3px; }
+
+    main { width: min(100% - 40px, var(--content)); padding: 54px 0 104px; }
+    .page-heading { max-width: 780px; margin-bottom: 36px; }
+    .eyebrow {
+      margin-bottom: var(--space-2);
+      color: var(--signal);
+      font: 750 12px/1.4 var(--body);
+      letter-spacing: .08em;
+    }
+    h1 {
+      margin-bottom: var(--space-3);
+      color: var(--ink);
+      font-size: clamp(34px, 4.4vw, 48px);
+      line-height: 1.18;
+      letter-spacing: -.045em;
+    }
+    h2 { margin-bottom: var(--space-4); color: var(--ink); font-size: 25px; line-height: 1.32; }
+    h3 { color: var(--ink); font-size: 16px; line-height: 1.4; }
+    .lede { max-width: 720px; margin-bottom: 0; color: var(--muted-strong); font-size: 16px; line-height: 1.72; }
+
+    .stack { gap: var(--space-4); }
+    .section-block { margin-top: 52px; }
+    .section-heading { align-items: center; margin-bottom: var(--space-4); }
+    .section-heading h2, .section-heading h3 { line-height: 1.3; }
+    .card {
+      border-color: var(--line);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      box-shadow: var(--shadow-1);
+    }
+    .card-pad { padding: var(--space-5); }
+    .quiet-rule { margin: var(--space-7) 0; border-top-color: var(--line); }
+
+    label { gap: var(--space-2); color: var(--ink-soft); font-size: 13px; font-weight: 720; }
+    input, textarea, select {
+      border-color: var(--line-strong);
+      border-radius: 10px;
+      color: var(--ink);
+      background: var(--white);
+      box-shadow: inset 0 1px 1px rgba(31, 46, 38, .025);
+    }
+    input, select { min-height: var(--control-height); padding: 0 var(--space-3); }
+    textarea { min-height: 104px; padding: 13px 14px; line-height: 1.68; }
+    input:hover, textarea:hover, select:hover { border-color: #9eaaa1; }
+    input:focus, textarea:focus, select:focus,
+    input:focus-visible, textarea:focus-visible, select:focus-visible {
+      border-color: var(--signal);
+      outline: 0;
+      box-shadow: 0 0 0 3px var(--focus-ring);
+    }
+    input::placeholder, textarea::placeholder { color: #7d8982; opacity: 1; }
+    input:disabled, textarea:disabled, select:disabled { color: var(--muted); background: var(--surface-strong); }
+    .field-grid { gap: var(--space-4); }
+    .button-row { gap: var(--space-2); }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: var(--control-height);
+      padding: 0 var(--space-4);
+      border-color: var(--line-strong);
+      border-radius: 10px;
+      color: var(--ink-soft);
+      background: var(--surface);
+      font-size: 14px;
+      font-weight: 760;
+      line-height: 1.2;
+      box-shadow: var(--shadow-1);
+    }
+    .button:hover { border-color: #9eaaa1; color: var(--ink); background: var(--surface-subtle); }
+    .button:active { background: var(--surface-strong); box-shadow: inset 0 1px 2px rgba(31, 46, 38, .08); }
+    .button.primary { border-color: var(--signal); color: var(--white); background: var(--signal); }
+    .button.primary:hover { border-color: var(--signal-hover); color: var(--white); background: var(--signal-hover); }
+    .button.quiet { border-color: #8eb09f; color: var(--signal); background: var(--signal-faint); }
+    .button.quiet:hover { border-color: var(--signal); background: var(--signal-soft); }
+    .button.danger { border-color: #d6aaa5; color: var(--danger); background: #fffafa; }
+    .button.danger:hover { border-color: var(--danger); color: var(--danger-hover); background: var(--danger-soft); }
+    .button.small { min-height: 36px; padding: 0 var(--space-3); font-size: 12px; }
+
+    .memo-form {
+      position: relative;
+      gap: var(--space-4);
+      padding: 26px 28px;
+      overflow: hidden;
+      border-color: #c8d2ca;
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      box-shadow: var(--shadow-2);
+    }
+    .memo-form::before {
+      content: "";
+      position: absolute;
+      inset: 22px auto 22px 0;
+      width: 3px;
+      border-radius: 0 3px 3px 0;
+      background: var(--signal);
+    }
+    .memo-form textarea { min-height: 114px; font-size: 16px; background: #fffefb; }
+    .memo-form .button-row { justify-content: flex-end; }
+    .memo-form .button.primary { min-width: 96px; }
+    .save-line { min-height: 26px; margin-top: var(--space-2); color: var(--signal); font-size: 13px; }
+
+    .focus-card {
+      padding: 20px 22px;
+      border: 1px solid #aac3b4;
+      border-left: 4px solid var(--signal);
+      border-radius: var(--radius-md);
+      background: var(--signal-faint);
+      box-shadow: var(--shadow-1);
+    }
+    .focus-card h3 { margin-bottom: var(--space-1); font: 700 19px/1.4 var(--display); }
+    .focus-clue { margin-bottom: 0; color: var(--ink-soft); }
+    .today-focus-stack { gap: var(--space-3); margin-bottom: 38px; }
+    .today-focus-heading { align-items: center; }
+
+    .pending-card {
+      padding: 22px 24px;
+      border: 1px solid #dfceb0;
+      border-left: 4px solid var(--warn);
+      border-radius: var(--radius-md);
+      background: var(--warn-faint);
+      box-shadow: var(--shadow-1);
+    }
+    .pending-card blockquote { margin-bottom: var(--space-2); color: #493a22; font-size: 20px; }
+    .candidate-list { gap: var(--space-2); margin-top: var(--space-4); }
+    .candidate-list button {
+      min-height: 38px;
+      padding: 0 14px;
+      border-color: #cbb487;
+      color: #59431e;
+      background: var(--surface);
+      font-weight: 720;
+    }
+    .candidate-list button:hover { border-color: var(--warn); background: var(--warn-soft); }
+    .candidate-list .none { color: var(--muted-strong); border-color: var(--line-strong); }
+
+    .memo-list { gap: 0; border-color: var(--line); border-radius: var(--radius-md); background: var(--surface); }
+    .memo-item { padding: 19px 21px; border-bottom: 1px solid var(--line); background: var(--surface); }
+    .memo-item:last-child { border-bottom: 0; }
+    .memo-item:hover { background: var(--signal-faint); }
+    .memo-item header { margin-bottom: var(--space-2); }
+    .memo-date { color: var(--muted-strong); font-size: 12px; }
+    .memo-text { margin-bottom: var(--space-3); color: var(--ink-soft); font-size: 15px; line-height: 1.7; }
+    .chips { gap: 5px; }
+    .chip {
+      padding: 4px 9px;
+      border: 1px solid #cdd7d0;
+      color: #46554d;
+      background: var(--signal-faint);
+      font-size: 11px;
+      font-weight: 650;
+    }
+    .chip.concern { border-color: #dbc69f; color: #684c1d; background: var(--warn-soft); }
+
+    .dashboard-metrics { gap: var(--space-4); margin-bottom: var(--space-5); }
+    .dashboard-metric {
+      position: relative;
+      padding: 20px 22px;
+      overflow: hidden;
+      border-color: var(--line);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      box-shadow: var(--shadow-1);
+    }
+    .dashboard-metric::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 3px;
+      background: var(--signal-soft);
+    }
+    .dashboard-metric strong { margin: var(--space-2) 0 6px; color: var(--signal); font-size: 36px; }
+    .dashboard-metric span { color: var(--muted); font-size: 13px; }
+    .dashboard-grid { gap: var(--space-4); }
+    .dashboard-card { padding: 22px; }
+    .dashboard-card h2 { font-size: 21px; }
+    .dashboard-card .helper { min-height: 39px; margin-bottom: var(--space-4); }
+    .dashboard-list { gap: 0; }
+    .dashboard-item { gap: var(--space-2); padding: 14px 0; border-top-color: var(--line); }
+    .dashboard-item .name-button { font-size: 18px; }
+    .dashboard-tag { padding: 4px 8px; color: #654b1d; background: var(--warn-soft); font-size: 11px; }
+    .dashboard-tag.queued { color: var(--signal); background: var(--signal-soft); }
+    .dashboard-date { font-size: 11px; }
+    .dashboard-clue { color: var(--muted-strong); font-size: 13px; line-height: 1.55; }
+
+    .radar-header { gap: var(--space-2); margin-bottom: var(--space-2); }
+    .radar-header strong { color: var(--ink); font-size: clamp(27px, 4vw, 39px); }
+    .radar-notice { font-size: 14px; }
+    .pending-jump {
+      margin-top: var(--space-4);
+      padding: 13px 15px;
+      border-left-color: var(--warn);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      color: #60481f;
+      background: var(--warn-faint);
+    }
+    .radar-groups { gap: var(--space-4); }
+    .radar-group {
+      min-height: 164px;
+      padding: 22px;
+      border-color: var(--line);
+      border-left: 3px solid #aac2b5;
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      box-shadow: var(--shadow-1);
+    }
+    .radar-group header { align-items: center; margin-bottom: var(--space-4); }
+    .radar-group header h3 { color: var(--ink-soft); font-size: 15px; }
+    .radar-group header strong { color: var(--signal); font-size: 14px; }
+    .name-grid { gap: var(--space-2) var(--space-4); }
+    .name-button {
+      min-height: 34px;
+      padding: 2px 0;
+      color: var(--ink);
+      font-size: 18px;
+      text-underline-offset: 4px;
+    }
+    .name-button:hover { border-bottom-color: var(--signal); color: var(--signal); }
+    .name-button:focus-visible { border-radius: 3px; }
+    .group-line { margin-top: var(--space-2); gap: var(--space-3); }
+    .group-detail { color: var(--muted-strong); font-size: 13px; }
+    .streak { margin-bottom: 0; color: var(--signal); font-size: 13px; }
+
+    .heatmap-wrap {
+      padding: var(--space-4);
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      box-shadow: var(--shadow-1);
+    }
+    .heatmap { min-width: 760px; border-spacing: 6px; }
+    .heatmap th { padding: 5px 3px; color: var(--muted-strong); font-size: 10px; }
+    .heatmap .student-col {
+      min-width: 112px;
+      padding-right: var(--space-3);
+      background: var(--surface);
+      box-shadow: 8px 0 10px -12px rgba(31, 46, 38, .55);
+    }
+    .heat-cell { min-width: 40px; height: 40px; border-radius: 7px; font-weight: 800; }
+    .heat-cell.empty { border: 1px dashed #9fac9f; background: var(--surface-subtle); }
+    .heat-cell.empty:hover { border-color: var(--signal); background: var(--signal-faint); }
+    .heat-cell.seen { border-color: #b8cbbf; color: var(--signal); background: var(--signal-soft); }
+    .heat-cell.concern { border-color: #dbc69f; color: #714f18; background: var(--warn-soft); }
+    .heat-cell::after { border-radius: var(--radius-sm); box-shadow: var(--shadow-2); }
+    .heat-cell:hover::after, .heat-cell:focus-visible::after { visibility: visible; opacity: 1; }
+    .heatmap-legend { gap: var(--space-4); margin-top: var(--space-3); font-size: 12px; }
+    .legend-swatch.empty { border: 1px dashed #9fac9f; background: var(--surface-subtle); }
+    .legend-swatch.seen { border: 1px solid #b8cbbf; background: var(--signal-soft); }
+    .legend-swatch.concern { border: 1px solid #dbc69f; background: var(--warn-soft); }
+
+    .mirror { padding: 34px 0; border-color: var(--line); }
+    .mirror-grid { gap: var(--space-6); }
+    .mirror-summary strong { color: var(--signal); font-size: 44px; }
+    .bar-list { gap: var(--space-3); }
+    .bar-row { grid-template-columns: 78px 44px 1fr; }
+    .bar-track { height: 11px; overflow: hidden; border-color: var(--line-strong); border-radius: 999px; background: var(--surface-strong); }
+    .bar-fill { border-radius: inherit; background: var(--signal); }
+    .mirror-sentences { color: var(--ink-soft); }
+
+    .student-toolbar { margin-bottom: var(--space-4); }
+    .student-toolbar label { color: var(--muted-strong); }
+    .student-list {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      box-shadow: var(--shadow-1);
+    }
+    .student-row {
+      min-height: 70px;
+      padding: 0 20px;
+      border-bottom-color: var(--line);
+      background: var(--surface);
+    }
+    .student-row:last-child { border-bottom: 0; }
+    .student-row:hover { background: var(--signal-faint); }
+    .student-row span { color: var(--muted-strong); font-size: 13px; }
+
+    .trend-list { gap: var(--space-3); }
+    .trend-track { overflow: hidden; border-left: 0; border-radius: 4px; background: var(--surface-strong); }
+    .trend-fill { border-radius: inherit; background: var(--signal); }
+    .ledger-toolbar { gap: var(--space-3); padding: var(--space-5); }
+    .ledger-toolbar .button { min-height: var(--control-height); }
+    .export-status { min-height: 22px; color: var(--muted-strong); font-size: 13px; }
+    .report-sheet {
+      margin-top: var(--space-6);
+      padding: 38px;
+      border-color: #7b877f;
+      border-radius: 2px;
+      background: #fffefa;
+      box-shadow: var(--shadow-2);
+    }
+    .report-title { padding-bottom: 19px; border-bottom-color: var(--ink); }
+    .report-title h2 { font-size: 32px; }
+    .report-metrics { gap: var(--space-3) var(--space-5); padding: 26px 0; }
+    .metric { grid-template-columns: 100px 1fr; }
+    .metric dt { color: var(--muted-strong); font-size: 13px; }
+    .report-section { padding: 22px 0; border-top-color: var(--line); }
+    .report-section li { margin-bottom: var(--space-2); }
+
+    .evidence-ledger { margin-top: 34px; }
+    .evidence-summary { gap: var(--space-2); }
+    .evidence-card {
+      gap: var(--space-4);
+      padding: 20px 22px;
+      border-color: var(--line);
+      border-left: 3px solid #b8c8bd;
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      box-shadow: var(--shadow-1);
+    }
+    .evidence-card + .evidence-card { margin-top: var(--space-3); }
+    .evidence-card.excluded { border-left-color: #c39b97; background: #f5f2ef; opacity: .76; }
+    .evidence-meta { gap: var(--space-2); color: var(--muted-strong); font-size: 11px; }
+    .status-pill {
+      min-height: 27px;
+      padding: 0 10px;
+      border-color: var(--line-strong);
+      color: var(--muted-strong);
+      background: var(--surface-subtle);
+    }
+    .status-pill.reviewed { border-color: #9fb9aa; color: var(--signal); background: var(--signal-faint); }
+    .status-pill.excluded { border-color: #d6aaa5; color: var(--danger); background: var(--danger-soft); }
+    .evidence-original {
+      padding: 13px 15px;
+      border-left-color: #aeb8b0;
+      color: var(--ink-soft);
+      background: var(--surface-subtle);
+      line-height: 1.7;
+    }
+    .privacy-boundary {
+      padding: 13px 15px;
+      border-left-color: var(--signal);
+      color: #345346;
+      background: var(--signal-faint);
+      font-size: 13px;
+    }
+
+    .settings-grid { gap: var(--space-5); }
+    .settings-grid > .card { padding: 26px; }
+    .settings-grid > .card > h2:first-child,
+    .settings-grid > .card > .section-heading:first-child { margin-top: 0; }
+    .helper { color: var(--muted-strong); font-size: 13px; line-height: 1.6; }
+    .warning-copy {
+      padding: 13px 15px;
+      border-left-color: var(--warn);
+      color: #5d4824;
+      background: var(--warn-faint);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+    .file-picker {
+      padding: var(--space-4);
+      border-color: #8daf9d;
+      border-radius: var(--radius-md);
+      color: var(--signal);
+      background: var(--signal-faint);
+    }
+    .import-status, .provider-status { min-height: 24px; color: var(--muted-strong); font-size: 13px; }
+    .paste-fallback, .api-advanced { border-top-color: var(--line); }
+    .paste-fallback summary, .api-advanced summary {
+      padding: 4px 0;
+      color: var(--muted-strong);
+      font-size: 13px;
+      text-underline-offset: 3px;
+    }
+    .paste-fallback summary:hover, .api-advanced summary:hover { color: var(--signal); }
+    .model-picker-note { color: var(--muted-strong); font-size: 13px; line-height: 1.65; }
+    .roster { gap: 0; border-top: 1px solid var(--line); }
+    .roster-row { min-height: 60px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+    .roster-row strong { color: var(--ink); font-size: 16px; }
+    .roster-row input { min-height: 38px; }
+    .self-test { padding-top: var(--space-2); font-size: 12px; }
+
+    dialog {
+      border-color: var(--line-strong);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      box-shadow: 0 22px 60px rgba(20, 34, 27, .24);
+    }
+    dialog::backdrop { background: rgba(22, 30, 26, .56); }
+    .dialog-body { padding: 28px; }
+    .dialog-close { border-color: var(--line-strong); background: var(--surface); }
+    .dialog-close:hover { color: var(--signal); background: var(--signal-soft); }
+    .toast {
+      padding: 13px 16px;
+      border-color: var(--signal-hover);
+      border-radius: var(--radius-sm);
+      background: var(--signal-hover);
+      box-shadow: var(--shadow-2);
+    }
+
+    @media (max-width: 980px) {
+      .dashboard-grid { grid-template-columns: 1fr; }
+      .dashboard-card .helper { min-height: 0; }
+      .ledger-toolbar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .ledger-toolbar .button { align-self: end; }
+    }
+
+    @media (max-width: 840px) {
+      .settings-grid, .radar-groups { grid-template-columns: 1fr; }
+      .settings-grid .wide { grid-column: auto; }
+      .field-grid.four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .dashboard-metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .dashboard-metric { padding: 18px; }
+      .dashboard-metric strong { font-size: 31px; }
+    }
+
+    @media (max-width: 760px) {
+      .header-inner, main { width: min(100% - 28px, var(--content)); }
+      .brand-row { min-height: 66px; }
+      .brand::before { width: 20px; height: 20px; flex-basis: 20px; }
+      .brand strong { font-size: 25px; }
+      .tab { min-height: 44px; padding: 0 14px; font-size: 13px; }
+      main { padding: 38px 0 80px; }
+      .page-heading { margin-bottom: 30px; }
+      h1 { font-size: clamp(33px, 10vw, 40px); }
+      h2 { font-size: 23px; }
+      .lede { font-size: 15px; }
+      .section-block { margin-top: 44px; }
+      .card-pad, .settings-grid > .card { padding: 20px; }
+      .memo-form { padding: 21px 20px; }
+      .memo-form::before { inset-block: 18px; }
+      .memo-form .button-row, .memo-form .button { width: 100%; }
+      .dashboard-metrics, .ledger-toolbar { grid-template-columns: 1fr; }
+      .dashboard-metric { padding: 19px 20px; }
+      .dashboard-metric strong { font-size: 34px; }
+      .dashboard-card { padding: 20px; }
+      .radar-group { padding: 20px; }
+      .heatmap-wrap { padding: var(--space-3); }
+      .student-row { min-height: 76px; padding: 13px 16px; }
+      .report-sheet { padding: 24px 20px; }
+      .evidence-card { padding: 18px; }
+      .dialog-body { padding: 22px; }
+    }
+
+    @media (max-width: 520px) {
+      .section-heading { align-items: flex-start; flex-wrap: wrap; gap: var(--space-2); }
+      .mode-badge { padding: 6px 8px; font-size: 10px; }
+      .field-grid.four { grid-template-columns: 1fr; }
+      .candidate-list button { flex-basis: calc(50% - 4px); }
+      .student-toolbar { justify-content: stretch; }
+      .student-toolbar label, .student-toolbar select { width: 100%; }
+      .student-row { grid-template-columns: minmax(0, 1fr) auto; gap: 5px 12px; }
+      .student-row .name-button { grid-row: auto; grid-column: 1; }
+      .student-row span:first-of-type { grid-column: 1 / -1; }
+      .roster-row { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2); padding: var(--space-4) 0; }
+      .roster-row strong, .roster-row input[data-role="aliases"], .roster-row .button-row { grid-column: 1 / -1; }
+      .roster-row .button-row { justify-content: flex-end; }
+      .roster-row .button { min-width: 68px; }
+      .dialog-actions .button { min-height: 46px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto !important; }
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+
+    @media print {
+      :root { --ink: #000; --muted: #333; --line: #999; }
+      body { color: #000; background: #fff; font-size: 10pt; }
+      main { max-width: none; }
+      .report-sheet { box-shadow: none; background: #fff; }
+      .report-title, .report-section, .report-note { border-color: #333; }
+      .report-section li { break-inside: avoid; }
+      a { color: #000; text-decoration: none; }
+    }
+
   </style>
 </head>
 <body>
@@ -349,6 +1004,7 @@
       </div>
       <nav id="tabs" class="tabs" role="tablist" aria-label="주 화면">
         <button class="tab" id="tab-today" role="tab" aria-controls="panel-today" aria-selected="true" data-tab="today">오늘</button>
+        <button class="tab" id="tab-dashboard" role="tab" aria-controls="panel-dashboard" aria-selected="false" data-tab="dashboard" tabindex="-1">대시보드</button>
         <button class="tab" id="tab-radar" role="tab" aria-controls="panel-radar" aria-selected="false" data-tab="radar" tabindex="-1">주간 레이더</button>
         <button class="tab" id="tab-students" role="tab" aria-controls="panel-students" aria-selected="false" data-tab="students" tabindex="-1">학생</button>
         <button class="tab" id="tab-report" role="tab" aria-controls="panel-report" aria-selected="false" data-tab="report" tabindex="-1">기록 장부</button>
@@ -381,6 +1037,32 @@
         <div class="section-heading"><h2 id="weekHeading">이번 주 기록</h2></div>
         <div id="weeklyMemos"></div>
       </section>
+    </section>
+
+    <section id="panel-dashboard" role="tabpanel" aria-labelledby="tab-dashboard" tabindex="0" hidden>
+      <header class="page-heading">
+        <p class="eyebrow">교사의 후속 행동</p>
+        <h1>교사 대시보드</h1>
+        <p class="lede">기록 공백과 반복된 관찰 맥락, 이미 잡아 둔 상담 날짜를 한눈에 확인합니다. 학생에 대한 평가나 AI 판단이 아닙니다.</p>
+      </header>
+      <div id="dashboardMetrics" class="dashboard-metrics"></div>
+      <div class="dashboard-grid">
+        <section class="card dashboard-card" aria-labelledby="dashboardTalkHeading">
+          <div class="section-heading"><h2 id="dashboardTalkHeading">오늘 말 걸기</h2><span id="dashboardTalkCount" class="mono muted"></span></div>
+          <p class="helper">학생 메뉴에서 등록한 오늘의 대화 목록입니다.</p>
+          <div id="dashboardTalkList" class="dashboard-list"></div>
+        </section>
+        <section class="card dashboard-card" aria-labelledby="dashboardAttentionHeading">
+          <div class="section-heading"><h2 id="dashboardAttentionHeading">관심을 줄 학생</h2><span id="dashboardAttentionCount" class="mono muted"></span></div>
+          <p class="helper">로컬 규칙: 기록 공백 또는 최근 우려 맥락만 반복된 경우입니다.</p>
+          <div id="dashboardAttentionList" class="dashboard-list"></div>
+        </section>
+        <section class="card dashboard-card" aria-labelledby="dashboardConsultationHeading">
+          <div class="section-heading"><h2 id="dashboardConsultationHeading">상담 예정</h2><span id="dashboardConsultationCount" class="mono muted"></span></div>
+          <p class="helper">오늘 이후로 예약된 상담을 날짜순으로 표시합니다.</p>
+          <div id="dashboardConsultationList" class="dashboard-list"></div>
+        </section>
+      </div>
     </section>
 
     <section id="panel-radar" role="tabpanel" aria-labelledby="tab-radar" tabindex="0" hidden>
@@ -529,7 +1211,7 @@
       <header class="dialog-header"><div><p class="eyebrow">교사의 다음 행동</p><h2 id="dialogTitle"></h2></div><button id="closeDialog" class="dialog-close" type="button" aria-label="닫기">×</button></header>
       <p id="dialogClue" class="muted"></p>
       <div class="dialog-actions">
-        <button class="button primary" type="button" data-dialog-action="queue">오늘 말 걸기</button>
+        <button id="queueTodayButton" class="button primary" type="button" data-dialog-action="queue">오늘 말 걸기</button>
         <button class="button" type="button" data-dialog-action="schedule">상담 예약</button>
         <button class="button" type="button" data-dialog-action="snooze">괜찮음</button>
       </div>
@@ -563,7 +1245,7 @@
       const DOMAINS = ["행동", "학업", "정서", "관계", "건강"];
       const TONES = ["긍정", "중립", "우려"];
       const REVIEW_STATUSES = ["미확인", "확인", "교사수정", "제외"];
-      const APP_VERSION = "2.3.1";
+      const APP_VERSION = "2.4.0";
       const MAX_ROSTER_IMPORT = 200;
       const PROVIDER_SIGNAL_WORDS = Object.freeze([
         "지각", "미제출", "안 챙", "떠들", "주의", "다툼", "늦", "안 함", "못 함", "산만", "휴대폰",
@@ -820,6 +1502,32 @@
         }));
       }
 
+      function normalizeTodayQueue(value, students = [], defaultDate = localToday()) {
+        if (!value || typeof value !== "object") return null;
+        const date = /^\d{4}-\d{2}-\d{2}$/.test(value.date || "") ? value.date : defaultDate;
+        const sourceItems = Array.isArray(value.items) ? value.items : value.studentId ? [value] : [];
+        const validStudentIds = new Set(students.map((student) => student.id));
+        const seen = new Set();
+        const items = [];
+        for (const item of sourceItems) {
+          const studentId = typeof item?.studentId === "string" ? item.studentId : "";
+          if (!studentId || seen.has(studentId) || !validStudentIds.has(studentId)) continue;
+          seen.add(studentId);
+          const clue = item.clue && typeof item.clue === "object" && typeof item.clue.quote === "string"
+            ? {
+                date: /^\d{4}-\d{2}-\d{2}$/.test(item.clue.date || "") ? item.clue.date : date,
+                quote: item.clue.quote
+              }
+            : null;
+          items.push({
+            studentId,
+            clue,
+            addedAt: typeof item.addedAt === "string" && item.addedAt ? item.addedAt : null
+          });
+        }
+        return items.length ? { date, items } : null;
+      }
+
       function loadState() {
         const settings = normalizeSettings(readJson(KEYS.settings, {}));
         const classInfo = readJson(KEYS.classInfo, { className: "", createdAt: settings.demoMode ? "2026-09-01" : localToday() });
@@ -835,7 +1543,7 @@
           memos,
           contacts,
           settings,
-          todayQueue: readJson(KEYS.todayQueue, null),
+          todayQueue: normalizeTodayQueue(readJson(KEYS.todayQueue, null), students, settings.demoMode ? DEMO_TODAY : localToday()),
           mirror: readJson(KEYS.mirror, null),
           privateTokens: Array.isArray(readJson(KEYS.privateTokens, [])) ? readJson(KEYS.privateTokens, []) : []
         };
@@ -1215,16 +1923,17 @@
           lastTest: { ok: false, at: null, errorCode: null }
         });
         const classInfo = source.classInfo && typeof source.classInfo === "object" ? source.classInfo : {};
+        const students = normalizeStudents(source.students);
         return {
           classInfo: {
             className: typeof classInfo.className === "string" ? classInfo.className.slice(0, 40) : "",
             createdAt: /^\d{4}-\d{2}-\d{2}$/.test(classInfo.createdAt || "") ? classInfo.createdAt : localToday()
           },
-          students: normalizeStudents(source.students),
+          students,
           memos: normalizeMemos(source.memos),
           contacts: normalizeContacts(source.contacts),
           settings,
-          todayQueue: source.todayQueue && typeof source.todayQueue === "object" ? deepClone(source.todayQueue) : null,
+          todayQueue: normalizeTodayQueue(source.todayQueue, students, settings.demoMode ? DEMO_TODAY : localToday()),
           mirror: null,
           privateTokens: Array.isArray(source.privateTokens) ? source.privateTokens.map((value) => String(value).normalize("NFC").trim()).filter((value) => value.length >= 2).slice(0, 2000) : []
         };
@@ -1942,6 +2651,69 @@
         return { date: latest.date, quote: latest.context || latest.memoText };
       }
 
+      function todayQueueItems(model = state, today = effectiveToday(model)) {
+        const queue = normalizeTodayQueue(model.todayQueue, model.students, today);
+        return queue?.date === today ? queue.items : [];
+      }
+
+      function addTodayQueueStudent(studentId, model = state) {
+        const student = studentById(studentId, model);
+        if (!student) return false;
+        const today = effectiveToday(model);
+        let queue = normalizeTodayQueue(model.todayQueue, model.students, today);
+        if (!queue || queue.date !== today) queue = { date: today, items: [] };
+        if (queue.items.some((item) => item.studentId === studentId)) return false;
+        queue.items.push({ studentId, clue: clueForStudent(studentId, model), addedAt: new Date().toISOString() });
+        model.todayQueue = queue;
+        return true;
+      }
+
+      function removeTodayQueueStudent(studentId, model = state) {
+        const today = effectiveToday(model);
+        const queue = normalizeTodayQueue(model.todayQueue, model.students, today);
+        if (!queue || !queue.items.some((item) => item.studentId === studentId)) return false;
+        const items = queue.items.filter((item) => item.studentId !== studentId);
+        model.todayQueue = items.length ? { date: queue.date, items } : null;
+        return true;
+      }
+
+      function attentionStudentRows(model = state, today = effectiveToday(model)) {
+        const silentIds = new Set(silentStudents(model.settings.silentDays, model, today).map((student) => student.id));
+        const concernIds = new Set(concernOnlyStudents(model.settings.silentDays, model, today).map((student) => student.id));
+        return model.students
+          .filter((student) => silentIds.has(student.id) || concernIds.has(student.id))
+          .map((student) => {
+            const last = lastMentionedAt(student.id, model, today);
+            const concernCount = concernIds.has(student.id)
+              ? toneBreakdown(student.id, addDays(today, -model.settings.silentDays), today, model).우려
+              : 0;
+            const reasons = [];
+            if (silentIds.has(student.id)) reasons.push(last ? `${daysBetween(last, today)}일간 기록 없음` : "관찰 기록 없음");
+            if (concernIds.has(student.id)) reasons.push(`우려 맥락만 ${concernCount}회`);
+            return { student, silent: silentIds.has(student.id), concern: concernIds.has(student.id), reasons, last };
+          })
+          .sort((a, b) => {
+            const scoreA = Number(a.silent) + Number(a.concern);
+            const scoreB = Number(b.silent) + Number(b.concern);
+            if (scoreA !== scoreB) return scoreB - scoreA;
+            if (a.last !== b.last) return String(a.last || "").localeCompare(String(b.last || ""));
+            return (a.student.number || 9999) - (b.student.number || 9999) || a.student.name.localeCompare(b.student.name, "ko");
+          });
+      }
+
+      function upcomingConsultations(model = state, today = effectiveToday(model)) {
+        return model.contacts
+          .filter((contact) => contact.type === "상담예약" && /^\d{4}-\d{2}-\d{2}$/.test(contact.date || "") && contact.date >= today)
+          .map((contact) => ({ contact, student: studentById(contact.studentId, model) }))
+          .filter((item) => item.student)
+          .sort((a, b) => a.contact.date.localeCompare(b.contact.date) || (a.student.number || 9999) - (b.student.number || 9999) || a.student.name.localeCompare(b.student.name, "ko"));
+      }
+
+      function consultationDateLabel(date, today = effectiveToday()) {
+        const days = daysBetween(today, date);
+        return days === 0 ? "오늘" : `D-${days}`;
+      }
+
       function analysisDates(model = state, today = effectiveToday(model)) {
         if (model.settings.demoMode) return [...DEMO_HEAT_DATES];
         const dates = [];
@@ -2474,7 +3246,7 @@
       }
 
       function setTab(name, focus = false) {
-        if (!["today", "radar", "students", "report", "settings"].includes(name)) return;
+        if (!["today", "dashboard", "radar", "students", "report", "settings"].includes(name)) return;
         ui.activeTab = name;
         for (const tab of document.querySelectorAll("[role=tab]")) {
           const active = tab.dataset.tab === name;
@@ -2489,20 +3261,31 @@
       function renderTodayFocus() {
         const container = document.getElementById("todayFocus");
         container.replaceChildren();
-        if (!state.todayQueue || state.todayQueue.date !== effectiveToday() || !studentById(state.todayQueue.studentId)) return;
-        const student = studentById(state.todayQueue.studentId);
-        const clue = state.todayQueue.clue;
-        const clueLine = clue
-          ? element("p", { className: "focus-clue" }, [
-              element("span", { className: "mono", text: formatShortDate(clue.date) }),
-              "  ", element("q", { text: clue.quote })
-            ])
-          : element("p", { className: "focus-clue", text: "최근 긍정·중립 기록이 없습니다" });
-        container.append(element("section", { className: "focus-card", attrs: { "aria-label": "오늘 볼 아이" } }, [
-          element("div", {}, [element("p", { className: "eyebrow", text: "오늘 볼 아이" }), element("h2", { text: student.name }), clueLine]),
-          element("button", { className: "button primary", text: "대화함", type: "button", dataset: { action: "contact-done" } })
+        const items = todayQueueItems();
+        if (!items.length) return;
+        const list = element("div", { className: "stack" });
+        for (const item of items) {
+          const student = studentById(item.studentId);
+          if (!student) continue;
+          const clue = item.clue || clueForStudent(student.id);
+          const clueLine = clue
+            ? element("p", { className: "focus-clue" }, [
+                element("span", { className: "mono", text: formatShortDate(clue.date) }),
+                "  ", element("q", { text: clue.quote })
+              ])
+            : element("p", { className: "focus-clue", text: "최근 긍정·중립 기록이 없습니다" });
+          list.append(element("article", { className: "focus-card" }, [
+            element("div", {}, [element("h3", { text: student.name }), clueLine]),
+            element("button", { className: "button primary", text: "대화함", type: "button", dataset: { action: "contact-done", studentId: student.id } })
+          ]));
+        }
+        container.append(element("section", { className: "today-focus-stack", attrs: { "aria-labelledby": "todayFocusHeading" } }, [
+          element("div", { className: "today-focus-heading" }, [
+            element("h2", { id: "todayFocusHeading", text: "오늘 말 걸기" }),
+            element("strong", { className: "mono muted", text: `${items.length}명` })
+          ]),
+          list
         ]));
-        container.append(element("div", { attrs: { style: "height:32px" } }));
       }
 
       function renderPendingCards() {
@@ -2568,6 +3351,68 @@
         dateInput.max = effectiveToday();
         if (!dateInput.value) dateInput.value = effectiveToday();
         document.getElementById("saveFeedback").textContent = ui.feedback;
+      }
+
+      function renderDashboard() {
+        const queueItems = todayQueueItems();
+        const attentionRows = attentionStudentRows();
+        const consultations = upcomingConsultations();
+        const metrics = document.getElementById("dashboardMetrics");
+        metrics.replaceChildren(...[
+          ["오늘 말 걸기", queueItems.length, "오늘 등록된 학생"],
+          ["관심을 줄 학생", attentionRows.length, "기록 공백·반복 맥락"],
+          ["상담 예정", consultations.length, "오늘 이후 예약"]
+        ].map(([label, value, detail]) => element("article", { className: "dashboard-metric" }, [
+          element("p", { className: "eyebrow", text: label }),
+          element("strong", { text: `${value}명` }),
+          element("span", { text: detail })
+        ])));
+
+        document.getElementById("dashboardTalkCount").textContent = `${queueItems.length}명`;
+        document.getElementById("dashboardAttentionCount").textContent = `${attentionRows.length}명`;
+        document.getElementById("dashboardConsultationCount").textContent = `${consultations.length}건`;
+
+        const talkList = document.getElementById("dashboardTalkList");
+        talkList.replaceChildren();
+        for (const item of queueItems) {
+          const student = studentById(item.studentId);
+          if (!student) continue;
+          const clue = item.clue || clueForStudent(student.id);
+          talkList.append(element("article", { className: "dashboard-item" }, [
+            element("header", {}, [
+              studentButton(student),
+              element("button", { className: "button primary small", text: "대화함", type: "button", dataset: { action: "contact-done", studentId: student.id } })
+            ]),
+            element("p", { className: "dashboard-clue", text: clue ? `${formatShortDate(clue.date)} · ${clue.quote}` : "최근 긍정·중립 기록 없음" })
+          ]));
+        }
+        if (!talkList.children.length) talkList.append(element("p", { className: "muted", text: "오늘 말 걸기로 등록한 학생이 없습니다." }));
+
+        const queuedIds = new Set(queueItems.map((item) => item.studentId));
+        const attentionList = document.getElementById("dashboardAttentionList");
+        attentionList.replaceChildren();
+        for (const row of attentionRows) {
+          const tags = row.reasons.map((reason) => element("span", { className: "dashboard-tag", text: reason }));
+          if (queuedIds.has(row.student.id)) tags.push(element("span", { className: "dashboard-tag queued", text: "오늘 말 걸기 등록" }));
+          attentionList.append(element("article", { className: "dashboard-item" }, [
+            element("header", {}, [studentButton(row.student)]),
+            element("div", { className: "dashboard-tags" }, tags)
+          ]));
+        }
+        if (!attentionList.children.length) attentionList.append(element("p", { className: "muted", text: "현재 규칙에 해당하는 학생이 없습니다." }));
+
+        const consultationList = document.getElementById("dashboardConsultationList");
+        consultationList.replaceChildren();
+        for (const item of consultations) {
+          consultationList.append(element("article", { className: "dashboard-item" }, [
+            element("header", {}, [
+              studentButton(item.student),
+              element("span", { className: "dashboard-date", text: `${formatKoreanDate(item.contact.date)} · ${consultationDateLabel(item.contact.date)}` })
+            ]),
+            item.contact.note ? element("p", { className: "dashboard-clue", text: item.contact.note }) : null
+          ]));
+        }
+        if (!consultationList.children.length) consultationList.append(element("p", { className: "muted", text: "예정된 상담이 없습니다." }));
       }
 
       function streakText(student) {
@@ -3117,6 +3962,7 @@
       function renderAll() {
         renderModeBadge();
         renderToday();
+        renderDashboard();
         renderRadar();
         renderStudents();
         renderReport();
@@ -3258,6 +4104,11 @@
         document.getElementById("dialogTitle").textContent = student.name;
         const clue = clueForStudent(student.id);
         document.getElementById("dialogClue").textContent = clue ? `${formatShortDate(clue.date)}  “${clue.quote}”` : "긍정·중립 맥락의 최근 기록이 없습니다.";
+        const queueButton = document.getElementById("queueTodayButton");
+        const queued = todayQueueItems().some((item) => item.studentId === student.id);
+        queueButton.disabled = queued;
+        queueButton.textContent = queued ? "오늘 말 걸기 등록됨" : "오늘 말 걸기";
+        document.getElementById("scheduleDate").min = effectiveToday();
         document.getElementById("scheduleDate").value = effectiveToday();
         document.getElementById("snoozeReason").value = "";
         document.getElementById("scheduleForm").classList.remove("active");
@@ -3385,6 +4236,24 @@
           const pending = unresolvedPendings(resolved)[0];
           applyPendingResolution(resolved, pending.memoId, pending.id, "S12");
           check("미해결 참조 소급 연결 후 4명", silentStudents(14, resolved, DEMO_TODAY).length === 4 && resolved.memos.some((memo) => memo.id === pending.memoId && memo.mentions.some((mention) => mention.studentId === "S12")));
+          const legacyQueue = normalizeTodayQueue({ studentId: "S02", date: DEMO_TODAY, clue: null }, demo.students, DEMO_TODAY);
+          check("기존 단일 오늘 말 걸기 자동 변환", legacyQueue?.items.length === 1 && legacyQueue.items[0].studentId === "S02");
+          const queueFixture = deepClone(demo);
+          const firstQueued = addTodayQueueStudent("S02", queueFixture);
+          const secondQueued = addTodayQueueStudent("S03", queueFixture);
+          const duplicateQueued = addTodayQueueStudent("S02", queueFixture);
+          check("오늘 말 걸기 2명 이상 누적·중복 방지", firstQueued && secondQueued && !duplicateQueued && todayQueueItems(queueFixture, DEMO_TODAY).map((item) => item.studentId).join(",") === "S02,S03");
+          removeTodayQueueStudent("S02", queueFixture);
+          check("대화 완료 학생만 목록에서 제거", todayQueueItems(queueFixture, DEMO_TODAY).map((item) => item.studentId).join(",") === "S03");
+          const attentionFixture = attentionStudentRows(demo, DEMO_TODAY);
+          check("대시보드 관심 기준 합집합", attentionFixture.length === 7 && attentionFixture.filter((row) => row.silent).length === 5 && attentionFixture.filter((row) => row.concern).length === 2);
+          const consultationFixture = deepClone(demo);
+          consultationFixture.contacts.push(
+            { id: "C901", studentId: "S02", type: "상담예약", date: DEMO_TODAY, note: "" },
+            { id: "C902", studentId: "S03", type: "상담예약", date: addDays(DEMO_TODAY, 2), note: "" },
+            { id: "C903", studentId: "S04", type: "상담예약", date: addDays(DEMO_TODAY, -1), note: "" }
+          );
+          check("대시보드 예정 상담 날짜순", upcomingConsultations(consultationFixture, DEMO_TODAY).map((item) => item.contact.id).join(",") === "C901,C902");
           const appendFixture = deepClone(demo);
           appendFixture.memos = [];
           appendMemoEntries(appendFixture, DEMO_TODAY, "안경이 친구를 도와줌\n박시우가 자료를 정리함\n오태경이 발표를 이끎");
@@ -3466,9 +4335,11 @@
           check("예시 Excel 단일 파일 내장", rosterExample.bytes[0] === 0x50 && rosterExample.bytes[1] === 0x4B && rosterExampleEntries.get("xl/workbook.xml")?.includes("학생명단") && rosterExampleEntries.get("xl/worksheets/sheet1.xml")?.includes("강민준"));
           const backupFixture = deepClone(demo);
           backupFixture.settings.apiKey = "private-test-value";
+          addTodayQueueStudent("S02", backupFixture);
+          addTodayQueueStudent("S03", backupFixture);
           const backup = portableBackupPayload(backupFixture, new Date("2026-09-13T03:04:05+09:00"));
           const restoredBackup = stateFromPortableBackup(backup);
-          check("작업 백업 복원·API 키 제외", !JSON.stringify(backup).includes("private-test-value") && restoredBackup.settings.apiKey === "" && restoredBackup.students.length === 25 && restoredBackup.memos.length === 9);
+          check("작업 백업 복원·API 키 제외", !JSON.stringify(backup).includes("private-test-value") && restoredBackup.settings.apiKey === "" && restoredBackup.students.length === 25 && restoredBackup.memos.length === 9 && todayQueueItems(restoredBackup, DEMO_TODAY).length === 2);
           check("concernOnly 2회 하한", !concernOnlyStudents(14, demo, DEMO_TODAY).some((student) => student.name === "문채원"));
           const safe = makeSafePrompt("김도윤 확인", demo);
           check("익명화 게이트 표식", safe[SAFE_PROMPT] === true && safe.text.includes("S04"));
@@ -3815,12 +4686,16 @@
         const student = studentById(ui.dialogStudentId);
         if (!student) return;
         if (action === "queue") {
-          state.todayQueue = { studentId: student.id, date: effectiveToday(), clue: clueForStudent(student.id) };
+          const added = addTodayQueueStudent(student.id);
+          if (!added) {
+            showToast(`${student.name}은 이미 오늘 말 걸기에 등록되어 있습니다.`);
+            return;
+          }
           persistState();
           closeStudentDialog();
           ui.activeTab = "today";
           renderAll();
-          showToast(`${student.name}을 오늘 볼 아이로 등록했습니다.`);
+          showToast(`${student.name}을 오늘 말 걸기에 추가했습니다. · ${todayQueueItems().length}명`);
           return;
         }
         document.getElementById("scheduleForm").classList.toggle("active", action === "schedule");
@@ -3834,6 +4709,10 @@
         const student = studentById(ui.dialogStudentId);
         const date = document.getElementById("scheduleDate").value;
         if (!student || !date) return;
+        if (date < effectiveToday()) {
+          showToast("상담 날짜는 오늘 이후로 선택해 주세요.");
+          return;
+        }
         state.contacts.push(createContact(student.id, "상담예약", date));
         persistState();
         closeStudentDialog();
@@ -3880,10 +4759,11 @@
           setTab("today");
           document.getElementById("pendingSection").scrollIntoView({ block: "start" });
         } else if (action === "contact-done") {
-          if (!state.todayQueue) return;
-          state.contacts.push(createContact(state.todayQueue.studentId, "대화", effectiveToday(), "레이더 알림 후"));
-          const student = studentById(state.todayQueue.studentId);
-          state.todayQueue = null;
+          const targetStudentId = studentId || todayQueueItems()[0]?.studentId;
+          if (!targetStudentId || !todayQueueItems().some((item) => item.studentId === targetStudentId)) return;
+          state.contacts.push(createContact(targetStudentId, "대화", effectiveToday(), "레이더 알림 후"));
+          const student = studentById(targetStudentId);
+          removeTodayQueueStudent(targetStudentId);
           persistState();
           renderAll();
           showToast(`${student?.name || "학생"}과 대화한 것으로 기록했습니다.`);
@@ -3909,6 +4789,7 @@
           if (!student || !confirm(`${student.name}과 연결된 관찰 기록 ${linkedEvidence}건·후속조치 ${linkedContacts}건을 함께 삭제할까요? 삭제하면 다음 Excel 내보내기에서도 빠집니다.`)) return;
           bumpAnalysisContext();
           rememberPrivateTokens(studentPrivateTokens(student));
+          removeTodayQueueStudent(studentId);
           state.students = state.students.filter((item) => item.id !== studentId);
           refreshDirectiveCandidates();
           state.memos = state.memos.map((memo) => ({
@@ -3917,7 +4798,6 @@
             pending: (memo.pending || []).map((pending) => ({ ...pending, candidates: pending.candidates.filter((id) => id !== studentId) }))
           }));
           state.contacts = state.contacts.filter((contact) => contact.studentId !== studentId);
-          if (state.todayQueue?.studentId === studentId) state.todayQueue = null;
           state.mirror = null;
           persistState();
           renderAll();
@@ -3935,6 +4815,11 @@
         extractMentionsFromText,
         silentStudents,
         concernOnlyStudents,
+        todayQueueItems,
+        addTodayQueueStudent,
+        removeTodayQueueStudent,
+        attentionStudentRows,
+        upcomingConsultations,
         buildDemoState,
         buildXlsxPackage,
         allEvidenceForStudent,
